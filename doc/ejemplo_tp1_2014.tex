@@ -1,9 +1,9 @@
 \documentclass[10pt, a4paper]{article}
-% especifico m·rgenes manualmente
+% especifico m√°rgenes manualmente
 \usepackage[paper=a4paper, left=1.5cm, right=1.5cm, bottom=1.5cm, top=3.5cm]{geometry}
-% codificaciÛn ISO-8859-1
-\usepackage[latin1]{inputenc}
-% separaciÛn sil·bica en castellano
+% codificaci√≥n ISO-8859-1
+\usepackage[utf8]{inputenc}
+% separaci√≥n sil√°bica en castellano
 \usepackage[spanish]{babel}
 % paquetes y caratula de algo2
 \usepackage{aed2-symb,aed2-itef,aed2-tad,caratula}
@@ -14,8 +14,8 @@
 % Estos comandos deben ir antes del \maketitle
 \materia{Algoritmos y Estructuras de Datos II} % obligatorio
 \submateria{Primer Cuatrimestre de 2014} % opcional
-\titulo{Trabajo Pr·ctico 1} % obligatorio
-\subtitulo{EspecificaciÛn} % opcional
+\titulo{Trabajo Pr√°ctico 1} % obligatorio
+\subtitulo{Especificaci√≥n} % opcional
 \grupo{Grupo 1} % opcional 
 
 \integrante{Integrante 1}{Nro/YY}{mail@dc.uba.ar} % obligatorio 
@@ -32,14 +32,14 @@
 %\newpage
 
 
-\section{EspecificaciÛn}
-Esta es una especificaciÛn del Trabajo Pr·ctico n˙mero 1 del 1$^{er}$ cuatrimestre del 2014 presentada por la c·tedra para la realizaciÛn del Trabajo Pr·ctico 2. Ver enunciado:\\
+\section{Especificaci√≥n}
+Esta es una especificaci√≥n del Trabajo Pr√°ctico n√∫mero 1 del 1$^{er}$ cuatrimestre del 2014 presentada por la c√°tedra para la realizaci√≥n del Trabajo Pr√°ctico 2. Ver enunciado:\\
 \verb+http://www.dc.uba.ar/materias/aed2/2014/1c/descargas/tps/tp1-enunciado/view+\\
 
 El enunciado es ligeramente diferente, en donde se agrega lo siguiente:
 \begin{itemize}
-\item Las promesas se ejecutan ˙nicamente ante un cambio de cotizaciÛn.
-\item El orden para ejecutar las promesas pendientes ahora est· definido y es el siguiente:
+\item Las promesas se ejecutan √∫nicamente ante un cambio de cotizaci√≥n.
+\item El orden para ejecutar las promesas pendientes ahora est√° definido y es el siguiente:
  \begin{enumerate}
  \item Se ejecutan las de venta.
  \item En el momento de ejecutar promesas de compra se le da prioridad a los clientes que mayor cantidad total de acciones poseen.

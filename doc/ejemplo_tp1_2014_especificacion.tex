@@ -17,7 +17,7 @@
 \section{TAD \tadNombre{Promesa}}
 
 \begin{tad}{\tadNombre{Promesa}}
-\tadIgualdadObservacional{p}{p'}{promesa}{título(p) = título(p') $\land$ tipo(p) = tipo(p') $\land$ limite(p) = limite(p') $\land$ cantidad(p) = cantidad(p')}
+\tadIgualdadObservacional{p}{p'}{promesa}{tÃ­tulo(p) = tÃ­tulo(p') $\land$ tipo(p) = tipo(p') $\land$ limite(p) = limite(p') $\land$ cantidad(p) = cantidad(p')}
 
 \tadGeneros{promesa}
 \tadExporta{promesa, generadores, observadores, otras operaciones}
@@ -27,9 +27,9 @@
 \tadObservadores
 \tadAlinearFunciones{cantidad~}{promesa,nat}
 
-\tadOperacion{título}{promesa}{nombre}{}
+\tadOperacion{tÃ­tulo}{promesa}{nombre}{}
 \tadOperacion{tipo}{promesa}{tipoPromesa}{}
-\tadOperacion{límite}{promesa}{dinero}{}
+\tadOperacion{lÃ­mite}{promesa}{dinero}{}
 \tadOperacion{cantidad}{promesa}{nat}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -40,26 +40,26 @@
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tadOtrasOperaciones
-\tadAlinearFunciones{promesasSobreTítulo}{nombre,tipoPromesa,conj(promesa)}
+\tadAlinearFunciones{promesasSobreTÃ­tulo}{nombre,tipoPromesa,conj(promesa)}
 
 \tadOperacion{promesaEjecutable}{promesa,dinero,nat}{bool}{}
 
 \tadOperacion{compraVenta}{nat,conj(promesa)}{nat}{}
 
-\tadOperacion{promesasSobreTítulo}{nombre,tipoPromesa,conj(promesa)}{conj(promesa)}{}
+\tadOperacion{promesasSobreTÃ­tulo}{nombre,tipoPromesa,conj(promesa)}{conj(promesa)}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tadAxiomas[\paratodo{nombre}{t} \paratodo{nat}{n, m} \paratodo{tipoPromesa}{tipo}]
 \tadAlinearAxiomas{cantidad(crearPromesa(t,tipo,n,mmm))}
 
-% OB título
-\tadAxioma{título(crearPromesa(t, tipo, n, m))}{t}
+% OB tÃ­tulo
+\tadAxioma{tÃ­tulo(crearPromesa(t, tipo, n, m))}{t}
 
 % OB tipo
 \tadAxioma{tipo(crearPromesa(t, tipo, n, m))}{tipo}
 
-% OB límite
-\tadAxioma{límite(crearPromesa(t, tipo, n, m))}{n}
+% OB lÃ­mite
+\tadAxioma{lÃ­mite(crearPromesa(t, tipo, n, m))}{n}
 
 % OB cantidad
 \tadAxioma{cantidad(crearPromesa(t, tipo, n, m))}{m}
@@ -70,8 +70,8 @@
 \tadAlinearAxiomas{promesaEjecutable(p,cot,disp)}
 \tadAxioma{promesaEjecutable(p,cot,disp)}
 {
-(tipo(p) = venta $\land$ cot < \ límite(p)) $\lor$ \\
-\big(tipo(p) = compra $\land$ cot > \ límite(p) $\land$ disp $\geq$~cantidad(p)\big)
+(tipo(p) = venta $\land$ cot < \ lÃ­mite(p)) $\lor$ \\
+\big(tipo(p) = compra $\land$ cot > \ lÃ­mite(p) $\land$ disp $\geq$~cantidad(p)\big)
 }
 \vskip12pt
 
@@ -80,7 +80,7 @@
 \tadAlinearAxiomas{compraVenta(disp, ps)}
 %
 \tadAxioma{compraVenta(disp, ps)}{
-\IF vacío?(ps) THEN disp ELSE
+\IF vacÃ­o?(ps) THEN disp ELSE
 	{\IF tipo(dameUno(ps)) = compra
 	THEN compraVenta(disp + cantidad(dameUno(ps)), sinUno(ps))
 	ELSE compraVenta(disp - cantidad(dameUno(ps)), sinUno(ps))
@@ -88,55 +88,55 @@
 FI}
 \vskip12pt
 
-% OO promesasSobreTítulo
-\tadAlinearAxiomas{promesasSobreTítulo(t1,tp,ps)}
-\tadAxioma{promesasSobreTítulo(t1,tp,ps)}
-{\IF vacío?(ps) THEN $\emptyset$
- ELSE promesasSobreTítulo(t1, tp, sinUno(ps)) $\cup$ \\
- 	({\IF t1 = título(dameUno(ps)) $\land$ tp = tipo(dameUno(ps)) THEN \{dameUno(ps)\} ELSE $\emptyset$ FI})
+% OO promesasSobreTÃ­tulo
+\tadAlinearAxiomas{promesasSobreTÃ­tulo(t1,tp,ps)}
+\tadAxioma{promesasSobreTÃ­tulo(t1,tp,ps)}
+{\IF vacÃ­o?(ps) THEN $\emptyset$
+ ELSE promesasSobreTÃ­tulo(t1, tp, sinUno(ps)) $\cup$ \\
+ 	({\IF t1 = tÃ­tulo(dameUno(ps)) $\land$ tp = tipo(dameUno(ps)) THEN \{dameUno(ps)\} ELSE $\emptyset$ FI})
  FI}
 
 \end{tad}
 
 
 
-%%%%%%%%%%%%%%% Tad Título
-\section{TAD \tadNombre{Título}}
+%%%%%%%%%%%%%%% Tad TÃ­tulo
+\section{TAD \tadNombre{TÃ­tulo}}
 
-\begin{tad}{\tadNombre{Título}}
-\tadIgualdadObservacional{t}{t'}{título}{nombre(t) = nombre(t') $\land$ cotización(t) = cotización(t') $\land$ \#máxAcciones(t) = \#máxAcciones(t') $\land$ \\ enAlza?(t) $\iff$ enAlza?(t') }
+\begin{tad}{\tadNombre{TÃ­tulo}}
+\tadIgualdadObservacional{t}{t'}{tÃ­tulo}{nombre(t) = nombre(t') $\land$ cotizaciÃ³n(t) = cotizaciÃ³n(t') $\land$ \#mÃ¡xAcciones(t) = \#mÃ¡xAcciones(t') $\land$ \\ enAlza?(t) $\iff$ enAlza?(t') }
 
-\tadGeneros{título}
-\tadExporta{título, generadores, observadores, otras operaciones}
+\tadGeneros{tÃ­tulo}
+\tadExporta{tÃ­tulo, generadores, observadores, otras operaciones}
 \tadUsa{\tadNombre{Nombre}, \tadNombre{Dinero}, \tadNombre{Nat}}
 
 \tadObservadores
-\tadAlinearFunciones{\#máxAcciones~}{título,nat}
+\tadAlinearFunciones{\#mÃ¡xAcciones~}{tÃ­tulo,nat}
 
-\tadOperacion{nombre}{título}{nombre}{}
-\tadOperacion{\#máxAcciones}{título}{nat}{}
-\tadOperacion{cotización}{título}{dinero}{}
-\tadOperacion{enAlza}{título}{bool}{}
+\tadOperacion{nombre}{tÃ­tulo}{nombre}{}
+\tadOperacion{\#mÃ¡xAcciones}{tÃ­tulo}{nat}{}
+\tadOperacion{cotizaciÃ³n}{tÃ­tulo}{dinero}{}
+\tadOperacion{enAlza}{tÃ­tulo}{bool}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tadGeneradores
-\tadAlinearFunciones{crearTítulo~}{nombre,dinero,nat}
+\tadAlinearFunciones{crearTÃ­tulo~}{nombre,dinero,nat}
 
-\tadOperacion{crearTítulo}{nombre,dinero,nat}{título}{}
-\tadOperacion{recotizar}{dinero,título}{título}{}
+\tadOperacion{crearTÃ­tulo}{nombre,dinero,nat}{tÃ­tulo}{}
+\tadOperacion{recotizar}{dinero,tÃ­tulo}{tÃ­tulo}{}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tadOtrasOperaciones
-\tadAlinearFunciones{cambiarCotización}{nombre/nomTit,dinero/cot,conj(título)/ts}
+\tadAlinearFunciones{cambiarCotizaciÃ³n}{nombre/nomTit,dinero/cot,conj(tÃ­tulo)/ts}
 
 
-\tadOperacion{cotizaciónActual}{nombre/nomTit,conj(título)/ts}{nat}{(\existe{título}{t})(t $\in$ ts $\land$ nombre(t) = nomTit)}
+\tadOperacion{cotizaciÃ³nActual}{nombre/nomTit,conj(tÃ­tulo)/ts}{nat}{(\existe{tÃ­tulo}{t})(t $\in$ ts $\land$ nombre(t) = nomTit)}
 
-\tadOperacion{cambiarCotización}{nombre/nomTit,dinero/cot,conj(título)/ts}{conj(título)}{(\existe{título}{t})(t $\in$ ts $\land$ nombre(t) = nomTit)}
+\tadOperacion{cambiarCotizaciÃ³n}{nombre/nomTit,dinero/cot,conj(tÃ­tulo)/ts}{conj(tÃ­tulo)}{(\existe{tÃ­tulo}{t})(t $\in$ ts $\land$ nombre(t) = nomTit)}
 
-\tadOperacion{límiteTenencia}{nombre/nomTit,conj(título)/ts}{nat}{(\existe{título}{t})(t $\in$ ts $\land$ nombre(t) = nomTit)}
+\tadOperacion{lÃ­miteTenencia}{nombre/nomTit,conj(tÃ­tulo)/ts}{nat}{(\existe{tÃ­tulo}{t})(t $\in$ ts $\land$ nombre(t) = nomTit)}
 
-\tadOperacion{títuloEnAlza}{nombre/nomTit,conj(título)/ts}{bool}{(\existe{título}{t})(t $\in$ ts $\land$ nombre(t) = nomTit)}
+\tadOperacion{tÃ­tuloEnAlza}{nombre/nomTit,conj(tÃ­tulo)/ts}{bool}{(\existe{tÃ­tulo}{t})(t $\in$ ts $\land$ nombre(t) = nomTit)}
 
 
 \medskip
@@ -144,70 +144,70 @@ FI}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tadAxiomas[\paratodo{nombre}{s}  \paratodo{nat}{n,c,c'}]
 
-\tadAlinearAxiomas{\#máxAcciones(crearTítulo(s,c,n))}
+\tadAlinearAxiomas{\#mÃ¡xAcciones(crearTÃ­tulo(s,c,n))}
 
 % OB nombre
-\tadAxioma{nombre(crearTítulo(s,c,n))}{s}
+\tadAxioma{nombre(crearTÃ­tulo(s,c,n))}{s}
 \tadAxioma{nombre(recotizar(c,t))}{nombre(t)}
 
-% OB \#máxAcciones
-\tadAxioma{\#máxAcciones(crearTítulo(s,c,n))}{n}
-\tadAxioma{\#máxAcciones(recotizar(c,t))}{\#máxAcciones(t)}
+% OB \#mÃ¡xAcciones
+\tadAxioma{\#mÃ¡xAcciones(crearTÃ­tulo(s,c,n))}{n}
+\tadAxioma{\#mÃ¡xAcciones(recotizar(c,t))}{\#mÃ¡xAcciones(t)}
 
-% OB cotización
-\tadAxioma{cotización(crearTítulo(s,c,n))}{c}
-\tadAxioma{cotización(recotizar(c,t))}{c}
+% OB cotizaciÃ³n
+\tadAxioma{cotizaciÃ³n(crearTÃ­tulo(s,c,n))}{c}
+\tadAxioma{cotizaciÃ³n(recotizar(c,t))}{c}
 
 % OB enAlza
-\tadAxioma{enAlza(crearTítulo(s,c,n))}{true}
+\tadAxioma{enAlza(crearTÃ­tulo(s,c,n))}{true}
 \tadAxioma{enAlza(recotizar(c,t))}
 {
-  c > \ cotización(t)
+  c > \ cotizaciÃ³n(t)
 }
 
 \vskip12pt
 
 
-% OO cotizaciónActual
-\tadAlinearAxiomas{cotizaciónActual(t1, ts)}
+% OO cotizaciÃ³nActual
+\tadAlinearAxiomas{cotizaciÃ³nActual(t1, ts)}
 %
-\tadAxioma{cotizaciónActual(t1, ts)}%
+\tadAxioma{cotizaciÃ³nActual(t1, ts)}%
 {\IF nombre(dameUno(ts)) = t1 THEN 
-	cotización(dameUno(ts)) 
+	cotizaciÃ³n(dameUno(ts)) 
 ELSE 
-	cotizaciónActual(t1, sinUno(ts))
+	cotizaciÃ³nActual(t1, sinUno(ts))
 FI}
 \vskip12pt
 
 
-% OO cambiarCotización
-\tadAlinearAxiomas{cambiarCotización(t1, cot, ts)}
+% OO cambiarCotizaciÃ³n
+\tadAlinearAxiomas{cambiarCotizaciÃ³n(t1, cot, ts)}
 %
-\tadAxioma{cambiarCotización(t1, cot, ts)}%
-{\IF vacío?(ts) THEN
+\tadAxioma{cambiarCotizaciÃ³n(t1, cot, ts)}%
+{\IF vacÃ­o?(ts) THEN
 	$\emptyset$
 ELSE 
 	{\IF nombre(dameUno(ts)) = t1 THEN 
 		Ag(recotizar(cot,dameUno(ts))), sinUno(ts)) 
 	ELSE 
-		Ag(dameUno(ts),cambiarCotización(t1, cot, sinUno(ts)))
+		Ag(dameUno(ts),cambiarCotizaciÃ³n(t1, cot, sinUno(ts)))
 	FI}
 FI}
 \vskip12pt
 
 
-% OO límiteTenencia
-\tadAlinearAxiomas{límiteTenencia(t1,ts)}
+% OO lÃ­miteTenencia
+\tadAlinearAxiomas{lÃ­miteTenencia(t1,ts)}
 %
-\tadAxioma{límiteTenencia(t1,ts)}{
-\IF nombre(dameUno(ts)) = t1 THEN \#máxAcciones(dameUno(ts)) ELSE límiteTenencia(t1,sinUno(ts)) FI}
+\tadAxioma{lÃ­miteTenencia(t1,ts)}{
+\IF nombre(dameUno(ts)) = t1 THEN \#mÃ¡xAcciones(dameUno(ts)) ELSE lÃ­miteTenencia(t1,sinUno(ts)) FI}
 
 
-% OO títuloEnAlza
-\tadAlinearAxiomas{títuloEnAlza(t1,ts)}
+% OO tÃ­tuloEnAlza
+\tadAlinearAxiomas{tÃ­tuloEnAlza(t1,ts)}
 %
-\tadAxioma{títuloEnAlza(t1,ts)}{
-\IF nombre(dameUno(ts)) = t1 THEN enAlza(dameUno(ts)) ELSE títuloEnAlza(t1,sinUno(ts)) FI}
+\tadAxioma{tÃ­tuloEnAlza(t1,ts)}{
+\IF nombre(dameUno(ts)) = t1 THEN enAlza(dameUno(ts)) ELSE tÃ­tuloEnAlza(t1,sinUno(ts)) FI}
 
 \end{tad}
 
@@ -219,9 +219,9 @@ FI}
 \begin{tad}{\tadNombre{Wolfie}}
 \tadGeneros{wolfie}
 \tadExporta{wolfie, generadores, observadores, enAlza}
-\tadUsa{\tadNombre{Bool}, \tadNombre{Nat}, \tadNombre{Dinero}, \tadNombre{Promesa}, \tadNombre{Cliente}, \tadNombre{Título}, \tadNombre{Conjunto($\alpha$)}, \tadNombre{Nombre}, \tadNombre{TipoPromesa}, \tadNombre{parPC}}
+\tadUsa{\tadNombre{Bool}, \tadNombre{Nat}, \tadNombre{Dinero}, \tadNombre{Promesa}, \tadNombre{Cliente}, \tadNombre{TÃ­tulo}, \tadNombre{Conjunto($\alpha$)}, \tadNombre{Nombre}, \tadNombre{TipoPromesa}, \tadNombre{parPC}}
 
-\tadIgualdadObservacional{w1}{w2}{wolfie}{clientes(w1) = clientes(w2) $\land$ títulos(w1) = títulos(w2) \yluego ($\forall$ c:cliente, t:título) ((c $\in$ clientes(w1) $\land$ t $\in$ títulos(w1)) $\impluego$ (promesasDe(c, w1) = promesasDe(c, w2)) $\land$ accionesPorCliente(c, nombre(t), w1) = accionesPorCliente(c, nombre(t), w2)) }
+\tadIgualdadObservacional{w1}{w2}{wolfie}{clientes(w1) = clientes(w2) $\land$ tÃ­tulos(w1) = tÃ­tulos(w2) \yluego ($\forall$ c:cliente, t:tÃ­tulo) ((c $\in$ clientes(w1) $\land$ t $\in$ tÃ­tulos(w1)) $\impluego$ (promesasDe(c, w1) = promesasDe(c, w2)) $\land$ accionesPorCliente(c, nombre(t), w1) = accionesPorCliente(c, nombre(t), w2)) }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -229,40 +229,40 @@ FI}
 \tadAlinearFunciones{accionesPorCliente}{cliente/c,nombre/nomTit,wolfie/w}
 
 \tadOperacion{clientes}{wolfie}{conj(cliente)}{}
-\tadOperacion{títulos}{wolfie}{conj(título)}{}
+\tadOperacion{tÃ­tulos}{wolfie}{conj(tÃ­tulo)}{}
 \tadOperacion{promesasDe}{cliente/c,wolfie/w}{conj(promesa)}
   {c $\in$ clientes(w)}
 \tadOperacion{accionesPorCliente}{cliente/c,nombre/nomTit,wolfie/w}{nat}
-{c $\in$ clientes(w) $\land$ (\existe{título}{t})(t $\in$ títulos(w) $\land$ nombre(t) = nomTit)}
+{c $\in$ clientes(w) $\land$ (\existe{tÃ­tulo}{t})(t $\in$ tÃ­tulos(w) $\land$ nombre(t) = nomTit)}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tadGeneradores
-\tadAlinearFunciones{actualizarCotización~}{título/t,nat/cot,wolfie/w,wolfie}
+\tadAlinearFunciones{actualizarCotizaciÃ³n~}{tÃ­tulo/t,nat/cot,wolfie/w,wolfie}
 
-\tadOperacion{inaugurarWolfie}{conj(cliente)/cs}{wolfie}{$\neg$ vacío(cs)}
-\tadOperacion{agregarTítulo}{título/t,wolfie/w}{wolfie}
-{(\paratodo{título}{t_2})($t_2 \in$ títulos(w) $\implies$ nombre(t) $\neq$ nombre($t_2$))}
+\tadOperacion{inaugurarWolfie}{conj(cliente)/cs}{wolfie}{$\neg$ vacÃ­o(cs)}
+\tadOperacion{agregarTÃ­tulo}{tÃ­tulo/t,wolfie/w}{wolfie}
+{(\paratodo{tÃ­tulo}{t_2})($t_2 \in$ tÃ­tulos(w) $\implies$ nombre(t) $\neq$ nombre($t_2$))}
 
-\tadOperacion{actualizarCotización}{nombre/nomTit,nat/cot,wolfie/w}{wolfie}{(\existe{título}{t})(t $\in$ títulos(w) $\land$ nombre(t) = nomTit)}
+\tadOperacion{actualizarCotizaciÃ³n}{nombre/nomTit,nat/cot,wolfie/w}{wolfie}{(\existe{tÃ­tulo}{t})(t $\in$ tÃ­tulos(w) $\land$ nombre(t) = nomTit)}
 
-\tadOperacion{agregarPromesa}{cliente/c, promesa/p, wolfie/w}{wolfie}{(\existe{título}{t})(t $\in$ títulos(w) $\land$ nombre(t) = título(p)) $\land$ c $\in$ clientes(w) $\yluego$ ($\forall p_2$: promesa)($p_2$ $\in$ promesasDe(c, w) $\implies$ (título(p) $\neq$ título($p_2$) $\lor$ tipo(p) $\neq$ tipo($p_2$)) ) $\land$ (tipo(p) = vender $\implies$ accionesPorCliente(c, título(p), w) $\geq$ cantidad(p) ) )}
+\tadOperacion{agregarPromesa}{cliente/c, promesa/p, wolfie/w}{wolfie}{(\existe{tÃ­tulo}{t})(t $\in$ tÃ­tulos(w) $\land$ nombre(t) = tÃ­tulo(p)) $\land$ c $\in$ clientes(w) $\yluego$ ($\forall p_2$: promesa)($p_2$ $\in$ promesasDe(c, w) $\implies$ (tÃ­tulo(p) $\neq$ tÃ­tulo($p_2$) $\lor$ tipo(p) $\neq$ tipo($p_2$)) ) $\land$ (tipo(p) = vender $\implies$ accionesPorCliente(c, tÃ­tulo(p), w) $\geq$ cantidad(p) ) )}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \tadOtrasOperaciones
 \tadAlinearFunciones{promesasAEjecutarPorCliente}{nombre/nomTit,dinero/cot,cliente/c,wolfie/w}
 
-\tadOperacion{enAlza}{nombre/nomTit,wolfie/w}{bool}{(\existe{título}{t})(t $\in$ títulos(w) $\land$ nombre(t) = nomTit)}
+\tadOperacion{enAlza}{nombre/nomTit,wolfie/w}{bool}{(\existe{tÃ­tulo}{t})(t $\in$ tÃ­tulos(w) $\land$ nombre(t) = nomTit)}
 
 
-\tadOperacion{accDisponibles}{nombre/nomTit,wolfie/w}{nat}{(\existe{título}{t})(t $\in$ títulos(w) $\land$ nombre(t) = nomTit)}
-\tadOperacion{tenenciasDeTodos}{nombre/nomTit,conj(cliente)/cs,wolfie/w}{nat}{cs $\subseteq$ clientes(w) $\land$ (\existe{título}{t})(t $\in$ títulos(w) $\land$ nombre(t) = nomTit)}
-\tadOperacion{promesasAEjecutarPorCliente}{nombre/nomTit,dinero/cot,cliente/c,wolfie/w}{conj(promesa)}{c $\in$ clientes(w) $\land$ (\existe{título}{t})(t $\in$ títulos(w) $\land$ nombre(t) = nomTit)}
+\tadOperacion{accDisponibles}{nombre/nomTit,wolfie/w}{nat}{(\existe{tÃ­tulo}{t})(t $\in$ tÃ­tulos(w) $\land$ nombre(t) = nomTit)}
+\tadOperacion{tenenciasDeTodos}{nombre/nomTit,conj(cliente)/cs,wolfie/w}{nat}{cs $\subseteq$ clientes(w) $\land$ (\existe{tÃ­tulo}{t})(t $\in$ tÃ­tulos(w) $\land$ nombre(t) = nomTit)}
+\tadOperacion{promesasAEjecutarPorCliente}{nombre/nomTit,dinero/cot,cliente/c,wolfie/w}{conj(promesa)}{c $\in$ clientes(w) $\land$ (\existe{tÃ­tulo}{t})(t $\in$ tÃ­tulos(w) $\land$ nombre(t) = nomTit)}
 \tadOperacion{filtrarPorCliente}{cliente,conj(parPC)}{conj(promesa)}{}
 
-\tadOperacion{ventasAEjecutar}{nombre/nomTit,dinero/cot,wolfie/w}{conj(parPC)}{(\existe{título}{t})(t $\in$ títulos(w) $\land$ nombre(t) = nomTit)}
+\tadOperacion{ventasAEjecutar}{nombre/nomTit,dinero/cot,wolfie/w}{conj(parPC)}{(\existe{tÃ­tulo}{t})(t $\in$ tÃ­tulos(w) $\land$ nombre(t) = nomTit)}
 
 
-\tadOperacion{comprasAEjecutar}{nombre/nomTit,dinero/cot,wolfie/w}{conj(parPC)}{(\existe{título}{t})(t $\in$ títulos(w) $\land$ nombre(t) = nomTit)}
+\tadOperacion{comprasAEjecutar}{nombre/nomTit,dinero/cot,wolfie/w}{conj(parPC)}{(\existe{tÃ­tulo}{t})(t $\in$ tÃ­tulos(w) $\land$ nombre(t) = nomTit)}
 
 \tadOperacion{promesasAEjecutar}{dinero/cot,nat/disp,secu(parPC)/pends}{conj(parPC)}{}
 
@@ -274,15 +274,15 @@ FI}
 
 \tadOperacion{ordenSecu}{conj(parPC),secu(cliente))}{secu(parPC)}{}
 
-\tadOperacion{estaClie?}{cliente/c,conj(parPC)/ps}{bool}{$\neg$ vacío(ps)} 
+\tadOperacion{estaClie?}{cliente/c,conj(parPC)/ps}{bool}{$\neg$ vacÃ­o(ps)} 
 
 \tadOperacion{damePromesa}{cliente/c,conj(parPC)/ps}{promesa}{estaClie?(c,ps)} 
 
 \tadOperacion{ordenarPorAcciones}{dicc(cliente $\text{,}$ nat)}{secu(cliente)}{}
 
-\tadOperacion{máxAcc}{dicc(cliente $\text{,}$ nat)/dc}{cliente}{$\neg$ vacío(dc)}
+\tadOperacion{mÃ¡xAcc}{dicc(cliente $\text{,}$ nat)/dc}{cliente}{$\neg$ vacÃ­o(dc)}
 
-\tadOperacion{máxAccAux}{conj(cliente)/cs,dicc(cliente $\text{,}$ nat)/dc}{tupla(cliente,nat)}{$\neg$ vacío(dc) $\land_L$ cs $\subseteq$ claves(dc)}
+\tadOperacion{mÃ¡xAccAux}{conj(cliente)/cs,dicc(cliente $\text{,}$ nat)/dc}{tupla(cliente,nat)}{$\neg$ vacÃ­o(dc) $\land_L$ cs $\subseteq$ claves(dc)}
 
 \tadOperacion{totalAccClie}{conj(parPC)/vs,wolfie/w}{dicc(cliente,nat)}{}
 
@@ -290,7 +290,7 @@ FI}
 
 \tadOperacion{accTotalClie}{cliente/c,wolfie/w}{nat}{c $\in$ clientes(w)}
 
-\tadOperacion{accTotalClieAux}{cliente/c,conj(título)/ts,wolfie/w}{nat}{c $\in$ clientes(w) $\land$ ts $\subseteq$ títulos(w)}
+\tadOperacion{accTotalClieAux}{cliente/c,conj(tÃ­tulo)/ts,wolfie/w}{nat}{c $\in$ clientes(w) $\land$ ts $\subseteq$ tÃ­tulos(w)}
 
 \tadOperacion{accVendidasClie}{conj(parPC)/ps,cliente/c}{nat}{}
 
@@ -298,61 +298,61 @@ FI}
 %\pagebreak
 %%%%%%%%%%%%%%%%%%%% AXIOMAS Wolfie
 
-\tadAxiomas[\paratodo{conj(cliente)}{cs} \paratodo{wolfie}{w} \paratodo{título}{t} \paratodo{nombre}{t1,t2} \paratodo{cliente}{c, cl} \paratodo{promesa}{p} \paratodo{nat}{cot} \paratodo{conj(título)}{ts} \paratodo{conj(promesa)}{ps} \paratodo{nat}{disp} \paratodo{tipoPromesa}{tp}]
+\tadAxiomas[\paratodo{conj(cliente)}{cs} \paratodo{wolfie}{w} \paratodo{tÃ­tulo}{t} \paratodo{nombre}{t1,t2} \paratodo{cliente}{c, cl} \paratodo{promesa}{p} \paratodo{nat}{cot} \paratodo{conj(tÃ­tulo)}{ts} \paratodo{conj(promesa)}{ps} \paratodo{nat}{disp} \paratodo{tipoPromesa}{tp}]
 
 % OB clientes
-\tadAlinearAxiomas{clientes(actualizarCotización(t1,cot,w))(clientes(w))}
+\tadAlinearAxiomas{clientes(actualizarCotizaciÃ³n(t1,cot,w))(clientes(w))}
 %
 \tadAxioma{clientes(inaugurarWolfie(cs))}{cs}
-\tadAxioma{clientes(agregarTítulo(t, w))}{clientes(w)}
-\tadAxioma{clientes(actualizarCotización(t2, cot, w))}{clientes(w)}
+\tadAxioma{clientes(agregarTÃ­tulo(t, w))}{clientes(w)}
+\tadAxioma{clientes(actualizarCotizaciÃ³n(t2, cot, w))}{clientes(w)}
 \tadAxioma{clientes(agregarPromesa(c, p, w))}{clientes(w)}
 \vskip12pt
 
-% OB títulos
-\tadAlinearAxiomas{títulos(actualizarCotización(t1,cot,w))(títulos(w))}
+% OB tÃ­tulos
+\tadAlinearAxiomas{tÃ­tulos(actualizarCotizaciÃ³n(t1,cot,w))(tÃ­tulos(w))}
 %
-\tadAxioma{títulos(inaugurarWolfie(cs))}{$\emptyset$}
-\tadAxioma{títulos(agregarTítulo(t, w))}{Ag(t, títulos(w))}
-\tadAxioma{títulos(actualizarCotización(t1, cot, w))}{cambiarCotización(t1,c,títulos(w))}
-\tadAxioma{títulos(agregarPromesa(c, p, w))}{títulos(w)}
+\tadAxioma{tÃ­tulos(inaugurarWolfie(cs))}{$\emptyset$}
+\tadAxioma{tÃ­tulos(agregarTÃ­tulo(t, w))}{Ag(t, tÃ­tulos(w))}
+\tadAxioma{tÃ­tulos(actualizarCotizaciÃ³n(t1, cot, w))}{cambiarCotizaciÃ³n(t1,c,tÃ­tulos(w))}
+\tadAxioma{tÃ­tulos(agregarPromesa(c, p, w))}{tÃ­tulos(w)}
 \vskip12pt
 
 
 % OB promesasDe
-\tadAlinearAxiomas{promesasDe(c, actualizarCotización(t1, cot, w))}
+\tadAlinearAxiomas{promesasDe(c, actualizarCotizaciÃ³n(t1, cot, w))}
 %
 \tadAxioma{promesasDe(c, inaugurarWolfie(cs))}{$\emptyset$}
 %
-\tadAxioma{promesasDe(c, agregarTítulo(t, w))}{promesasDe(c, w)}
+\tadAxioma{promesasDe(c, agregarTÃ­tulo(t, w))}{promesasDe(c, w)}
 %
 \tadAxioma{promesasDe(c, agregarPromesa(cl, p, w))}
 {
 promesasDe(c,w) $\cup$ {\IF c = cl THEN\{p\} ELSE $\emptyset$ FI}
 }
 %
-\tadAxioma{promesasDe(c, actualizarCotización(t1, cot, w))}{promesasDe(c, w) - \\
+\tadAxioma{promesasDe(c, actualizarCotizaciÃ³n(t1, cot, w))}{promesasDe(c, w) - \\
 promesasAEjecutarPorCliente(t1, cot, c, w)}
 \vskip12pt
 
 % OO enAlza
 \tadAlinearAxiomas{tenenciasDeTodos(t1,cs,w)}
 \tadAxioma{enAlza(t1,w)}{
-títuloEnAlza(t1,títulos(w))
+tÃ­tuloEnAlza(t1,tÃ­tulos(w))
 }
 \vskip12pt
 
 % OO accDisponibles
 \tadAlinearAxiomas{tenenciasDeTodos(t1,cs,w)}
 \tadAxioma{accDisponibles(t1,w)}{
-límiteTenencia(t1,títulos(w)) - tenenciasDeTodos(t1,clientes(w),w)
+lÃ­miteTenencia(t1,tÃ­tulos(w)) - tenenciasDeTodos(t1,clientes(w),w)
 }
 \vskip12pt
 
 
 % OO tenenciasDeTodos
 \tadAxioma{tenenciasDeTodos(t1,cs,w)}{
-\IF vacío?(cs) THEN 0 ELSE accionesPorCliente(dameUno(cs),t1,w) + \\
+\IF vacÃ­o?(cs) THEN 0 ELSE accionesPorCliente(dameUno(cs),t1,w) + \\
 tenenciasDeTodos(t1,sinUno(cs),w) FI
 }
 \vskip12pt
@@ -369,7 +369,7 @@ tenenciasDeTodos(t1,sinUno(cs),w) FI
 % OO filtrarPorCliente
 \tadAlinearAxiomas{filtrarPorCliente(c, ps)}
 \tadAxioma{filtrarPorCliente(c, ps)}{
-\IF vacío?(ps) THEN $\emptyset$ ELSE
+\IF vacÃ­o?(ps) THEN $\emptyset$ ELSE
 	filtrarPorCliente(c,sinUno(ps)) $\cup$  \\ {\big(\IF $\Pi_2$(dameUno(ps)) = c THEN \{$\Pi_1$(dameUno(ps))\} ELSE $\emptyset$ FI\big)
 	} 
 FI}
@@ -398,11 +398,11 @@ promesasAEjecutar\big(cot, \\
 \tadAlinearAxiomas{aparearPC(t1,tp,cs,w)}
 \tadAxioma{aparearPC(t1,tp,cs,w)}
 {
-\IF vacío?(cs) THEN $\emptyset$
+\IF vacÃ­o?(cs) THEN $\emptyset$
 ELSE
 aparearPC(t1,tp,sinUno(cs),w) $\cup$ \\
-  \big({\IF vacío?(promesasSobreTítulo(t1, tp, promesasDe(dameUno(cs),w))) THEN $\emptyset$
-  ELSE \{<promesasSobreTítulo(t1,tp,promesasDe(dameUno(cs),w)),dameUno(cs)>\}
+  \big({\IF vacÃ­o?(promesasSobreTÃ­tulo(t1, tp, promesasDe(dameUno(cs),w))) THEN $\emptyset$
+  ELSE \{<promesasSobreTÃ­tulo(t1,tp,promesasDe(dameUno(cs),w)),dameUno(cs)>\}
   FI}\big)
 FI}
 \vskip12pt
@@ -412,7 +412,7 @@ FI}
 \tadAlinearAxiomas{promesasAEjecutar(cot,disp,pends)}
 \tadAxioma{promesasAEjecutar(cot,disp,pends)}
 { 
-{\IF vacía?(pends) THEN $\emptyset$ 
+{\IF vacÃ­a?(pends) THEN $\emptyset$ 
   ELSE {\IF promesaEjecutable($\Pi_1$(prim(pends)),cot,disp) THEN \{prim(pends)\} $\cup$\\
   			\big(
   			{\IF tipo($\Pi_1$(prim(pends))) = compra
@@ -437,7 +437,7 @@ FI}
 % OO accVendidas
 \tadAlinearAxiomas{accVendidas(ps)}
 \tadAxioma{accVendidas(ps)}
-{\IF vacío?(ps) THEN 0 ELSE
+{\IF vacÃ­o?(ps) THEN 0 ELSE
 cantidad($\Pi_1$(dameUno(ps))) + accVendidas(sinUno(ps))
 FI
 }
@@ -454,7 +454,7 @@ ordenSecu(cs, ordenarPorAcciones(totalAccClie(vs,w)))
 % OO ordenSecu
 \tadAlinearAxiomas{ordenSecu(ps,sc)}
 \tadAxioma{ordenSecu(ps,sc)}{
-\IF vacía?(sc) THEN <>
+\IF vacÃ­a?(sc) THEN <>
 ELSE
  {\IF estaClie?(prim(sc),ps) 
   THEN
@@ -491,28 +491,28 @@ FI
 % OO ordenarPorAcciones
 \tadAlinearAxiomas{ordenarPorAcciones(dc)}
 \tadAxioma{ordenarPorAcciones(dc)}{
-\IF vacío?(dc) THEN vacío
+\IF vacÃ­o?(dc) THEN vacÃ­o
 ELSE
-máxAcc(dc) $\bullet$ ordenarPorAcciones(borrar(máxAcc(dc),dc))
+mÃ¡xAcc(dc) $\bullet$ ordenarPorAcciones(borrar(mÃ¡xAcc(dc),dc))
 FI
 }
 \vskip12pt
 
-% OO máxAcc
-\tadAlinearAxiomas{máxAccAux(cs,dc)}
-\tadAxioma{máxAcc(dc)}{
-$\Pi_1$(máxAccAux(claves(dc),dc))
+% OO mÃ¡xAcc
+\tadAlinearAxiomas{mÃ¡xAccAux(cs,dc)}
+\tadAxioma{mÃ¡xAcc(dc)}{
+$\Pi_1$(mÃ¡xAccAux(claves(dc),dc))
 }
 
-% OO máxAccAux
-\tadAxioma{máxAccAux(cs,dc)}{
-\IF vacío(sinUno(cs)) THEN <dameUno(cs), obtener(dameUno(cs),dc)>
+% OO mÃ¡xAccAux
+\tadAxioma{mÃ¡xAccAux(cs,dc)}{
+\IF vacÃ­o(sinUno(cs)) THEN <dameUno(cs), obtener(dameUno(cs),dc)>
 ELSE
-{\IF obtener(dameUno(cs),dc) > \ $\Pi_2$(máxAccAux(sinUno(cs),dc))
+{\IF obtener(dameUno(cs),dc) > \ $\Pi_2$(mÃ¡xAccAux(sinUno(cs),dc))
 THEN
 <dameUno(cs), obtener(dameUno(cs),dc)>
 ELSE
-máxAccAux(sinUno(cs),dc)
+mÃ¡xAccAux(sinUno(cs),dc)
 FI
 }
 FI
@@ -528,7 +528,7 @@ totalAccClieAux(clientes(w),vs,w)
 
 % OO totalAccClieAux
 \tadAxioma{totalAccClieAux(cs,vs,w)}{
-\IF vacío?(cs) THEN vacío? 
+\IF vacÃ­o?(cs) THEN vacÃ­o? 
 ELSE 
 definir\big(dameUno(cs),\\
 \hspace*{1em} (accTotalClie(dameUno(cs),w)+accVendidasClie(vs,dameUno(cs))), 
@@ -540,12 +540,12 @@ FI
 % OO accTotalClie
 \tadAlinearAxiomas{accTotalClieAux(c,ts,w)}
 \tadAxioma{accTotalClie(c,w)}{
-accTotalClieAux(c,títulos(w),w)
+accTotalClieAux(c,tÃ­tulos(w),w)
 }
 
 % OO accTotalClieAux
 \tadAxioma{accTotalClieAux(c,ts,w)}{
-\IF vacío?(ts) THEN 0
+\IF vacÃ­o?(ts) THEN 0
 ELSE
 accionesPorCliente(c,dameUno(ts),w)+accTotalClieAux(c,sinUno(ts),w)
 FI
@@ -556,7 +556,7 @@ FI
 % OO accVendidasClie
 \tadAlinearAxiomas{accVendidasClie(ps,c)}
 \tadAxioma{accVendidasClie(ps,c)}
-{\IF vacío?(ps) THEN 0 ELSE
+{\IF vacÃ­o?(ps) THEN 0 ELSE
 accVendidasClie(c,sinUno(ps)) + \\
  {\IF c = $\Pi_2$(dameUno(ps)) THEN
  cantidad($\Pi_1$(dameUno(ps)))
@@ -569,9 +569,9 @@ FI
 
 
 % OB accionesPorCliente
-\tadAlinearAxiomas{accionesPorCliente(c,t1,actualizarCotización(t2,cot,w))}
+\tadAlinearAxiomas{accionesPorCliente(c,t1,actualizarCotizaciÃ³n(t2,cot,w))}
 %
-\tadAxioma{accionesPorCliente(c, t1, agregarTítulo(t2, cot, w))}
+\tadAxioma{accionesPorCliente(c, t1, agregarTÃ­tulo(t2, cot, w))}
 {\IF t1 = t2 THEN 0 ELSE accionesPorCliente(c, t1, w) FI}
 %
 \tadAxioma{accionesPorCliente(c, t1, agregarPromesa(cl, p, w))}
@@ -579,7 +579,7 @@ FI
 \vskip12pt
 %
 %
-\tadAxioma{accionesPorCliente(c,t1,actualizarCotización(t2,cot,w))}
+\tadAxioma{accionesPorCliente(c,t1,actualizarCotizaciÃ³n(t2,cot,w))}
 {\IF t1 = t2 THEN
   compraVenta\big(accionesPorCliente(c,t1,w),\\
   \hspace*{1em} promesasAEjecutarPorCliente(t1,cot,c,w)\big)
