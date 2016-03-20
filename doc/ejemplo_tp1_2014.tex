@@ -1,0 +1,53 @@
+\documentclass[10pt, a4paper]{article}
+% especifico márgenes manualmente
+\usepackage[paper=a4paper, left=1.5cm, right=1.5cm, bottom=1.5cm, top=3.5cm]{geometry}
+% codificación ISO-8859-1
+\usepackage[latin1]{inputenc}
+% separación silábica en castellano
+\usepackage[spanish]{babel}
+% paquetes y caratula de algo2
+\usepackage{aed2-symb,aed2-itef,aed2-tad,caratula}
+
+
+\begin{document}
+
+% Estos comandos deben ir antes del \maketitle
+\materia{Algoritmos y Estructuras de Datos II} % obligatorio
+\submateria{Primer Cuatrimestre de 2014} % opcional
+\titulo{Trabajo Práctico 1} % obligatorio
+\subtitulo{Especificación} % opcional
+\grupo{Grupo 1} % opcional 
+
+\integrante{Integrante 1}{Nro/YY}{mail@dc.uba.ar} % obligatorio 
+\integrante{Integrante 2}{Nro/YY}{mail@dc.uba.ar} % obligatorio 
+\integrante{Integrante 3}{Nro/YY}{mail@dc.uba.ar} % obligatorio 
+\integrante{Integrante 4}{Nro/YY}{mail@dc.uba.ar} % obligatorio 
+
+\maketitle
+
+% compilar 2 veces para actualizar las referencias
+\tableofcontents
+
+\pagebreak
+%\newpage
+
+
+\section{Especificación}
+Esta es una especificación del Trabajo Práctico número 1 del 1$^{er}$ cuatrimestre del 2014 presentada por la cátedra para la realización del Trabajo Práctico 2. Ver enunciado:\\
+\verb+http://www.dc.uba.ar/materias/aed2/2014/1c/descargas/tps/tp1-enunciado/view+\\
+
+El enunciado es ligeramente diferente, en donde se agrega lo siguiente:
+\begin{itemize}
+\item Las promesas se ejecutan únicamente ante un cambio de cotización.
+\item El orden para ejecutar las promesas pendientes ahora está definido y es el siguiente:
+ \begin{enumerate}
+ \item Se ejecutan las de venta.
+ \item En el momento de ejecutar promesas de compra se le da prioridad a los clientes que mayor cantidad total de acciones poseen.
+ \end{enumerate}
+\end{itemize}
+
+
+\input{ejemplo_tp1_2014_especificacion}
+
+
+\end{document}
