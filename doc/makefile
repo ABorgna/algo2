@@ -5,6 +5,7 @@ all: $(targets)
 
 $(targets) : %.pdf : %.tex $(libs)
 	pdflatex $<
+	pdflatex $<
 
 ./%.sty:
 	@ln -s ../libs/$@ $@
