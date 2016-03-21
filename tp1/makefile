@@ -1,10 +1,12 @@
 targets = tp1.pdf
 
+includes = tads/db.tex
+
 libs = aed2-itef.sty aed2-symb.sty aed2-tad.sty aed2-tokenizer.sty caratula.sty
 
 all: $(targets)
 
-$(targets) : %.pdf : %.tex $(libs)
+$(targets) : %.pdf : %.tex $(libs) $(includes)
 	pdflatex $<
 	pdflatex $<
 
