@@ -37,3 +37,8 @@
 *.out
 *.toc
 *.pdf
+
+# Linked libraries
+*.sty
+!/libs/*.sty
+
