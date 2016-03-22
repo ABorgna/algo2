@@ -1,0 +1,26 @@
+\section{TAD \tadNombre{Registro}}
+
+\begin{tad}{\tadNombre{Registro}}
+\tadIgualdadObservacional{r}{r'}{registro}{?}
+
+\tadGeneros{registro}
+\tadExporta{registro, generadores, observadores, otras operaciones}
+\tadUsa{?}
+
+\tadObservadores
+// Creo que si en vez de 'tieneCampo' guardamos la lista de campos
+// nos es mas facil especificar los requiere de las inserciones (en db y en tabla)
+// ya que seria igualdad de conjuntos directamente
+\tadOperacion{rValor}{registro r, campo c}{valor}{rTieneCampo(r,c)}
+\tadOperacion{rTieneCampo}{registro, campo}{bool}{}
+
+\tadGeneradores
+\tadOperacion{nuevoRegistro}{}{registro}{}
+\tadOperacion{agregarValor}{registro r, campo c, valor v}{registro}
+    {$\not$ rTieneCampo(r,c) $\land$ cEsString?(c) == vEsString?(v)}
+
+\tadAxiomas[\paratodo{registro}{r}]
+\tadAxioma{?}{r}
+
+\end{tad}
+

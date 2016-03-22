@@ -1,0 +1,26 @@
+\section{TAD \tadNombre{Valor}}
+
+\begin{tad}{\tadNombre{Valor}}
+\tadIgualdadObservacional{v}{v'}{valor}{?}
+
+\tadGeneros{valor}
+\tadExporta{valor, generadores, observadores, otras operaciones}
+\tadUsa{?}
+
+\tadObservadores
+\tadOperacion{valorString}{valor}{string}{}
+\tadOperacion{valorNat}{valor}{nat}{}
+\tadOperacion{vEsString?}{valor}{bool}{}
+
+\tadGeneradores
+\tadOperacion{valorString}{string}{valor}{}
+\tadOperacion{valorNat}{nat}{valor}{}
+
+\tadOtrasOperaciones
+\tadOperacion{vEsNat?}{valor}{bool}{}
+
+\tadAxiomas[\paratodo{valor}{v}]
+\tadAxioma{?}{v}
+
+\end{tad}
+

@@ -1,19 +1,37 @@
-\section{TAD \tadNombre{DB}}
+\section{TAD \tadNombre{Database}}
 
-\begin{tad}{\tadNombre{DB}}
-\tadIgualdadObservacional{p}{p'}{db}{?}
+\begin{tad}{\tadNombre{Database}}
+\tadIgualdadObservacional{db}{db'}{database}{?}
 
-\tadGeneros{db}
-\tadExporta{?}
+\tadGeneros{database}
+\tadExporta{database, generadores, observadores, otras operaciones}
 \tadUsa{?}
 
 \tadObservadores
-\tadOperacion{observador}{db}{?}{}
+\tadOperacion{dbTabla}{database db, nombreTabla nt}{tabla}{tieneTabla(db,nt)}
+\tadOperacion{dbTieneTabla}{database, nombreTabla}{bool}{}
+\tadOperacion{dbJoins}{database}{dicc(nombreJoin,join)}{}
+\tadOperacion{dbTriggers}{database}{dicc(nombreTrigger,trigger)}{}
 
 \tadGeneradores
-\tadOperacion{generador}{}{?}{}
+\tadOperacion{nuevaDB}{dicc(nombreTabla,tabla) tablas}{database}
+    {$\neg$vacio(tablas)}
+\tadOperacion{insertar}{database db, nombreTabla nt, registro r}{database}
+    {dbTieneTabla(db,nt) $\land_L$ // checkear campos del registro, y repetidos}
+\tadOperacion{borrar}{database db, nombreTabla nt, campo c, valor v}{database}
+    {cEsString?(c) = vEsString?(v) $\land$
+    dbTieneTabla(db,nt) $\land_L$ // checkear campo valido}
+\tadOperacion{crearJoin}{database db, nombreJoin nj, join j}{database}
+    {$\neg$def?(nj,dbJoins(db)) $\land$ // checkear tablas y campo del join}
+\tadOperacion{borrarJoin}{database db, nombreJoin nj}{database}
+    {def?(nj,dbJoins(db))}
+\tadOperacion{crearTrigger}{database db, nombreTrigger ntg, trigger tg}{database}
+    {$\neg$def?(ntg,dbTriggers(db)) $\land$ // checkear tablas y valores por defecto del trigger}
+\tadOperacion{borrarTrigger}{database db, nombreTrigger ntg}{database}
+    {def?(ntg,dbTriggers(db))}
 
-\tadAxiomas[\paratodo{db}{t}]
-\tadAxioma{?}{t}
+\tadAxiomas[\paratodo{database}{db}]
+\tadAxioma{?}{db}
 
 \end{tad}
+

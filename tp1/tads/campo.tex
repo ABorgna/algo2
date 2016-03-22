@@ -1,0 +1,25 @@
+\section{TAD \tadNombre{Campo}}
+
+\begin{tad}{\tadNombre{Campo}}
+\tadIgualdadObservacional{c}{c'}{campo}{?}
+
+\tadGeneros{campo}
+\tadExporta{campo, generadores, observadores, otras operaciones}
+\tadUsa{?}
+
+\tadObservadores
+\tadOperacion{cNombre}{campo}{string}{}
+\tadOperacion{cEsString?}{campo}{bool}{}
+
+\tadGeneradores
+\tadOperacion{campoString}{string}{campo}{}
+\tadOperacion{campoNat}{nat}{campo}{}
+
+\tadOtrasOperaciones
+\tadOperacion{cEsNat?}{campo}{bool}{}
+
+\tadAxiomas[\paratodo{campo}{c}]
+\tadAxioma{?}{c}
+
+\end{tad}
+
