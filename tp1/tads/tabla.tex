@@ -9,15 +9,15 @@
 
 \tadObservadores
 \tadOperacion{tCampos}{tabla}{conj(campo)}{}
-\tadOperacion{tEsClave}{tabla t, campo c}{bool}{c $\in$ tCampos(t)}
-\tadOperacion{tRegistros}{tabla t}{conj(registro)}{}
+\tadOperacion{tEsClave}{tabla/t, campo/c}{bool}{c $\in$ tCampos(t)}
+\tadOperacion{tRegistros}{tabla/t}{conj(registro)}{}
 
 \tadGeneradores
-\tadOperacion{nuevaTabla}{conj(campo) campos, conj(campo) claves}{tabla}
+\tadOperacion{nuevaTabla}{conj(campo)/campos, conj(campo)/claves}{tabla}
     {$\neg\emptyset$?(claves) $\land$ claves $\subseteq$ campos }
-\tadOperacion{insertarEnTabla}{tabla t, registro r}{tabla}
+\tadOperacion{insertarEnTabla}{tabla/t, registro/r}{tabla}
     {// checkear campos del registro y repetidos}
-\tadOperacion{borrarDeTabla}{tabla t, campo c, valor v}{tabla}
+\tadOperacion{borrarDeTabla}{tabla/t, campo/c, valor/v}{tabla}
     {c $\in$ tCampos(t) $\land$ cEsString?(c) = vEsString?(v)}
 
 \tadAxiomas[\paratodo{tabla}{t}]
