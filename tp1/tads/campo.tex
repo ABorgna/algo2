@@ -1,11 +1,12 @@
 \section{TAD \tadNombre{Campo}}
 
 \begin{tad}{\tadNombre{Campo}}
-\tadIgualdadObservacional{c}{c'}{campo}{?}
+    \tadIgualdadObservacional{c}{c'}{campo}{cNombre($c$) = cNombre($c'$) %
+    $\land$ cEsString?($c$) = cEsString?($c'$)}
 
 \tadGeneros{campo}
 \tadExporta{campo, generadores, observadores, otras operaciones}
-\tadUsa{?}
+\tadUsa{string, bool}
 
 \tadObservadores
 \tadOperacion{cNombre}{campo}{string}{}
@@ -13,13 +14,17 @@
 
 \tadGeneradores
 \tadOperacion{campoString}{string}{campo}{}
-\tadOperacion{campoNat}{nat}{campo}{}
+\tadOperacion{campoNat}{string}{campo}{}
 
 \tadOtrasOperaciones
 \tadOperacion{cEsNat?}{campo}{bool}{}
 
 \tadAxiomas[\paratodo{campo}{c}]
-\tadAxioma{?}{c}
+\tadAxioma{cNombre(campoString(s))}{s}
+\tadAxioma{cNombre(campoNat(s))}{s}
+\tadAxioma{cEsString?(campoString(s))}{true}
+\tadAxioma{cEsString?(campoNat(s))}{false}
+\tadAxioma{cEsNat?(c)}{$\neg$ cEsString?(c)}
 
 \end{tad}
 
