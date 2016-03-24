@@ -1,0 +1,14 @@
+# Aca vengo a volcar las dudas que ocurran para que no queden dispersas
+
+
+- En los axiomas de cada tad dice PARATODO t: tipo al lado de axiomas. En los
+    casos en los que eso sea sobre generadores, como por ejemplo:
+            
+            vEsString(valorString(s)) == true
+
+    ..tendria que ir un PARATODO s: string? o se sobrentiende?
+
+
+
+- En la igualdad observacional se pueden utilizar otras operaciones?
+    solo por ua cuestion estetica, para poner esNat en vez de not esString

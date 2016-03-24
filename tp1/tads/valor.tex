@@ -1,15 +1,22 @@
 \section{TAD \tadNombre{Valor}}
 
 \begin{tad}{\tadNombre{Valor}}
-\tadIgualdadObservacional{v}{v'}{valor}{?}
+\tadIgualdadObservacional{v}{v'}{valor}{%
+    \IF vEsString($v$) THEN%
+        vEsString($v'$) $\yluego$ leerString($v$) = leerString($v'$)%
+    ELSE%
+        vEsNat($v'$) $\yluego$ leerNat($v$) = leerNat($v'$)%
+    FI%
+}
+
 
 \tadGeneros{valor}
 \tadExporta{valor, generadores, observadores, otras operaciones}
-\tadUsa{?}
+\tadUsa{string, nat, bool}
 
 \tadObservadores
-\tadOperacion{valorString}{valor}{string}{}
-\tadOperacion{valorNat}{valor}{nat}{}
+\tadOperacion{leerString}{valor\ $v$}{string}{vEsString($v$)}
+\tadOperacion{leerNat}{valor\ $v$}{nat}{$\neg$vEsString($v$)}
 \tadOperacion{vEsString?}{valor}{bool}{}
 
 \tadGeneradores
@@ -20,7 +27,12 @@
 \tadOperacion{vEsNat?}{valor}{bool}{}
 
 \tadAxiomas[\paratodo{valor}{v}]
-\tadAxioma{?}{v}
+\tadAxioma{vEsString(valorString(s))}{true}
+\tadAxioma{vEsString(valorNat(n))}{false}
+\tadAxioma{vEsNat(v)}{$\neg$vEsString(v)}
+\tadAxioma{leerString(valorString(s))}{s}
+\tadAxioma{leerNat(valorNat(n))}{n}
+
 
 \end{tad}
 
