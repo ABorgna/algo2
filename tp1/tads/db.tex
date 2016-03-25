@@ -17,10 +17,10 @@
 \tadOperacion{nuevaDB}{dicc(nombreTabla,tabla)/tablas}{database}
     {$\neg$vacio(tablas)}
 \tadOperacion{insertar}{database/db, nombreTabla/nt, registro/r}{database}
-    {dbTieneTabla(db,nt) $\land_L$ // checkear campos del registro, y repetidos}
+    {dbTieneTabla(db,nt) $\land_L$ rCampos(r) $\subseteq$?? tCampos(dbTabla(db, nt))}% // checkear campos del registro, y repetidos
 \tadOperacion{borrar}{database/db, nombreTabla/nt, campo/c, valor/v}{database}
     {cEsString?(c) = vEsString?(v) $\land$
-    dbTieneTabla(db,nt) $\land_L$ // checkear campo valido}
+    dbTieneTabla(db,nt) $\land_L$ tieneCampo?(nt, c)}
 \tadOperacion{crearJoin}{database/db, nombreJoin/nj, join/j}{database}
     {$\neg$def?(nj,dbJoins(db)) $\land$ // checkear tablas y campo del join}
 \tadOperacion{borrarJoin}{database/db, nombreJoin/nj}{database}

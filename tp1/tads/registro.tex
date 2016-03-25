@@ -1,28 +1,37 @@
 \section{TAD \tadNombre{Registro}}
 
 \begin{tad}{\tadNombre{Registro}}
-\tadIgualdadObservacional{r}{r'}{registro}{?}
+\tadIgualdadObservacional{r}{r'}{registro}{rCampos(r) $\igobs$ rCampos(r') $\land$ (\paratodo{campo}{c})(c $\in$ rCampos(r) $\implies$ rValor(r, c) $\igobs$ rValor(r', c))}
 
 \tadGeneros{registro}
 \tadExporta{registro, generadores, observadores, otras operaciones}
-\tadUsa{?}
+\tadUsa{\tadNombre{Campo}, \tadNombre{Valor}, \tadNombre{Conj}}
 
 \tadObservadores
-// Creo que si en vez de 'tieneCampo' guardamos la lista de campos
-\newline
-// nos es mas facil especificar los requiere de las inserciones (en db y en tabla)
-\newline
-// ya que seria igualdad de conjuntos directamente
+%// Creo que si en vez de 'tieneCampo' guardamos la lista de campos
+%\newline
+%// nos es mas facil especificar los requiere de las inserciones (en db y en tabla)
+%\newline
+%// ya que seria igualdad de conjuntos directamente
 \tadOperacion{rValor}{registro/r, campo/c}{valor}{rTieneCampo(r,c)}
-\tadOperacion{rTieneCampo}{registro, campo}{bool}{}
+%%\tadOperacion{rTieneCampo}{registro, campo}{bool}{} Lo cambiamos por rCampos;
+\tadOperacion{rCampos}{registro/r}{conj(campo)}{}
 
 \tadGeneradores
 \tadOperacion{nuevoRegistro}{}{registro}{}
 \tadOperacion{agregarValor}{registro/r, campo/c, valor/v}{registro}
-    {$\not$ rTieneCampo(r,c) $\land$ cEsString?(c) == vEsString?(v)}
+    {$\neg$ rTieneCampo(r,c) $\land$ cEsString?(c) == vEsString?(v)}
 
-\tadAxiomas[\paratodo{registro}{r}]
-\tadAxioma{?}{r}
+\tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
+\tadAxioma{rValor(agregarValor(r, c, v), c')}{%
+	\IF c == c' THEN%
+		v%
+	ELSE%
+		rValor(r, c')
+	FI%
+}
+\tadAxioma{rCampos(nuevoRegistro)}{$\varnothing$}
+\tadAxioma{rCampos(agregarValor(r, c, v))}{Ag(c, campos(r))}
 
 \end{tad}
 
