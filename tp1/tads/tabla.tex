@@ -1,7 +1,11 @@
 \section{TAD \tadNombre{Tabla}}
 
 \begin{tad}{\tadNombre{Tabla}}
-\tadIgualdadObservacional{t}{t'}{tabla}{?}
+\tadIgualdadObservacional{t}{t'}{tabla}
+    {tRegistros(t) $\igobs$ tRegistros(t') $\land$ \\
+    tCampos(t) $\igobs$ tCampos(t') $\land_L$ \\
+    (\paratodo{campo}{c})(c $\in$ tCampos(t) $\implies$ \\
+     tEsClave(t, c) $\igobs$ tEsClave(t', c))}
 
 \tadGeneros{tabla}
 \tadExporta{tabla, generadores, observadores, otras operaciones}
