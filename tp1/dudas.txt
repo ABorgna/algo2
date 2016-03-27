@@ -3,12 +3,19 @@
 
 - En los axiomas de cada tad dice PARATODO t: tipo al lado de axiomas. En los
     casos en los que eso sea sobre generadores, como por ejemplo:
-            
+
             vEsString(valorString(s)) == true
 
     ..tendria que ir un PARATODO s: string? o se sobrentiende?
 
+    Y, si tiene que ir, que pasa cuando el generador tiene restricciones sobre s?
+    (ej si valorString() requiere que s no sea vacia)
 
 
 - En la igualdad observacional se pueden utilizar otras operaciones?
     solo por ua cuestion estetica, para poner esNat en vez de not esString
+
+- Si t:tabla tiene un solo r:registro, y t' tiene un solo registro r' igual a r excepto que tiene campos extra (no de la tabla).
+    Debería t =_obs t' ? Ahora no lo son, y permitirlo complicaria bastante el predicado de igualdad.
+    Por ahi mejor seria no permitir registros con campos extra y ya...
+
