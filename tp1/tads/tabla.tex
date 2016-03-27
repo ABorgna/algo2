@@ -29,16 +29,16 @@
 
 \tadAxioma{tieneCampo?(t, c)}{auxTieneCampo(t, c, tCampos(t))}
 \tadAxioma{auxTieneCampo(t, c, cs)}{
-	\IF $\varnothing$?(cs) THEN
-		false
-	ELSE
-		{\IF dameUno(cs) == c THEN
-			true
-		ELSE
-			auxTieneCampo(t, c, sinUno(cs))
-		FI}
-	FI
-	}
+    \IF $\varnothing$?(cs) THEN
+        false
+    ELSE
+        {\IF dameUno(cs) == c THEN
+            true
+        ELSE
+            auxTieneCampo(t, c, sinUno(cs))
+        FI}
+    FI
+    }
 
 \end{tad}
 

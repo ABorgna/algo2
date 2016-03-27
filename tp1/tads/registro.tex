@@ -24,11 +24,11 @@
 
 \tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
 \tadAxioma{rValor(agregarValor(r, c, v), c')}{%
-	\IF c == c' THEN%
-		v%
-	ELSE%
-		rValor(r, c')
-	FI%
+    \IF c == c' THEN%
+        v%
+    ELSE%
+        rValor(r, c')
+    FI%
 }
 \tadAxioma{rCampos(nuevoRegistro)}{$\varnothing$}
 \tadAxioma{rCampos(agregarValor(r, c, v))}{Ag(c, campos(r))}
