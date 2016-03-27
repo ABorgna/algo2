@@ -5,7 +5,8 @@
 
 \tadGeneros{tabla}
 \tadExporta{tabla, generadores, observadores, otras operaciones}
-\tadUsa{?}
+\tadUsa{\tadNombre{Conjunto($\alpha$)}, \tadNombre{Campo},
+    \tadNombre{Registro}, \tadNombre{Valor}}
 
 \tadObservadores
 \tadOperacion{tCampos}{tabla}{conj(campo)}{}
@@ -14,31 +15,30 @@
 
 \tadGeneradores
 \tadOperacion{nuevaTabla}{conj(campo)/campos, conj(campo)/claves}{tabla}
-    {$\neg\emptyset$?(claves) $\land$ claves $\subseteq$ campos }
+    {$\neg\emptyset$?(claves) $\land$ (claves $\subseteq$ campos)}
 \tadOperacion{insertarEnTabla}{tabla/t, registro/r}{tabla}
-    {// checkear campos del registro y repetidos}
+    {tCampos(t) $\subseteq$ rCampos(r)}
 \tadOperacion{borrarDeTabla}{tabla/t, campo/c, valor/v}{tabla}
-    {c $\in$ tCampos(t) $\land$ cEsString?(c) = vEsString?(v)}
+    {c $\in$ tCampos(t) $\land$ (cEsString?(c) $\iff$ vEsString?(v))}
 
 \tadOtrasOperaciones
 \tadOperacion{tieneCampo?}{tabla/t, campo/c}{bool}{}
-\tadOperacion{auxTieneCampo}{tabla/t, campo/c, conj(campo)/cs}{bool}{}
 
 \tadAxiomas[\paratodo{tabla}{t}]
-\tadAxioma{?}{t}
 
-\tadAxioma{tieneCampo?(t, c)}{auxTieneCampo(t, c, tCampos(t))}
-\tadAxioma{auxTieneCampo(t, c, cs)}{
-    \IF $\varnothing$?(cs) THEN
-        false
-    ELSE
-        {\IF dameUno(cs) == c THEN
-            true
-        ELSE
-            auxTieneCampo(t, c, sinUno(cs))
-        FI}
-    FI
-    }
+\tadAxioma{tCampos(nuevaTabla(campos,claves))}{campos}
+\tadAxioma{tCampos(insertarEnTabla(t,r))}{tCampos(t)}
+\tadAxioma{tCampos(borrarDeTabla(t,c,v))}{tCampos(t)}
+
+\tadAxioma{tEsClave(nuevaTabla(campos,claves),c)}{c $\in$ claves}
+\tadAxioma{tEsClave(insertarEnTabla(t,r),c)}{tEsClave(t,c)}
+\tadAxioma{tEsClave(borrarDeTabla(t,c,v),c)}{tEsClave(t,c)}
+
+\tadAxioma{tRegistros(nuevaTabla(campos,claves))}{$\emptyset$}
+\tadAxioma{tRegistros(insertarEnTabla(t,r))}{Ag(r,tRegistros(t))}
+\tadAxioma{tRegistros(borrarDeTabla(t,c,v))}{quitarRegistros(tRegistros(t),c,v)}
+
+\tadAxioma{tieneCampo?(t, c)}{c $\in$ tCampos(t)}
 
 \end{tad}
 

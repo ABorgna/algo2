@@ -16,6 +16,10 @@
 \tadOperacion{agregarValor}{registro/r, campo/c, valor/v}{registro}
     {$\neg$(c $\in$ rCampos(r)) $\land$ (cEsString?(c) $\iff$ vEsString?(v))}
 
+\tadOtrasOperaciones
+\tadOperacion{quitarRegistros}{conj(registro), campo/c, valor/v}{conj(registro)}
+    {c $\in$ rCampos(r) $\land$ (cEsString?(c) $\iff$ vEsString?(v))}
+
 \tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
 \tadAxioma{rValor(agregarValor(r, c, v), c')}{
     \IF c == c' THEN
@@ -26,6 +30,16 @@
 }
 \tadAxioma{rCampos(nuevoRegistro)}{$\emptyset$}
 \tadAxioma{rCampos(agregarValor(r, c, v))}{Ag(c, rCampos(r))}
+\tadAxioma{quitarRegistros(registros, c, v)}{
+    \IF $\emptyset$?(rs) THEN
+        $\emptyset$
+    ELSE
+        {\IF c $\in$ rCampos(dameUno(rs)) $\land_L$ v = rValor(dameUno(rs),c) THEN
+            Ag(dameUno(rs),quitarRegistros(sinUno(rs), c, v))
+        ELSE quitarRegistros(sinUno(rs), c, v) 
+        FI}
+    FI
+}
 
 \end{tad}
 
