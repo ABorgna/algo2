@@ -14,7 +14,9 @@
 \tadGeneradores
 \tadOperacion{nuevoRegistro}{}{registro}{}
 \tadOperacion{agregarValor}{registro/r, campo/c, valor/v}{registro}
-    {$\neg$(c $\in$ rCampos(r)) $\land$ (cEsString?(c) $\iff$ vEsString?(v))}
+    {(($\forall$ c' : campo, c' $\in$ rCampos(r)) cNombre(c) $\neq$ cNombre(c'))
+        \\
+    $\land$ (cEsString?(c) $\iff$ vEsString?(v))}
 
 \tadOtrasOperaciones
 \tadOperacion{quitarRegistros}{conj(registro), campo/c, valor/v}{conj(registro)}
