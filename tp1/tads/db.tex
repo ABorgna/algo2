@@ -4,34 +4,94 @@
 \tadIgualdadObservacional{db}{db'}{database}{?}
 
 \tadGeneros{database}
-\tadExporta{database, generadores, observadores, otras operaciones}
+\tadExporta{database, generadores, observadores}
 \tadUsa{?}
 
 \tadObservadores
 \tadOperacion{dbTabla}{database/db, nombreTabla/nt}{tabla}{tieneTabla(db,nt)}
 \tadOperacion{dbTieneTabla}{database, nombreTabla}{bool}{}
 \tadOperacion{dbJoins}{database}{dicc(nombreJoin,join)}{}
+\tadOperacion{dbVerJoin}{database/db, nombreJoin/nj}{conj(registro)}
+    {def?(nj,dbJoins(db))}
 \tadOperacion{dbTriggers}{database}{dicc(nombreTrigger,trigger)}{}
 
 \tadGeneradores
 \tadOperacion{nuevaDB}{dicc(nombreTabla,tabla)/tablas}{database}
-    {$\neg$vacio(tablas)}
+    {$\neg\emptyset$?(claves(tablas))}
 \tadOperacion{insertar}{database/db, nombreTabla/nt, registro/r}{database}
-    {dbTieneTabla(db,nt) $\land_L$ rCampos(r) $\subseteq$?? tCampos(dbTabla(db, nt))}% // checkear campos del registro, y repetidos
+    {dbTieneTabla(db,nt) $\land_L$ tCampos(dbTabla(db, nt)) $\subseteq$ rCampos(r) $\land$ // Checkear repetidos}
 \tadOperacion{borrar}{database/db, nombreTabla/nt, campo/c, valor/v}{database}
-    {cEsString?(c) = vEsString?(v) $\land$
-    dbTieneTabla(db,nt) $\land_L$ tieneCampo?(nt, c)}
+    {(cEsString?(c) $\iff$ vEsString?(v)) $\land$ dbTieneTabla(nt)
+        $\land_L$ c $\in$ tCampos(dbTabla(db,nt))}
 \tadOperacion{crearJoin}{database/db, nombreJoin/nj, join/j}{database}
     {$\neg$def?(nj,dbJoins(db)) $\land$ // checkear tablas y campo del join}
 \tadOperacion{borrarJoin}{database/db, nombreJoin/nj}{database}
     {def?(nj,dbJoins(db))}
 \tadOperacion{crearTrigger}{database/db, nombreTrigger/ntg, trigger/tg}{database}
-    {$\neg$def?(ntg,dbTriggers(db)) $\land$ // checkear tablas y valores por defecto del trigger}
+    {$\neg$def?(ntg,dbTriggers(db))
+    $\land$ $\neg$($\Pi_1$(tg) = $\Pi_2$(tg))
+    $\land$ // checkear tablas y valores por defecto del trigger}
 \tadOperacion{borrarTrigger}{database/db, nombreTrigger/ntg}{database}
     {def?(ntg,dbTriggers(db))}
 
+\tadOtrasOperaciones
+
+\tadOperacion{correrTriggers}{database/db, conj(nombreTrigger)/ntgs, nombreTabla/ntInsert, nombreTabla/ntTarget, registro/r}{tabla}{$\neg$(ntInsert = ntTarget)}
+
 \tadAxiomas[\paratodo{database}{db}]
-\tadAxioma{?}{db}
+
+\tadAxioma{dbTabla(nuevaDB(tablas),nt)}{obtener(nt,tablas)}
+\tadAxioma{dbTabla(insertar(db,nt',r),nt)}
+    {\IF nt' = nt
+        THEN insertarEnTabla(dbTabla(db,nt),r)
+        ELSE correrTriggers(db, claves(dbTriggers(db)), nt', nt, r)
+     FI
+    }
+\tadAxioma{dbTabla(borrar(db,nt',c,v),nt)}
+    {\IF nt' = nt
+        THEN borrarDeTabla(dbTabla(db,nt),c,v)
+        ELSE dbTabla(db,nt) FI}
+\tadAxioma{dbTabla(crearJoin(db,nj,j),nt)}{dbTabla(db,nt)}
+\tadAxioma{dbTabla(borrarJoin(db,nj),nt)}{dbTabla(db,nt)}
+\tadAxioma{dbTabla(crearTrigger(db,ntg,tg),nt)}{dbTabla(db,nt)}
+\tadAxioma{dbTabla(borrarTrigger(db,ntg),nt)}{dbTabla(db,nt)}
+
+\tadAxioma{dbTieneTabla(nuevaDB(tablas),nt)}{def?(nt,tablas)}
+\tadAxioma{dbTieneTabla(insertar(db,nt',r),nt)}{dbTieneTabla(db,nt)}
+\tadAxioma{dbTieneTabla(borrar(db,nt',c,v),nt)}{dbTieneTabla(db,nt)}
+\tadAxioma{dbTieneTabla(crearJoin(db,nj,j),nt)}{dbTieneTabla(db,nt)}
+\tadAxioma{dbTieneTabla(borrarJoin(db,nj),nt)}{dbTieneTabla(db,nt)}
+\tadAxioma{dbTieneTabla(crearTrigger(db,ntg,tg),nt)}{dbTieneTabla(db,nt)}
+\tadAxioma{dbTieneTabla(borrarTrigger(db,ntg),nt)}{dbTieneTabla(db,nt)}
+
+\tadAxioma{dbJoins(nuevaDB(tablas))}{vacio}
+\tadAxioma{dbJoins(insertar(db,nt,r))}{dbJoins(db)}
+\tadAxioma{dbJoins(borrar(db,nt,c,v))}{dbJoins(db)}
+\tadAxioma{dbJoins(crearJoin(db,nj,j))}{definir(nj,j,dbJoins(db))}
+\tadAxioma{dbJoins(borrarJoin(db,nj))}{borrar(nj,dbJoins(db))}
+\tadAxioma{dbJoins(crearTrigger(db,ntg,tg))}{dbJoins(db)}
+\tadAxioma{dbJoins(borrarTrigger(db,ntg))}{dbJoins(db)}
+
+\tadAxioma{dbVerJoin(insertar(db,nt,r))}{?}
+\tadAxioma{dbVerJoin(borrar(db,nt,c,v))}{?}
+\tadAxioma{dbVerJoin(crearJoin(db,nj,j))}{dbVerJoin(db)}
+\tadAxioma{dbVerJoin(borrarJoin(db,nj))}{dbVerJoin(db)}
+\tadAxioma{dbVerJoin(crearTrigger(db,ntg,tg))}{dbVerJoin(db)}
+\tadAxioma{dbVerJoin(borrarTrigger(db,ntg))}{dbVerJoin(db)}
+
+\tadAxioma{dbTriggers(nuevaDB(tablas))}{vacio}
+\tadAxioma{dbTriggers(insertar(db,nt,r))}{dbTriggers(db)}
+\tadAxioma{dbTriggers(borrar(db,nt,c,v))}{dbTriggers(db)}
+\tadAxioma{dbTriggers(crearJoin(db,nj,j))}{dbTriggers(db)}
+\tadAxioma{dbTriggers(borrarJoin(db,nj))}{dbTriggers(db)}
+\tadAxioma{dbTriggers(crearTrigger(db,ntg,tg))}{definir(ntg,tg,dbTriggers(db))}
+\tadAxioma{dbTriggers(borrarTrigger(db,ntg))}{borrar(ntg,dbTriggers(db))}
+
+\tadAxioma{correrTriggers(db, ntgs, ntInsert, ntTarget, r)}
+    {\IF $\emptyset$?(ntgs)
+      THEN  dbTabla(db,ntTarget)
+     ELSE algo recursivo con correrTriger(sinUno(ntgs))
+     FI}
 
 \end{tad}
 
