@@ -87,11 +87,24 @@
 \tadAxioma{dbTriggers(crearTrigger(db,ntg,tg))}{definir(ntg,tg,dbTriggers(db))}
 \tadAxioma{dbTriggers(borrarTrigger(db,ntg))}{borrar(ntg,dbTriggers(db))}
 
+// Hay que definir unionRegistros(r,r')
 \tadAxioma{correrTriggers(db, ntgs, ntInsert, ntTarget, r)}
     {\IF $\emptyset$?(ntgs)
       THEN  dbTabla(db,ntTarget)
-     ELSE algo recursivo con correrTriger(sinUno(ntgs))
-     FI}
+      ELSE {\IF($\Pi_1$(obtener(dameUno(ntgs),dbTriggers(db))) $\igobs$ ntInsert
+              \\ \hspace*{\itefIndentacion}
+                $\land$
+              \\ \hspace*{\itefIndentacion}
+                $\Pi_2$(obtener(dameUno(ntgs),dbTriggers(db))) $\igobs$ ntTarget)
+              \\ THEN 
+                insertarEnTabla(
+              \\ \hspace*{\itefIndentacion}
+                 correrTriggers(db,sinUno(ntgs),ntInsert, ntTarget, r),
+              \\ \hspace*{\itefIndentacion}
+                 unionRegistros(r,$\Pi_3$(obtener(dameUno(ntgs), dbTriggers(db)))))
+            ELSE correrTriggers(db,sinUno(ntgs),ntInsert, ntTarget, r)
+           FI}
+      FI}
 
 \end{tad}
 
