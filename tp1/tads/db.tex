@@ -1,7 +1,13 @@
 \section{TAD \tadNombre{Database}}
 
 \begin{tad}{\tadNombre{Database}}
-\tadIgualdadObservacional{db}{db'}{database}{?}
+\tadIgualdadObservacional{db}{db'}{database}{
+    (\paratodo{nombreTabla}{nt}) dbTieneTabla(db,nt) \igobs dbTieneTabla(db',nt) $\land$ \\
+    dbJoins(db) \igobs dbJoins(db') $\land$ \\
+    dbTriggers(db) \igobs dbTriggers(db') $\land_L$ \\
+    (\paratodo{nombreTabla}{nt}, dbTieneTabla(db,nt)) dbTabla(db,nt) \igobs dbTabla(db',nt) $\land$ \\
+    (\paratodo{nombreJoin}{nj}, nj $\in$ claves(dbJoins(db,nj))) dbVerJoin(db,nj) \igobs dbVerJoin(db',nj)
+}
 
 \tadGeneros{database}
 \tadExporta{database, generadores, observadores}
@@ -87,7 +93,6 @@
 \tadAxioma{dbTriggers(crearTrigger(db,ntg,tg))}{definir(ntg,tg,dbTriggers(db))}
 \tadAxioma{dbTriggers(borrarTrigger(db,ntg))}{borrar(ntg,dbTriggers(db))}
 
-// Hay que definir unionRegistros(r,r')
 \tadAxioma{correrTriggers(db, ntgs, ntInsert, ntTarget, r)}
     {\IF $\emptyset$?(ntgs)
       THEN  dbTabla(db,ntTarget)
