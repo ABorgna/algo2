@@ -1,11 +1,13 @@
 \section{TAD \tadNombre{Tabla}}
 
 \begin{tad}{\tadNombre{Tabla}}
-\tadIgualdadObservacional{t}{t'}{tabla}
-    {tRegistros(t) $\igobs$ tRegistros(t') $\land$ \\
+\tadIgualdadObservacional{t}{t'}{tabla}{
+    tRegistros(t) $\igobs$ tRegistros(t') $\land$ \\
+    tModificaciones(t) $\igobs$ tModificaciones(t') $\land$ \\
     tCampos(t) $\igobs$ tCampos(t') $\land_L$ \\
     (\paratodo{campo}{c})(c $\in$ tCampos(t) $\implies$ \\
-     tEsClave(t, c) $\igobs$ tEsClave(t', c))}
+     tEsClave(t, c) $\igobs$ tEsClave(t', c))
+ }
 
 \tadGeneros{tabla}
 \tadExporta{tabla, generadores, observadores, otras operaciones}
@@ -16,6 +18,7 @@
 \tadOperacion{tCampos}{tabla}{conj(campo)}{}
 \tadOperacion{tEsClave}{tabla/t, campo/c}{bool}{c $\in$ tCampos(t)}
 \tadOperacion{tRegistros}{tabla/t}{conj(registro)}{}
+\tadOperacion{tModificaciones}{tabla/t}{nat}{}
 
 \tadGeneradores
 \tadOperacion{nuevaTabla}{conj(campo)/campos, conj(campo)/claves}{tabla}
@@ -41,6 +44,10 @@
 \tadAxioma{tRegistros(nuevaTabla(campos,claves))}{$\emptyset$}
 \tadAxioma{tRegistros(insertarEnTabla(t,r))}{Ag(r,tRegistros(t))}
 \tadAxioma{tRegistros(borrarDeTabla(t,c,v))}{quitarRegistros(tRegistros(t),c,v)}
+
+\tadAxioma{tModificaciones(nuevaTabla(campos,claves))}{0}
+\tadAxioma{tModificaciones(insertarEnTabla(t,r))}{1 + tModificaciones(t)}
+\tadAxioma{tModificaciones(borrarDeTabla(t,c,v))}{1 + tModificaciones(t)}
 
 \tadAxioma{tieneCampo?(t, c)}{c $\in$ tCampos(t)}
 
