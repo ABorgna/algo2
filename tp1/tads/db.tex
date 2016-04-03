@@ -10,7 +10,7 @@
 }
 
 \tadGeneros{database}
-\tadExporta{database, generadores, observadores}
+\tadExporta{database, generadores, observadores, masModificada}
 \tadUsa{?}
 
 \tadObservadores
@@ -42,7 +42,10 @@
 
 \tadOtrasOperaciones
 
-\tadOperacion{correrTriggers}{database/db, conj(nombreTrigger)/ntgs, nombreTabla/ntInsert, nombreTabla/ntTarget, registro/r}{tabla}{$\neg$(ntInsert = ntTarget)}
+\tadOperacion{masModificada}{database/db}{nombreTabla}{}
+
+\tadOperacion{correrTriggers}{database, conj(nombreTrigger), nombreTabla/ntInsert, nombreTabla/ntTarget, registro}
+    {tabla}{$\neg$(ntInsert = ntTarget)}
 
 \tadAxiomas[\paratodo{database}{db}]
 
@@ -92,6 +95,10 @@
 \tadAxioma{dbTriggers(borrarJoin(db,nj))}{dbTriggers(db)}
 \tadAxioma{dbTriggers(crearTrigger(db,ntg,tg))}{definir(ntg,tg,dbTriggers(db))}
 \tadAxioma{dbTriggers(borrarTrigger(db,ntg))}{borrar(ntg,dbTriggers(db))}
+
+\tadAxioma{(\paratodo{nombreTabla}{nt}, tieneTabla(db,nt)) \\
+    \hspace*{8em}   tModificaciones(dbTabla(nt)) $\leq$
+    tModificaciones(dbTabla(masModificada(db)))}{true}
 
 \tadAxioma{correrTriggers(db, ntgs, ntInsert, ntTarget, r)}
     {\IF $\emptyset$?(ntgs)
