@@ -21,6 +21,7 @@
 \tadOtrasOperaciones
 \tadOperacion{quitarRegistros}{conj(registro), campo/c, valor/v}{conj(registro)}
     {c $\in$ rCampos(r) $\land$ (cEsString?(c) $\iff$ vEsString?(v))}
+\tadOperacion{unionRegistros}{registro, registro}{registro}{}
 
 \tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
 \tadAxioma{rValor(agregarValor(r, c, v), c')}{
@@ -38,8 +39,17 @@
     ELSE
         {\IF c $\in$ rCampos(dameUno(rs)) $\land_L$ v = rValor(dameUno(rs),c) THEN
             Ag(dameUno(rs),quitarRegistros(sinUno(rs), c, v))
-        ELSE quitarRegistros(sinUno(rs), c, v) 
+        ELSE
+            quitarRegistros(sinUno(rs), c, v) 
         FI}
+    FI
+}
+\tadAxioma{unionRegistros(r, nuevoRegistro)}{r}
+\tadAxioma{unionRegistros(r, agregarValor(r',c,v))}{
+    \IF ($\forall$ c' : campo, c' $\in$ rCampos(r)) cNombre(c) $\neq$ cNombre(c') THEN
+        agregarValor(unionRegistros(r,r'),c,v)
+    ELSE
+        unionRegistros(r,r')
     FI
 }
 
