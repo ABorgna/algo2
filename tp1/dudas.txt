@@ -19,3 +19,6 @@
     Debería t =_obs t' ? Ahora no lo son, y permitirlo complicaria bastante el predicado de igualdad.
     Por ahi mejor seria no permitir registros con campos extra y ya...
 
+- En el tad registro, en la funcion quitarRegistros. El chequeo de si tiene los campos es innesesario porque ya se verifica en el axioma.
+
+- En el tad registro, en el axioma de quitarRegistros, el dameUno y sinUno no me dejan dormir. En los axiomas de conjunto dice que dameUno devuelve un elemento del conjunto pero no dice que deba devolver el mismo. (Lo cual me deja pensando en si le haria falta un axioma mas al tad de conjunto que diga "dameUno(c) === dameUno(c)")

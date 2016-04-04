@@ -1,31 +1,34 @@
 \section{TAD \tadNombre{Registro}}
 
 \begin{tad}{\tadNombre{Registro}}
-\tadIgualdadObservacional{r}{r'}{registro}{rCampos(r) $\igobs$ rCampos(r') $\land_L$ (\paratodo{campo}{c})(c $\in$ rCampos(r) $\implies$ rValor(r, c) $\igobs$ rValor(r', c))}
+\tadIgualdadObservacional{r}{r'}{registro}{rCampos($r$) $\igobs$ rCampos($r'$) $\land_L$ (\paratodo{campo}{c}) \\
+    ($c \in$ rCampos($r$) $\implies$ rValor($r$, $c$) $\igobs$ rValor($r'$, $c$))}
 
 \tadGeneros{registro}
 \tadExporta{registro, generadores, observadores, otras operaciones}
 \tadUsa{\tadNombre{Campo}, \tadNombre{Valor}, \tadNombre{Conj}}
 
 \tadObservadores
-\tadOperacion{rValor}{registro/r, campo/c}{valor}{rTieneCampo(r,c)}
+\tadOperacion{rValor}{registro/r, campo/c}{valor}{$c \in$ rCampos($r$)}
 \tadOperacion{rCampos}{registro/r}{conj(campo)}{}
 
 \tadGeneradores
 \tadOperacion{nuevoRegistro}{}{registro}{}
 \tadOperacion{agregarValor}{registro/r, campo/c, valor/v}{registro}
-    {(($\forall$ c' : campo, c' $\in$ rCampos(r)) cNombre(c) $\neq$ cNombre(c'))
+    {(($\forall c'$ : campo, $c'$ $\in$ rCampos($r$)) cNombre($c$) $\neq$ cNombre($c'$))
         \\
-    $\land$ (cEsString?(c) $\iff$ vEsString?(v))}
+    $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))}
 
 \tadOtrasOperaciones
-\tadOperacion{quitarRegistros}{conj(registro), campo/c, valor/v}{conj(registro)}
-    {c $\in$ rCampos(r) $\land$ (cEsString?(c) $\iff$ vEsString?(v))}
+\tadOperacion{quitarRegistros}{conj(registro)/rs, campo/c, valor/v}{conj(registro)}
+    {($\forall r$ : registro, $r \in rs$) % 
+        $c$ $\in$ rCampos($r$) $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))%
+    }
 \tadOperacion{unionRegistros}{registro, registro}{registro}{}
 
 \tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
 \tadAxioma{rValor(agregarValor(r, c, v), c')}{
-    \IF c == c' THEN
+    \IF c = c' THEN
         v
     ELSE
         rValor(r, c')
@@ -33,7 +36,7 @@
 }
 \tadAxioma{rCampos(nuevoRegistro)}{$\emptyset$}
 \tadAxioma{rCampos(agregarValor(r, c, v))}{Ag(c, rCampos(r))}
-\tadAxioma{quitarRegistros(registros, c, v)}{
+\tadAxioma{quitarRegistros(rs, c, v)}{
     \IF $\emptyset$?(rs) THEN
         $\emptyset$
     ELSE
