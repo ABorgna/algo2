@@ -3,9 +3,9 @@
 \begin{tad}{\tadNombre{Valor}}
 \tadIgualdadObservacional{v}{v'}{valor}{%
     \IF vEsString?($v$) THEN%
-        vEsString?($v'$) $\yluego$ leerString($v$) = leerString($v'$)%
+        vEsString?($v'$) $\yluego$ leerString($v$) \igobs leerString($v'$)%
     ELSE%
-        vEsNat?($v'$) $\yluego$ leerNat($v$) = leerNat($v'$)%
+        vEsNat?($v'$) $\yluego$ leerNat($v$) \igobs leerNat($v'$)%
     FI%
 }
 
@@ -16,7 +16,7 @@
 
 \tadObservadores
 \tadOperacion{leerString}{valor\ $v$}{string}{vEsString?($v$)}
-\tadOperacion{leerNat}{valor\ $v$}{nat}{$\neg$vEsString?($v$)} %%Ya que tenemos la oop. vEsNat? podriamos usarla.
+\tadOperacion{leerNat}{valor\ $v$}{nat}{vEsNat?($v$)}
 \tadOperacion{vEsString?}{valor}{bool}{}
 
 \tadGeneradores
