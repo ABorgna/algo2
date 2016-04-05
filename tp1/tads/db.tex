@@ -100,8 +100,11 @@
 \tadAxioma{dbTriggers(crearTrigger(db,ntg,tg))}{definir(ntg,tg,dbTriggers(db))}
 \tadAxioma{dbTriggers(borrarTrigger(db,ntg))}{borrar(ntg,dbTriggers(db))}
 
-\tadAxioma{(\paratodo{nombreTabla}{nt}, tieneTabla(db,nt)) \\
-    \hspace*{8em}   tModificaciones(dbTabla(nt)) $\leq$
+\tadAxioma{tModificaciones(dbTabla(nt)) $\leq$
+    tModificaciones(dbTabla(masModificada(db)))}{true}
+
+\tadAxioma{(\existe{nombreTabla}{nt}, tieneTabla(db,nt)) \\
+    \hspace*{8em}   tModificaciones(dbTabla(nt)) $=$
     tModificaciones(dbTabla(masModificada(db)))}{true}
 
 \tadAxioma{correrTriggers(db, ntgs, ntInsert, ntTarget, r)}
