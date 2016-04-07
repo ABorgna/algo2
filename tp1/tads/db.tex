@@ -26,8 +26,10 @@
 \tadOperacion{dbTriggers}{database}{dicc(nombreTrigger,trigger)}{}
 
 \tadGeneradores
-\tadOperacion{nuevaDB}{dicc(nombreTabla,tabla)/tablas}{database}
-    {$\neg\emptyset$?(claves(tablas))}
+\tadOperacion{nuevaDB}{dicc(nombreTabla,tabla)/tablas}{database}{
+    $\neg\emptyset$?(claves(tablas)) $\land$
+    (\paratodo{tabla}{t}, t $\in$ tablas) tModificaciones(t) \igobs 0
+}
 \tadOperacion{insertar}{database/db, nombreTabla/nt, registro/r}{database}
     {dbTieneTabla(db,nt) $\land_L$ tCampos(dbTabla(db, nt)) $\subseteq$ rCampos(r) $\land$ // Checkear repetidos}
 \tadOperacion{borrar}{database/db, nombreTabla/nt, campo/c, valor/v}{database}
