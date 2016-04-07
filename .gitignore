@@ -43,4 +43,4 @@
 !/libs/*.sty
 
 # Cosas molestas
-*.db.tex.swp
+*.tex.swp
