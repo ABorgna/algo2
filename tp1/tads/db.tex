@@ -32,15 +32,15 @@
 }
 \tadOperacion{insertar}{database/db, nombreTabla/nt, registro/r}{database}
     {dbTieneTabla(db,nt) $\land_L$ tCampos(dbTabla(db, nt)) $\subseteq$ rCampos(r) \\
-    $\land$ $\neg$ tRegistroRepetido(dbTabla(db, nt), r) }
+    $\land$ $\neg$ tRegistroRepetido?(dbTabla(db, nt), r) }
 \tadOperacion{borrar}{database/db, nombreTabla/nt, campo/c, valor/v}{database}
     {(cEsString?(c) $\iff$ vEsString?(v)) $\land$ dbTieneTabla(nt)
         $\land_L$ c $\in$ tCampos(dbTabla(db,nt))}
 \tadOperacion{crearJoin}{database/db, nombreJoin/nj, join/j}{database}
 {$\neg$def?(nj,dbJoins(db)) $\land$ \hspace*{10em}\\ 
-    (dbTieneTabla(db, $\Pi_1$(j)) $\yluego$ tieneCampo(dbTabla(db, $\Pi_1$(j)), $\Pi_3$(j)) \\
+    (dbTieneTabla(db, $\Pi_1$(j)) $\yluego$ tieneCampo?(dbTabla(db, $\Pi_1$(j)), $\Pi_3$(j)) \\
     $\yluego$ tEsClave(dbTabla(db, $\Pi_1$(j)), $\Pi_3$(j))) $\land$ \\
-    (dbTieneTabla(db, $\Pi_2$(j)) $\yluego$ tieneCampo(dbTabla(db, $\Pi_2$(j)), $\Pi_3$(j)) \\
+    (dbTieneTabla(db, $\Pi_2$(j)) $\yluego$ tieneCampo?(dbTabla(db, $\Pi_2$(j)), $\Pi_3$(j)) \\
     $\yluego$ tEsClave(dbTabla(db, $\Pi_2$(j)), $\Pi_3$(j)))}
 \tadOperacion{borrarJoin}{database/db, nombreJoin/nj}{database}
     {def?(nj,dbJoins(db))}

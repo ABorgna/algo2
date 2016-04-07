@@ -54,7 +54,7 @@
 \tadAxioma{tieneCampo?(t, c)}{c $\in$ tCampos(t)}
 
 \tadAxioma{tRegistroRepetido?(t, nuevoRegistro)}{false}
-\tadAxioma{tRegistroRepetido?(t, agregarValor(r, c, v))}{ ((c $\in$ tCampos(t) $\yluego$ tEsClave(t, c)) $\impluego$ %
+\tadAxioma{tRegistroRepetido?(t, agregarValor(r, c, v))}{ (tieneCampo?(t, c) $\yluego$ tEsClave(t, c) $\yluego$ %
     ($\#$quitarRegistros(tRegistos(t), c, v) $\neq$ $\#$tRegistos(t))) %
     $\lor$ tRegistroRepetido?(t, r)} 
 
