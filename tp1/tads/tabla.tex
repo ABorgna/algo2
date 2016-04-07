@@ -30,6 +30,8 @@
 
 \tadOtrasOperaciones
 \tadOperacion{tieneCampo?}{tabla/t, campo/c}{bool}{}
+%\tadOperacion{unaClave}{tabla/t}{campo}{}
+\tadOperacion{tRegistroRepetido?}{tabla/t, registro/r}{bool}{tCampos(t) $\subseteq$ rCampos(r)}
 
 \tadAxiomas[\paratodo{tabla}{t}]
 
@@ -50,6 +52,15 @@
 \tadAxioma{tModificaciones(borrarDeTabla(t,c,v))}{1 + tModificaciones(t)}
 
 \tadAxioma{tieneCampo?(t, c)}{c $\in$ tCampos(t)}
+
+\tadAxioma{tRegistroRepetido?(t, nuevoRegistro)}{false}
+\tadAxioma{tRegistroRepetido?(t, agregarValor(r, c, v))}{ (c $\in$ tCampos(t) $\yluego$ tEsClave(t, c)) $\impluego$ %
+    ($\#$quitarRegistros(tRegistos(t), c, v) $\neq$ $\#$tRegistos(t)) %
+    $\lor$ tRegistroRepetido?(t, r)} 
+
+
+%\tadAxioma{unaClave(t) $\in$ tCampos(t) $\yluego$ esClave(t, unaClave(t))}{true}
+
 
 \end{tad}
 

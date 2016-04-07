@@ -29,18 +29,19 @@
 \tadOperacion{nuevaDB}{dicc(nombreTabla,tabla)/tablas}{database}
     {$\neg\emptyset$?(claves(tablas))}
 \tadOperacion{insertar}{database/db, nombreTabla/nt, registro/r}{database}
-    {dbTieneTabla(db,nt) $\land_L$ tCampos(dbTabla(db, nt)) $\subseteq$ rCampos(r) $\land$ // Checkear repetidos}
+    {dbTieneTabla(db,nt) $\land_L$ tCampos(dbTabla(db, nt)) $\subseteq$ rCampos(r) \\
+    $\land$ $\neg$ tRegistroRepetido(dbTabla(db, nt), r) }
 \tadOperacion{borrar}{database/db, nombreTabla/nt, campo/c, valor/v}{database}
     {(cEsString?(c) $\iff$ vEsString?(v)) $\land$ dbTieneTabla(nt)
         $\land_L$ c $\in$ tCampos(dbTabla(db,nt))}
 \tadOperacion{crearJoin}{database/db, nombreJoin/nj, join/j}{database}
-    {$\neg$def?(nj,dbJoins(db)) $\land$ // checkear tablas y campo del join}
+    {$\neg$def?(nj,dbJoins(db)) $\land$ \cuidado checkear tablas y campo del join}
 \tadOperacion{borrarJoin}{database/db, nombreJoin/nj}{database}
     {def?(nj,dbJoins(db))}
 \tadOperacion{crearTrigger}{database/db, nombreTrigger/ntg, trigger/tg}{database}
     {$\neg$def?(ntg,dbTriggers(db))
     $\land$ $\neg$($\Pi_1$(tg) = $\Pi_2$(tg))
-    $\land$ // checkear tablas y valores por defecto del trigger}
+    $\land$ \cuidado checkear tablas y valores por defecto del trigger}
 \tadOperacion{borrarTrigger}{database/db, nombreTrigger/ntg}{database}
     {def?(ntg,dbTriggers(db))}
 
