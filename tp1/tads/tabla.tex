@@ -55,10 +55,14 @@
 
 \tadAxioma{tieneCampo?(t, c)}{c $\in$ tCampos(t)}
 
-\tadAxioma{tRegistroRepetido?(t, nuevoRegistro)}{false}
-\tadAxioma{tRegistroRepetido?(t, agregarValor(r, c, v))}{ (tieneCampo?(t, c) $\yluego$ tEsClave(t, c) $\yluego$ %
-    ($\#$quitarRegistros(tRegistos(t), c, v) $\neq$ $\#$tRegistos(t))) %
-    $\lor$ tRegistroRepetido?(t, r)} 
+\tadAxioma{tRegistroRepetido?(t, r)}{
+    \IF (rVacio?(r)) THEN false
+    ELSE {
+        ( tiemeCampo?(t, unCampo(r) $\yluego$ tEsClave(t, unCampo(r)) $\yluego$ %
+        ($\#$quitarRegistros(tRegistos(t), unCampo(r), unValor(r)) $\neq$ $\#$tRegistos(t)) ) %
+        $\lor$ tRegistroRepetido?(t, sinUno(r)) %
+    } FI %
+}
 
 \tadAxioma{tClaves(nuevaTabla(campos, claves))}{claves}
 \tadAxioma{tClaves(insertarEnTabla(t, r))}{tClaves(t)}

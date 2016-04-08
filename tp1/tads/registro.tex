@@ -28,6 +28,10 @@
         $c$ $\in$ rCampos($r$) $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))%
     }
 \tadOperacion{unionRegistros}{registro, registro}{registro}{}
+\tadOperacion{unCampo}{registro/r}{campo}{$\neg$rVacio?(r)}
+\tadOperacion{unValor}{registro/r}{valor}{$\neg$rVacio?(r)}
+\tadOperacion{sinUno}{registro/r}{registro}{$\neg$rVacio?(r)}
+\tadOperacion{rVacio?}{registro}{bool}{}
 
 \tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
 \tadAxioma{rValor(agregarValor(r, c, v), c')}{
@@ -58,6 +62,13 @@
         unionRegistros(r,r')
     FI
 }
+
+\tadAxioma{rVacio?(nuevoRegistro)}{true}
+\tadAxioma{rVacio?(agregarValor(r, c, v))}{false}
+
+\tadAxioma{sinUno(agregarValor(r, c, v))}{r}
+\tadAxioma{unCampo(agregarValor(r, c, v))}{c}
+\tadAxioma{unValor(agregarValor(r, c, v))}{v}
 
 \end{tad}
 
