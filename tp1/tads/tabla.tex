@@ -32,24 +32,26 @@
 \tadOperacion{tieneCampo?}{tabla/t, campo/c}{bool}{}
 %\tadOperacion{unaClave}{tabla/t}{campo}{}
 \tadOperacion{tRegistroRepetido?}{tabla/t, registro/r}{bool}{tCampos(t) $\subseteq$ rCampos(r)}
+\tadOperacion{tClaves}{tabla/t}{conj(campo)}{}
+
 
 \tadAxiomas[\paratodo{tabla}{t}]
 
-\tadAxioma{tCampos(nuevaTabla(campos,claves))}{campos}
-\tadAxioma{tCampos(insertarEnTabla(t,r))}{tCampos(t)}
-\tadAxioma{tCampos(borrarDeTabla(t,c,v))}{tCampos(t)}
+\tadAxioma{tCampos(nuevaTabla(campos, claves))}{campos}
+\tadAxioma{tCampos(insertarEnTabla(t, r))}{tCampos(t)}
+\tadAxioma{tCampos(borrarDeTabla(t, c, v))}{tCampos(t)}
 
-\tadAxioma{tEsClave(nuevaTabla(campos,claves),c)}{c $\in$ claves}
-\tadAxioma{tEsClave(insertarEnTabla(t,r),c)}{tEsClave(t,c)}
-\tadAxioma{tEsClave(borrarDeTabla(t,c,v),c)}{tEsClave(t,c)}
+\tadAxioma{tEsClave(nuevaTabla(campos, claves), c)}{c $\in$ claves}
+\tadAxioma{tEsClave(insertarEnTabla(t, r), c)}{tEsClave(t, c)}
+\tadAxioma{tEsClave(borrarDeTabla(t, c, v), c)}{tEsClave(t, c)}
 
-\tadAxioma{tRegistros(nuevaTabla(campos,claves))}{$\emptyset$}
-\tadAxioma{tRegistros(insertarEnTabla(t,r))}{Ag(r,tRegistros(t))}
-\tadAxioma{tRegistros(borrarDeTabla(t,c,v))}{quitarRegistros(tRegistros(t),c,v)}
+\tadAxioma{tRegistros(nuevaTabla(campos, claves))}{$\emptyset$}
+\tadAxioma{tRegistros(insertarEnTabla(t, r))}{Ag(r, tRegistros(t))}
+\tadAxioma{tRegistros(borrarDeTabla(t, c, v))}{quitarRegistros(tRegistros(t), c, v)}
 
-\tadAxioma{tModificaciones(nuevaTabla(campos,claves))}{0}
-\tadAxioma{tModificaciones(insertarEnTabla(t,r))}{1 + tModificaciones(t)}
-\tadAxioma{tModificaciones(borrarDeTabla(t,c,v))}{1 + tModificaciones(t)}
+\tadAxioma{tModificaciones(nuevaTabla(campos, claves))}{0}
+\tadAxioma{tModificaciones(insertarEnTabla(t, r))}{1 + tModificaciones(t)}
+\tadAxioma{tModificaciones(borrarDeTabla(t, c, v))}{1 + tModificaciones(t)}
 
 \tadAxioma{tieneCampo?(t, c)}{c $\in$ tCampos(t)}
 
@@ -57,6 +59,10 @@
 \tadAxioma{tRegistroRepetido?(t, agregarValor(r, c, v))}{ (tieneCampo?(t, c) $\yluego$ tEsClave(t, c) $\yluego$ %
     ($\#$quitarRegistros(tRegistos(t), c, v) $\neq$ $\#$tRegistos(t))) %
     $\lor$ tRegistroRepetido?(t, r)} 
+
+\tadAxioma{tClaves(nuevaTabla(campos, claves))}{claves}
+\tadAxioma{tClaves(insertarEnTabla(t, r))}{tClaves(t)}
+\tadAxioma{tClaves(borrarDeTabla(t, c, v))}{tClaves(t)}
 
 
 %\tadAxioma{unaClave(t) $\in$ tCampos(t) $\yluego$ esClave(t, unaClave(t))}{true}

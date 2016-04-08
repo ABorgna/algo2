@@ -37,7 +37,7 @@
     {(cEsString?(c) $\iff$ vEsString?(v)) $\land$ dbTieneTabla(nt)
         $\land_L$ c $\in$ tCampos(dbTabla(db,nt))}
 \tadOperacion{crearJoin}{database/db, nombreJoin/nj, join/j}{database}
-{$\neg$def?(nj,dbJoins(db)) $\land$ \hspace*{10em}\\ 
+{$\neg$def?(nj,dbJoins(db)) $\land$ $\neg$($\Pi_1$(j)=$\Pi_2$(j)) $\land$ \hspace*{10em}\\ 
     (dbTieneTabla(db, $\Pi_1$(j)) $\yluego$ tieneCampo?(dbTabla(db, $\Pi_1$(j)), $\Pi_3$(j)) \\
     $\yluego$ tEsClave(dbTabla(db, $\Pi_1$(j)), $\Pi_3$(j))) $\land$ \\
     (dbTieneTabla(db, $\Pi_2$(j)) $\yluego$ tieneCampo?(dbTabla(db, $\Pi_2$(j)), $\Pi_3$(j)) \\
@@ -46,8 +46,10 @@
     {def?(nj,dbJoins(db))}
 \tadOperacion{crearTrigger}{database/db, nombreTrigger/ntg, trigger/tg}{database}
     {$\neg$def?(ntg,dbTriggers(db))
-    $\land$ $\neg$($\Pi_1$(tg) = $\Pi_2$(tg))
-    $\land$ \cuidado checkear tablas y valores por defecto del trigger}
+    $\land$ $\neg$($\Pi_1$(tg) = $\Pi_2$(tg)) \\
+    $\land$ (dbTieneTabla(db, $\Pi_1$(tg)) $\land$ dbTieneTabla(db, $\Pi_2$(tg)))
+    $\yluego$ (tClaves(dbTabla(db, $\Pi_1$(tg))) $\subseteq$ tClaves(dbTabla(db, $\Pi_2$(tg)))) \\
+    \cuidado checkear valores por defecto del trigger}
 \tadOperacion{borrarTrigger}{database/db, nombreTrigger/ntg}{database}
     {def?(ntg,dbTriggers(db))}
 
