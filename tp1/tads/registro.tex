@@ -32,6 +32,9 @@
 \tadOperacion{unValor}{registro/r}{valor}{$\neg$rVacio?(r)}
 \tadOperacion{sinUno}{registro/r}{registro}{$\neg$rVacio?(r)}
 \tadOperacion{rVacio?}{registro}{bool}{}
+\tadOperacion{mismosValores}{registro/r1, registro/r2, conj(campo)/cs}{bool}{
+    $cs \subseteq$ rCampos(r1) $\land$ $cs \subseteq$ rCampos(r2)
+}
 
 \tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
 \tadAxioma{rValor(agregarValor(r, c, v), c')}{
@@ -66,9 +69,19 @@
 \tadAxioma{rVacio?(nuevoRegistro)}{true}
 \tadAxioma{rVacio?(agregarValor(r, c, v))}{false}
 
-\tadAxioma{sinUno(agregarValor(r, c, v))}{r}
-\tadAxioma{unCampo(agregarValor(r, c, v))}{c}
-\tadAxioma{unValor(agregarValor(r, c, v))}{v}
+\tadAxioma{unCampo(r) $\in$ rCampos(r)}{true}
+\tadAxioma{unValor(r)}{rValor(r,unCampo(r))}
+\tadAxioma{rCampos(sinUno(r))}{rCampos(r) - \{unCampo(r)\}}
+\tadAxioma{mismosValores(r,sinUno(r),rCampos(sinUno(r)))}{true}
+
+\tadAxioma{mismosValores(r1,r2,cs)}{
+    \IF $\emptyset$?(cs) THEN
+        true
+    ELSE
+        rValor(r1,dameUno(cs)) $=$ rValor(r2,dameUno(cs)) $\land$ 
+        mismosValores(r1,r2,sinUno(cs))
+    FI
+}
 
 \end{tad}
 
