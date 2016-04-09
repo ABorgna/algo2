@@ -56,6 +56,7 @@
 \tadOtrasOperaciones
 
 \tadOperacion{masModificada}{database/db}{nombreTabla}{}
+\tadOperacion{masModificadaAux}{database, conj(tombreTabla), tabla}{nombreTabla}{}
 
 \tadOperacion{correrTriggers}{database, conj(nombreTrigger), nombreTabla/ntInsert, nombreTabla/ntTarget, registro}
     {tabla}{$\neg$(ntInsert = ntTarget)}
@@ -153,5 +154,16 @@
 \tadAxioma{nombresTablas(crearTrigger(db,ntg,tg))}{nombresTablas(db)}
 \tadAxioma{nombresTablas(borrarTrigger(db,ntg))}{nombresTablas(db)}
 
-\end{tad}
+\tadAxioma{masModificada(db)}{masModificadaAux(db, sinUno(nombresTablas(db)), dameUno(nombresTablas(db)))}
+\tadAxioma{masModificadaAux(db, nts, tMasModificada)}{
+\IF $\varnothing$?(nts) THEN 
+    tMasModificada 
+ELSE
+    {\IF tModificaciones(dbTabla(db, dameUno(nts))) $\geq$ tModificaciones(dbTabla(db, tMasModificada)) THEN
+        masModificadaAux(db, sinUno(nts), dameUno(nts)) 
+    ELSE
+        masModificadaAux(db, sinUno(nts), tMasModificada) 
+    FI}
+FI}
 
+\end{tad}
