@@ -60,6 +60,11 @@
 \tadOperacion{correrTriggers}{database, conj(nombreTrigger), nombreTabla/ntInsert, nombreTabla/ntTarget, registro}
     {tabla}{$\neg$(ntInsert = ntTarget)}
 
+\tadOperacion{nombresTablas}{database/db}{conj(nombreTabla)}{}
+\tadOperacion{existeTablaConModificaciones}{database/db, nat/n, conj(nombreTabla)/nts}{bool}{
+    $nts \subseteq$ nombresTablas(db)
+}
+
 \tadAxiomas[\paratodo{database}{db}]
 
 \tadAxioma{dbTabla(nuevaDB(tablas),nt)}{obtener(nt,tablas)}
@@ -111,10 +116,16 @@
 
 \tadAxioma{tModificaciones(dbTabla(nt)) $\leq$
     tModificaciones(dbTabla(masModificada(db)))}{true}
+\tadAxioma{existeTablaConModificaciones(db,tModificaciones(dbTabla(masModificada(db))),nombresTablas(db))}{true}
 
-\tadAxioma{(\existe{nombreTabla}{nt}, tieneTabla(db,nt)) \\
-    \hspace*{8em}   tModificaciones(dbTabla(nt)) $=$
-    tModificaciones(dbTabla(masModificada(db)))}{true}
+\tadAxioma{existeTablaConModificaciones(db,n,nts)}{
+    \IF $\emptyset$?(nts) THEN
+        false
+    ELSE
+        tModificaciones(dbTabla(dameUno(nts))) = n $\lor$ \\
+        existeTablaConModificaciones(db,n,sinUno(nts))
+    FI
+}
 
 \tadAxioma{correrTriggers(db, ntgs, ntInsert, ntTarget, r)}
     {\IF $\emptyset$?(ntgs)
@@ -133,6 +144,14 @@
             ELSE correrTriggers(db,sinUno(ntgs),ntInsert, ntTarget, r)
            FI}
       FI}
+
+\tadAxioma{nombresTablas(nuevaDB(tablas))}{claves(tablas)}
+\tadAxioma{nombresTablas(insertar(db,nt,r))}{nombresTablas(db)}
+\tadAxioma{nombresTablas(borrar(db,nt,c,v))}{nombresTablas(db)}
+\tadAxioma{nombresTablas(crearJoin(db,nj,j))}{nombresTablas(db)}
+\tadAxioma{nombresTablas(borrarJoin(db,nj))}{nombresTablas(db)}
+\tadAxioma{nombresTablas(crearTrigger(db,ntg,tg))}{nombresTablas(db)}
+\tadAxioma{nombresTablas(borrarTrigger(db,ntg))}{nombresTablas(db)}
 
 \end{tad}
 
