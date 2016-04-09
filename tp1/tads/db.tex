@@ -49,7 +49,7 @@
     $\land$ $\neg$($\Pi_1$(tg) = $\Pi_2$(tg)) \\
     $\land$ (dbTieneTabla(db, $\Pi_1$(tg)) $\land$ dbTieneTabla(db, $\Pi_2$(tg))) \\
     $\yluego$ (tClaves(dbTabla(db, $\Pi_1$(tg))) $\subseteq$ tClaves(dbTabla(db, $\Pi_2$(tg))) \\
-    $\land$ tCampos(dbTabla(db, $\Pi_2$(tg))) $\subseteq$ rCampos($\Pi_3$(tg)))}
+    $\land$ tCampos(dbTabla(db, $\Pi_2$(tg))) $\subseteq$ tCampos(dbTabla(db, $\Pi_1$(tg))) $\cup$  rCampos($\Pi_3$(tg)))}
 \tadOperacion{borrarTrigger}{database/db, nombreTrigger/ntg}{database}
     {def?(ntg,dbTriggers(db))}
 
