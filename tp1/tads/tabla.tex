@@ -25,7 +25,7 @@
 \tadOperacion{nuevaTabla}{conj(campo)/campos, conj(campo)/claves}{tabla}
     {$\neg\emptyset$?(claves) $\land$ (claves $\subseteq$ campos)}
 \tadOperacion{insertarEnTabla}{tabla/t, registro/r}{tabla}
-    {tCampos(t) $\subseteq$ rCampos(r)}
+    {tCampos(t) $\subseteq$ rCampos(r) $\land$ $\neg$tRegistroRepetido?(t, r)}
 \tadOperacion{borrarDeTabla}{tabla/t, campo/c, valor/v}{tabla}
     {c $\in$ tCampos(t) $\land$ (cEsString?(c) $\iff$ vEsString?(v))}
 
