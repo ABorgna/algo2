@@ -173,7 +173,7 @@
     sumaRegistros
   ELSE
     {\IF $\neg$ rVacio?(dameRegistro(t', campo, rValor(dameUno(tRegistros), campo))) THEN
-      joinRegistros(t, sinUno(tRegistros), t', Ag(sumarRegistros(dameUno(tRegistros), dameRegistro(t', campo, rValor(dameUno(registros), campo))), sumaRegistros)
+      joinRegistros(t, sinUno(tRegistros), t', Ag(unionRegistros(dameUno(tRegistros), dameRegistro(t', campo, rValor(dameUno(registros), campo))), sumaRegistros)
     ELSE
       joinRegistros(t, sinUno(tRegistros), t', sumaRegistros)
     FI}
