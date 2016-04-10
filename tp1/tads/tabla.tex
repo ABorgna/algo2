@@ -1,3 +1,4 @@
+\pagebreak
 \section{TAD \tadNombre{Tabla}}
 
 \begin{tad}{\tadNombre{Tabla}}
@@ -33,6 +34,7 @@
 %\tadOperacion{unaClave}{tabla/t}{campo}{}
 \tadOperacion{tRegistroRepetido?}{tabla/t, registro/r}{bool}{tCampos(t) $\subseteq$ rCampos(r)}
 \tadOperacion{tClaves}{tabla/t}{conj(campo)}{}
+\tadOperacion{dameRegistro}{tabla/t, campo/c, valor/v}{registro}{c $\in$ tClaves(t)}
 
 
 \tadAxiomas[\paratodo{tabla}{t}]
@@ -67,6 +69,18 @@
 \tadAxioma{tClaves(nuevaTabla(campos, claves))}{claves}
 \tadAxioma{tClaves(insertarEnTabla(t, r))}{tClaves(t)}
 \tadAxioma{tClaves(borrarDeTabla(t, c, v))}{tClaves(t)}
+
+\tadAxioma{dameRegistro(t, c, v)}{dameRegistrosAux(t, c, v, tRegistros(t))}
+\tadAxioma{dameRegistroAux(t, c, v, tRegs)}{
+\IF $\varnothing$?(tRegs) THEN 
+    nuevoRegistro 
+ELSE
+    {\IF rValor(dameUno(tRegs), c) == v THEN
+        dameUno(tRegs) 
+    ELSE 
+        dameRegistroAux(t, c , v, sinUno(tRegs)) 
+    FI}
+FI}
 
 
 %\tadAxioma{unaClave(t) $\in$ tCampos(t) $\yluego$ esClave(t, unaClave(t))}{true}

@@ -1,3 +1,4 @@
+\pagebreak
 \section{TAD \tadNombre{Database}}
 
 \begin{tad}{\tadNombre{Database}}
@@ -56,7 +57,6 @@
 \tadOtrasOperaciones
 
 \tadOperacion{masModificada}{database/db}{nombreTabla}{}
-\tadOperacion{masModificadaAux}{database, conj(tombreTabla), tabla}{nombreTabla}{}
 
 \tadOperacion{correrTriggers}{database, conj(nombreTrigger), nombreTabla/ntInsert, nombreTabla/ntTarget, registro}
     {tabla}{$\neg$(ntInsert = ntTarget)}
@@ -65,6 +65,8 @@
 \tadOperacion{existeTablaConModificaciones}{database/db, nat/n, conj(nombreTabla)/nts}{bool}{
     $nts \subseteq$ nombresTablas(db)
 }
+\tadOperacion{verJoinAux}{tabla/t, tabla/t', campo/c}{conj(registro)}{}
+\tadOperacion{joinRegistros}{tabla, conj(registro), tabla, campo, conj(registro))}{conj(registro)}{}
 
 \tadAxiomas[\paratodo{database}{db}]
 
@@ -100,12 +102,19 @@
 \tadAxioma{dbJoins(crearTrigger(db,ntg,tg))}{dbJoins(db)}
 \tadAxioma{dbJoins(borrarTrigger(db,ntg))}{dbJoins(db)}
 
-\tadAxioma{dbVerJoin(insertar(db,nt,r))}{?}
-\tadAxioma{dbVerJoin(borrar(db,nt,c,v))}{?}
-\tadAxioma{dbVerJoin(crearJoin(db,nj,j))}{dbVerJoin(db)}
-\tadAxioma{dbVerJoin(borrarJoin(db,nj))}{dbVerJoin(db)}
-\tadAxioma{dbVerJoin(crearTrigger(db,ntg,tg))}{dbVerJoin(db)}
-\tadAxioma{dbVerJoin(borrarTrigger(db,ntg))}{dbVerJoin(db)}
+\tadAxioma{dbVerJoin(insertar(db,nt,r), nj)}
+%Le pasamos a la funcion auxiliar las dos tablas actualizadas, y el campo clave a resolver
+{
+  verJoinAux(dbTabla(insertar(db, nt, r), $Pi_1$(obtener(dbJoins(db), nj))), dbTabla(insertar(db, nt, r), $Pi_2$(obtener(dbJoins(db), nj))), dameUno(tClaves(t) $\cap$ tClaves(t')))
+}
+
+\tadAxioma{dbVerJoin(borrar(db, nt, c, v), nj)}{
+  verJoinAux(dbTabla(borrar(db, nt, c, v), $Pi_1$(obtener(dbJoins(db), nj))), dbTabla(borrar(db, nt, c, v), $Pi_2$(obtener(dbJoins(db), nj))), dameUno(tClaves(t) $\cap$ tClaves(t')))
+}
+\tadAxioma{dbVerJoin(crearJoin(db,nj',j), nj)}{dbVerJoin(db, nj)}
+\tadAxioma{dbVerJoin(borrarJoin(db,nj'), nj)}{dbVerJoin(db, nj)}
+\tadAxioma{dbVerJoin(crearTrigger(db,ntg,tg), nj)}{dbVerJoin(db, nj)}
+\tadAxioma{dbVerJoin(borrarTrigger(db,ntg), nj)}{dbVerJoin(db, nj)}
 
 \tadAxioma{dbTriggers(nuevaDB(tablas))}{vacio}
 \tadAxioma{dbTriggers(insertar(db,nt,r))}{dbTriggers(db)}
@@ -154,16 +163,20 @@
 \tadAxioma{nombresTablas(crearTrigger(db,ntg,tg))}{nombresTablas(db)}
 \tadAxioma{nombresTablas(borrarTrigger(db,ntg))}{nombresTablas(db)}
 
-\tadAxioma{masModificada(db)}{masModificadaAux(db, sinUno(nombresTablas(db)), dameUno(nombresTablas(db)))}
-\tadAxioma{masModificadaAux(db, nts, tMasModificada)}{
-\IF $\varnothing$?(nts) THEN 
-    tMasModificada 
-ELSE
-    {\IF tModificaciones(dbTabla(db, dameUno(nts))) $\geq$ tModificaciones(dbTabla(db, tMasModificada)) THEN
-        masModificadaAux(db, sinUno(nts), dameUno(nts)) 
+
+\tadAxioma{verJoinAux(t, t', campo)}{
+  joinRegistros(t, tRegistros(t), t', campo, $\varnothing$)
+}
+\tadAxioma{joinRegistros(t, tRegistros, t', campo, sumaRegistros)}{
+  \\
+  \IF $\varnothing$?(tRegistros) THEN 
+    sumaRegistros
+  ELSE
+    {\IF $\neg$ rVacio?(dameRegistro(t', campo, rValor(dameUno(tRegistros), campo))) THEN
+      joinRegistros(t, sinUno(tRegistros), t', Ag(sumarRegistros(dameUno(tRegistros), dameRegistro(t', campo, rValor(dameUno(registros), campo))), sumaRegistros)
     ELSE
-        masModificadaAux(db, sinUno(nts), tMasModificada) 
+      joinRegistros(t, sinUno(tRegistros), t', sumaRegistros)
     FI}
-FI}
+  FI}
 
 \end{tad}
