@@ -3,11 +3,14 @@
 
 \begin{tad}{\tadNombre{Database}}
 \tadIgualdadObservacional{db}{db'}{database}{
-    (\paratodo{nombreTabla}{nt}) dbTieneTabla(db,nt) \igobs dbTieneTabla(db',nt) $\land$ \\
-    dbJoins(db) \igobs dbJoins(db') $\land$ \\
-    dbTriggers(db) \igobs dbTriggers(db') $\land_L$ \\
-    (\paratodo{nombreTabla}{nt}, dbTieneTabla(db,nt)) dbTabla(db,nt) \igobs dbTabla(db',nt) $\land$ \\
-    (\paratodo{nombreJoin}{nj}, nj $\in$ claves(dbJoins(db,nj))) dbVerJoin(db,nj) \igobs dbVerJoin(db',nj)
+    (\paratodo{nombreTabla}{nt}) \\
+    \hspace*{0.5em} (dbTieneTabla(db,nt) \igobs dbTieneTabla(db',nt)) \\
+    $\land$ dbJoins(db) \igobs dbJoins(db') \\
+    $\land$ dbTriggers(db) \igobs dbTriggers(db') \\
+    $\land_L$ (\paratodo{nombreTabla}{nt}, dbTieneTabla(db,nt)) \\
+    \hspace*{1em} (dbTabla(db,nt) \igobs dbTabla(db',nt)) \\
+    $\land$ (\paratodo{nombreJoin}{nj}, nj $\in$ claves(dbJoins(db,nj))) \\
+    \hspace*{1em} (dbVerJoin(db,nj) \igobs dbVerJoin(db',nj))
 }
 
 \tadGeneros{database}
@@ -37,19 +40,24 @@
 \tadOperacion{borrar}{database/db, nombreTabla/nt, campo/c, valor/v}{database}
     {(cEsString?(c) $\iff$ vEsString?(v)) $\land$ dbTieneTabla(nt)
         $\land_L$ c $\in$ tCampos(dbTabla(db,nt))}
-\tadOperacion{crearJoin}{database/db, nombreJoin/nj, join/j}{database}
-{$\neg$def?(nj,dbJoins(db)) $\land$ $\neg$($\Pi_1$(j)=$\Pi_2$(j)) $\land$ \hspace*{10em}\\ 
-    (dbTieneTabla(db, $\Pi_1$(j)) $\yluego$ tieneCampo?(dbTabla(db, $\Pi_1$(j)), $\Pi_3$(j)) \\
-    $\yluego$ tEsClave(dbTabla(db, $\Pi_1$(j)), $\Pi_3$(j))) $\land$ \\
-    (dbTieneTabla(db, $\Pi_2$(j)) $\yluego$ tieneCampo?(dbTabla(db, $\Pi_2$(j)), $\Pi_3$(j)) \\
-    $\yluego$ tEsClave(dbTabla(db, $\Pi_2$(j)), $\Pi_3$(j)))}
+\tadOperacion{crearJoin}{database/db, nombreJoin/nj, join/j}{database}{
+    $\neg$def?(nj,dbJoins(db)) $\land$ 
+    $\neg$($\Pi_1$(j)=$\Pi_2$(j)) $\land$ (\\
+     \hspace*{1em} dbTieneTabla(db, $\Pi_1$(j)) $\yluego$ \\
+     \hspace*{1em} tieneCampo?(dbTabla(db, $\Pi_1$(j)), $\Pi_3$(j)) $\yluego$ \\
+     \hspace*{1em} tEsClave(dbTabla(db, $\Pi_1$(j)), $\Pi_3$(j)) \\
+    ) $\land$ (\\
+     \hspace*{1em} dbTieneTabla(db, $\Pi_2$(j)) $\yluego$ \\
+     \hspace*{1em} tieneCampo?(dbTabla(db, $\Pi_2$(j)), $\Pi_3$(j)) $\yluego$ \\
+     \hspace*{1em} tEsClave(dbTabla(db, $\Pi_2$(j)), $\Pi_3$(j)) \\
+    )}
 \tadOperacion{borrarJoin}{database/db, nombreJoin/nj}{database}
     {def?(nj,dbJoins(db))}
 \tadOperacion{crearTrigger}{database/db, nombreTrigger/ntg, trigger/tg}{database}
     {$\neg$def?(ntg,dbTriggers(db))
     $\land$ $\neg$($\Pi_1$(tg) = $\Pi_2$(tg)) \\
-    $\land$ (dbTieneTabla(db, $\Pi_1$(tg)) $\land$ dbTieneTabla(db, $\Pi_2$(tg))) \\
-    $\yluego$ (tClaves(dbTabla(db, $\Pi_1$(tg))) $\subseteq$ tClaves(dbTabla(db, $\Pi_2$(tg))) \\
+    $\land$ dbTieneTabla(db, $\Pi_1$(tg)) $\land$ dbTieneTabla(db, $\Pi_2$(tg)) \\
+    $\yluego$ tClaves(dbTabla(db, $\Pi_1$(tg)) $\subseteq$ tClaves(dbTabla(db, $\Pi_2$(tg))) \\
     $\land$ tCampos(dbTabla(db, $\Pi_2$(tg))) $\subseteq$ tCampos(dbTabla(db, $\Pi_1$(tg))) $\cup$  rCampos($\Pi_3$(tg)))}
 \tadOperacion{borrarTrigger}{database/db, nombreTrigger/ntg}{database}
     {def?(ntg,dbTriggers(db))}
@@ -58,8 +66,8 @@
 
 \tadOperacion{masModificada}{database/db}{nombreTabla}{}
 
-\tadOperacion{correrTriggers}{database, conj(nombreTrigger), nombreTabla/ntInsert, nombreTabla/ntTarget, registro}
-    {tabla}{$\neg$(ntInsert = ntTarget)}
+\tadOperacion{correrTriggers}{database, conj(nombreTrigger), nombreTabla/ins, nombreTabla/tgt, registro}
+    {tabla}{$\neg$(ins \igobs tgt)}
 
 \tadOperacion{nombresTablas}{database/db}{conj(nombreTabla)}{}
 \tadOperacion{existeTablaConModificaciones}{database/db, nat/n, conj(nombreTabla)/nts}{bool}{
@@ -105,11 +113,19 @@
 \tadAxioma{dbVerJoin(insertar(db,nt,r), nj)}
 %Le pasamos a la funcion auxiliar las dos tablas actualizadas, y el campo clave a resolver
 {
-  verJoinAux(dbTabla(insertar(db, nt, r), $Pi_1$(obtener(dbJoins(db), nj))), dbTabla(insertar(db, nt, r), $Pi_2$(obtener(dbJoins(db), nj))), dameUno(tClaves(t) $\cap$ tClaves(t')))
+  verJoinAux( \\
+  \hspace*{1em} dbTabla(insertar(db, nt, r), $\Pi_1$(obtener(dbJoins(db), nj))), \\
+  \hspace*{1em} dbTabla(insertar(db, nt, r), $\Pi_2$(obtener(dbJoins(db), nj))), \\
+  \hspace*{1em} dameUno(tClaves(t) $\cap$ tClaves(t')) \\
+  )
 }
 
 \tadAxioma{dbVerJoin(borrar(db, nt, c, v), nj)}{
-  verJoinAux(dbTabla(borrar(db, nt, c, v), $Pi_1$(obtener(dbJoins(db), nj))), dbTabla(borrar(db, nt, c, v), $Pi_2$(obtener(dbJoins(db), nj))), dameUno(tClaves(t) $\cap$ tClaves(t')))
+  verJoinAux( \\
+  \hspace*{1em} dbTabla(borrar(db, nt, c, v), $\Pi_1$(obtener(dbJoins(db), nj))), \\
+  \hspace*{1em} dbTabla(borrar(db, nt, c, v), $\Pi_2$(obtener(dbJoins(db), nj))), \\
+  \hspace*{1em} dameUno(tClaves(t) $\cap$ tClaves(t')) \\
+  )
 }
 \tadAxioma{dbVerJoin(crearJoin(db,nj',j), nj)}{dbVerJoin(db, nj)}
 \tadAxioma{dbVerJoin(borrarJoin(db,nj'), nj)}{dbVerJoin(db, nj)}
@@ -140,18 +156,20 @@
 \tadAxioma{correrTriggers(db, ntgs, ntInsert, ntTarget, r)}
     {\IF $\emptyset$?(ntgs)
       THEN  dbTabla(db,ntTarget)
-      ELSE {\IF($\Pi_1$(obtener(dameUno(ntgs),dbTriggers(db))) $\igobs$ ntInsert
-              \\ \hspace*{\itefIndentacion}
-                $\land$
-              \\ \hspace*{\itefIndentacion}
-                $\Pi_2$(obtener(dameUno(ntgs),dbTriggers(db))) $\igobs$ ntTarget)
-              \\ THEN 
-                insertarEnTabla(
-              \\ \hspace*{\itefIndentacion}
-                 correrTriggers(db,sinUno(ntgs),ntInsert, ntTarget, r),
-              \\ \hspace*{\itefIndentacion}
-                 unionRegistros(r,$\Pi_3$(obtener(dameUno(ntgs), dbTriggers(db)))))
-            ELSE correrTriggers(db,sinUno(ntgs),ntInsert, ntTarget, r)
+      ELSE {\IF \\
+                \hspace*{1em} $\Pi_1$(obtener(dameUno(ntgs),dbTriggers(db))) \\
+                \hspace*{3em} $\igobs$ ntInsert $\land$ \\
+                \hspace*{1em} $\Pi_2$(obtener(dameUno(ntgs),dbTriggers(db))) \\
+                \hspace*{3em} $\igobs$ ntTarget \\
+            THEN
+                insertarEnTabla( \\
+                \hspace*{2em} correrTriggers(db,sinUno(ntgs),ntInsert, \\
+                \hspace*{9em} ntTarget, r), \\
+                \hspace*{2em} unionRegistros(r,$\Pi_3$(obtener(dameUno(ntgs), \\
+                \hspace*{9em} dbTriggers(db)))) \\
+            )
+            ELSE
+                correrTriggers(db,sinUno(ntgs),ntInsert, ntTarget, r)
            FI}
       FI}
 
@@ -172,10 +190,20 @@
   \IF $\varnothing$?(tRegistros) THEN 
     sumaRegistros
   ELSE
-    {\IF $\neg$ rVacio?(dameRegistro(t', campo, rValor(dameUno(tRegistros), campo))) THEN
-      joinRegistros(t, sinUno(tRegistros), t', Ag(unionRegistros(dameUno(tRegistros), dameRegistro(t', campo, rValor(dameUno(registros), campo))), sumaRegistros)
+    {\IF
+        $\neg$rVacio?(dameRegistro(t', campo, \\
+        \hspace*{3em} rValor(dameUno(tRegistros), campo)))
+    THEN
+        joinRegistros(t, sinUno(tRegistros), t', \\
+        \hspace*{1em} Ag(unionRegistros(dameUno(tRegistros), \\
+        \hspace*{3em} dameRegistro(t', campo, \\
+        \hspace*{3em} rValor(dameUno(registros), campo))), \\
+        \hspace*{3em} sumaRegistros \\
+        \hspace*{1em} ) \\
+        )
     ELSE
-      joinRegistros(t, sinUno(tRegistros), t', sumaRegistros)
+      joinRegistros(t, sinUno(tRegistros), \\
+      \hspace*{6em} t', sumaRegistros)
     FI}
   FI}
 

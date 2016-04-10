@@ -6,8 +6,8 @@
     tRegistros(t) $\igobs$ tRegistros(t') $\land$ \\
     tModificaciones(t) $\igobs$ tModificaciones(t') $\land$ \\
     tCampos(t) $\igobs$ tCampos(t') $\land_L$ \\
-    (\paratodo{campo}{c})(c $\in$ tCampos(t) $\implies$ \\
-     tEsClave(t, c) $\igobs$ tEsClave(t', c))
+    (\paratodo{campo}{c}, c $\in$ tCampos(t)) \\
+    \hspace*{2em} tEsClave(t, c) $\igobs$ tEsClave(t', c)
  }
 
 \tadGeneros{tabla}
@@ -58,10 +58,13 @@
 \tadAxioma{tieneCampo?(t, c)}{c $\in$ tCampos(t)}
 
 \tadAxioma{tRegistroRepetido?(t, r)}{
-    \IF (rVacio?(r)) THEN false
+    \IF rVacio?(r) THEN
+        false
     ELSE {
-        ( tiemeCampo?(t, unCampo(r) $\yluego$ tEsClave(t, unCampo(r)) $\yluego$ %
-        ($\#$quitarRegistros(tRegistos(t), unCampo(r), unValor(r)) $\neq$ $\#$tRegistos(t)) ) %
+        (tiemeCampo?(t, unCampo(r)) $\yluego$ tEsClave(t, unCampo(r)) \\
+        $\yluego$ ($\#$quitarRegistros(tRegistos(t), unCampo(r), unValor(r)) \\ 
+        \hspace*{2em} $\neq$ $\#$tRegistos(t)) \\
+        ) \\%
         $\lor$ tRegistroRepetido?(t, sinUno(r)) %
     } FI %
 }

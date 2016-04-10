@@ -4,8 +4,8 @@
 
 \tadIgualdadObservacional{r}{r'}{registro}{
     rCampos($r$) $\igobs$ rCampos($r'$) $\land_L$ \\
-    (\paratodo{campo}{c}, $c \in$ rCampos($r$))
-    rValor($r$, $c$) $\igobs$ rValor($r'$, $c$)
+    (\paratodo{campo}{c}, $c \in$ rCampos($r$)) \\
+    \hspace*{2em} rValor($r$, $c$) $\igobs$ rValor($r'$, $c$)
 }
 
 \tadGeneros{registro}
@@ -79,8 +79,8 @@
     \IF $\emptyset$?(cs) THEN
         true
     ELSE
-        rValor(r1,dameUno(cs)) $=$ rValor(r2,dameUno(cs)) $\land$ 
-        mismosValores(r1,r2,sinUno(cs))
+        rValor(r1,dameUno(cs)) $=$ rValor(r2,dameUno(cs)) \\
+        $\land$ mismosValores(r1,r2,sinUno(cs))
     FI
 }
 
