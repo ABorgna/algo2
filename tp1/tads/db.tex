@@ -77,9 +77,10 @@
 \tadOperacion{joinRegistros}{tabla, conj(registro), tabla, campo, conj(registro)}{conj(registro)}{}
 
 \tadAxiomas[\paratodo{database}{db}, \paratodo{nombreTabla}{nt,nt',ntInsert,ntTarget}, \paratodo{registro}{r},
-    \paratodo{campo}{c}, \paratodo{valor}{v}, \paratodo{nombreTrigger}{ntg}, \paratodo{nombreJoin}{nj,nj'},
-    \paratodo{conj(tabla)}{tablas}, \paratodo{join}{j}, \paratodo{trigger}{tg}, \paratodo{tabla}{t,t'},
-    \paratodo{conj(registro)}{rsTabla,rsSuma}]
+    \paratodo{campo}{c}, \paratodo{valor}{v}, \\
+    \paratodo{nombreTrigger}{ntg}, \paratodo{nombreJoin}{nj,nj'},
+    \paratodo{conj(tabla)}{tablas}, \paratodo{join}{j}, \paratodo{trigger}{tg}, \\
+    \paratodo{tabla}{t,t'}, \paratodo{conj(registro)}{rsTabla,rsSuma}]
 
 \tadAxioma{dbTabla(nuevaDB(tablas),nt)}{obtener(nt,tablas)}
 \tadAxioma{dbTabla(insertar(db,nt',r),nt)}
