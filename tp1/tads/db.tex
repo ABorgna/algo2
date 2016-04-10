@@ -74,9 +74,12 @@
     $nts \subseteq$ nombresTablas(db)
 }
 \tadOperacion{verJoinAux}{tabla/t, tabla/t', campo/c}{conj(registro)}{}
-\tadOperacion{joinRegistros}{tabla, conj(registro), tabla, campo, conj(registro))}{conj(registro)}{}
+\tadOperacion{joinRegistros}{tabla, conj(registro), tabla, campo, conj(registro)}{conj(registro)}{}
 
-\tadAxiomas[\paratodo{database}{db}]
+\tadAxiomas[\paratodo{database}{db}, \paratodo{nombreTabla}{nt,nt',ntInsert,ntTarget}, \paratodo{registro}{r},
+    \paratodo{campo}{c}, \paratodo{valor}{v}, \paratodo{nombreTrigger}{ntg}, \paratodo{nombreJoin}{nj,nj'},
+    \paratodo{conj(tabla)}{tablas}, \paratodo{join}{j}, \paratodo{trigger}{tg}, \paratodo{tabla}{t,t'},
+    \paratodo{conj(registro)}{rsTabla,rsSuma}]
 
 \tadAxioma{dbTabla(nuevaDB(tablas),nt)}{obtener(nt,tablas)}
 \tadAxioma{dbTabla(insertar(db,nt',r),nt)}
@@ -187,24 +190,23 @@
   joinRegistros(t, tRegistros(t), t', campo, $\varnothing$)
 }
 
-\tadAxioma{joinRegistros(t, tRegistros, t', campo, sumaRegistros)}{
-  \IF $\varnothing$?(tRegistros) THEN 
-    sumaRegistros
+\tadAxioma{joinRegistros(t, rsTabla, t', campo, rsSuma)}{
+  \IF $\varnothing$?(rsTabla) THEN 
+    rsSuma
   ELSE
     {\IF
         $\neg$rVacio?(dameRegistro(t', campo, \\
-        \hspace*{3em} rValor(dameUno(tRegistros), campo)))
+        \hspace*{3em} rValor(dameUno(rsTabla), campo)))
     THEN
-        joinRegistros(t, sinUno(tRegistros), t', \\
-        \hspace*{1em} Ag(unionRegistros(dameUno(tRegistros), \\
+        joinRegistros(t, sinUno(rsTabla), t', \\
+        \hspace*{1em} Ag(unionRegistros(dameUno(rsTabla), \\
         \hspace*{3em} dameRegistro(t', campo, \\
-        \hspace*{3em} rValor(dameUno(registros), campo))), \\
-        \hspace*{3em} sumaRegistros \\
+        \hspace*{3em} rValor(dameUno(rsTabla), campo))), \\
+        \hspace*{3em} rsSuma \\
         \hspace*{1em} ) \\
         )
     ELSE
-      joinRegistros(t, sinUno(tRegistros), \\
-      \hspace*{6em} t', sumaRegistros)
+      joinRegistros(t, sinUno(rsTabla), t', rsSuma)
     FI}
   FI}
 
