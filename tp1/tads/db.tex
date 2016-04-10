@@ -82,7 +82,8 @@
 \tadAxioma{dbTabla(insertar(db,nt',r),nt)}
     {\IF nt' = nt
         THEN insertarEnTabla(dbTabla(db,nt),r)
-        ELSE correrTriggers(db, claves(dbTriggers(db)), nt', nt, r)
+        ELSE correrTriggers(insertarEnTabla(dbTabla(db,nt),r), \\
+        \hspace*{6em} claves(dbTriggers(db)), nt', nt, r)
      FI
     }
 \tadAxioma{dbTabla(borrar(db,nt',c,v),nt)}
