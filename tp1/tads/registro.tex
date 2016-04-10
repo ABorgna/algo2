@@ -34,7 +34,7 @@
 \tadOperacion{sinUno}{registro/r}{registro}{$\neg$rVacio?(r)}
 \tadOperacion{rVacio?}{registro}{bool}{}
 \tadOperacion{mismosValores}{registro/r1, registro/r2, conj(campo)/cs}{bool}{
-    $cs \sbseteq$ rCampos(r1) $\land$ $cs \subseteq$ rCampos(r2)
+    $cs \subseteq$ rCampos(r1) $\land$ $cs \subseteq$ rCampos(r2)
 }
 
 \tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
