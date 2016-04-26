@@ -58,15 +58,7 @@
 \tadAxioma{tieneCampo?(t, c)}{c $\in$ tCampos(t)}
 
 \tadAxioma{tRegistroRepetido?(t, r)}{
-    \IF rVacio?(r) THEN
-        false
-    ELSE {
-        (tiemeCampo?(t, unCampo(r)) $\yluego$ tEsClave(t, unCampo(r)) \\
-        $\yluego$ ($\#$quitarRegistros(tRegistos(t), unCampo(r), unValor(r)) \\ 
-        \hspace*{2em} $\neq$ $\#$tRegistos(t)) \\
-        ) \\%
-        $\lor$ tRegistroRepetido?(t, sinUno(r)) %
-    } FI %
+    recortaR(r, tClaves(t)) $\in$ recortaCR(tRegistros(t), tClaves(t))
 }
 
 \tadAxioma{tClaves(nuevaTabla(campos, claves))}{claves}
