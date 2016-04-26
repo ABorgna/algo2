@@ -65,14 +65,12 @@
 \tadOtrasOperaciones
 
 \tadOperacion{masModificada}{database/db}{nombreTabla}{}
+\tadOperacion{masModificadaAux}{database/db, conj(nombreTabla)/nts}{nombreTabla}{$\neg\emptyset$?(nts) $\land nts \subseteq$ nombresTablas($db$)}
 
 \tadOperacion{correrTriggers}{database, conj(nombreTrigger), nombreTabla/ins, nombreTabla/tgt, registro}
     {tabla}{$\neg$(ins \igobs tgt)}
 
 \tadOperacion{nombresTablas}{database/db}{conj(nombreTabla)}{}
-\tadOperacion{existeTablaConModificaciones}{database/db, nat/n, conj(nombreTabla)/nts}{bool}{
-    $nts \subseteq$ nombresTablas(db)
-}
 \tadOperacion{verJoinAux}{tabla/t, tabla/t', campo/c}{conj(registro)}{}
 \tadOperacion{joinRegistros}{tabla, conj(registro), tabla, campo, conj(registro)}{conj(registro)}{}
 
@@ -145,18 +143,20 @@
 \tadAxioma{dbTriggers(crearTrigger(db,ntg,tg))}{definir(ntg,tg,dbTriggers(db))}
 \tadAxioma{dbTriggers(borrarTrigger(db,ntg))}{borrar(ntg,dbTriggers(db))}
 
-\tadAxioma{tModificaciones(dbTabla(nt)) $\leq$
-    tModificaciones(dbTabla(masModificada(db)))}{true}
-\tadAxioma{existeTablaConModificaciones(db,tModificaciones(dbTabla(masModificada(db))),nombresTablas(db))}{true}
-
-\tadAxioma{existeTablaConModificaciones(db,n,nts)}{
-    \IF $\emptyset$?(nts) THEN
-        false
+\tadAxioma{masModificada(db)}{masModificadaAux(db, nombresTablas(db))}
+\tadAxioma{masModificadaAux(db, nts)}
+    {\IF $\emptyset$?(sinUno(nts)) 
+    THEN
+        dameUno(nts)
     ELSE
-        tModificaciones(dbTabla(dameUno(nts))) = n $\lor$ \\
-        existeTablaConModificaciones(db,n,sinUno(nts))
-    FI
-}
+        {\IF tModificaciones(dbTabla(db, dameUno(nts))) \\
+            $\geq$ tModoficaciones(dbTabla(db, masModificadaAux(db, sinUno(nts)))) \\ 
+        THEN
+            dameUno(nts)
+        ELSE
+            masModificadaAux(db, sinUno(nts))
+        FI}
+    FI}
 
 \tadAxioma{correrTriggers(db, ntgs, ntInsert, ntTarget, r)}
     {\IF $\emptyset$?(ntgs)
