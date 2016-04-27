@@ -23,19 +23,26 @@
 
 \tadOtrasOperaciones
 \tadOperacion{quitarRegistros}{conj(registro)/rs, campo/c, valor/v}{conj(registro)}
-    {mismosCampos($rs$) $\land$ $c$ $\in$ todosCampos($rs$) $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))}
+    {mismosCampos($rs$) $\land$ $c$ $\in$ todosLosCampos($rs$) $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))}
 \tadOperacion{unionRegistros}{registro, registro}{registro}{}
 \tadOperacion{rVacio?}{registro}{bool}{}
 \tadOperacion{mismosValores}{registro/r1, registro/r2, conj(campo)/cs}{bool}{
     $cs \subseteq$ rCampos(r1) $\land$ $cs \subseteq$ rCampos(r2)
 }
 
-\tadOperacion{\cuidado rContieneNombre?}{registro/r, string/nombre}{bool}{}
+\tadOperacion{rContieneNombre?}{registro/r, string/nombre}{bool}{}
 
-\tadOperacion{\cuidado recortaR}{registro/r, conj(campo)/cs}{registro}{cs $\subseteq$ rCampos(r) }
-\tadOperacion{\cuidado recortaCR}{conj(registro)/rs, conj(campo)/cs}{conj(registro)}{mismosCampos(rs) $\land$ cs $\subseteq$ todosCampos(rs)}
-\tadOperacion{\cuidado mismosCampos}{conj(registro)/rs}{bool}{}
-\tadOperacion{\cuidado todosCampos}{conj(registro)/rs}{conj(campo)}{}
+%dado un registro y un conjunto de campos, crea un registro de esos campos con los valores del registro
+\tadOperacion{recortaR}{registro/r, conj(campo)/cs}{registro}{cs $\subseteq$ rCampos(r) }
+
+%lo mismo que la anterior pero sobre un conjunto de registros
+\tadOperacion{recortaCR}{conj(registro)/rs, conj(campo)/cs}{conj(registro)}{mismosCampos(rs) $\land$ cs $\subseteq$ todosLosCampos(rs)}
+
+%devuelve true si todos los registros en rs tienen los mismos campos
+\tadOperacion{mismosCampos}{conj(registro)/rs}{bool}{}
+
+%devuelve un conjunto con todos los campos que hay entre todos los registros de rs
+\tadOperacion{todosLosCampos}{conj(registro)/rs}{conj(campo)}{}
 
 \tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
 \tadAxioma{rValor(agregarValor(r, c, v), c')}{
@@ -80,5 +87,37 @@
         $\land$ mismosValores(r1,r2,sinUno(cs))
     FI
 }
+
+\tadAxioma{rContieneNombre?(nuevoRegistro, nom)}{false}
+\tadAxioma{rContieneNombre?(agregarValor(r, c, v), nom)}{ cNombre(c) \igobs nom $\lor$ rContieneNombre?(r, nom)}
+
+\tadAxioma{recortaR(r, cs)}{
+\IF $\emptyset$?(cs) THEN
+    nuevoRegistro
+ELSE
+    agregarValor(recortaR(r, sinUno(cs)), rValor(r, dameUno(cs)))
+FI}
+
+\tadAxioma{recortaCR(rs, cs)}{
+\IF $\emptyset$?(rs) THEN
+    $\emptyset$
+ELSE
+    Ag(recortarR(dameUno(rs), cs), recortaCR(sinUno(rs), cs))
+FI}
+
+\tadAxioma{mismosCampos(rs)}{
+\IF $\#$(rs) $<$ 2 THEN
+    true
+ELSE
+    rCampos(dameUno(rs)) \igobs rCampos(dameUno(sinUno(rs))) \\
+    $\land$ mismosCampos(sinUno(rs))
+FI}
+
+\tadAxioma{todosLosCampos(rs)}{
+\IF $\emptyset$(rs) THEN
+    $\emptyset$
+ELSE
+    rCampos(dameUno(rs)) $\cup$ todosLosCampos(sinUno(rs))
+FI}
 
 \end{tad}
