@@ -38,6 +38,9 @@
 
 \tadOperacion{tablasVirgenes}{conj(tabla)/ts}{bool}{}
 
+\tadOperacion{\cuidado tBuscar}{tabla/t, registro/criterio, conj(campo)/campos}{conj(registro)}
+{campos $\subseteq$ tCampos(t) $\land$ rCampos(criterio) $\subseteq$ tCampos(t)}
+
 \tadAxiomas[\paratodo{tabla}{t}]
 
 \tadAxioma{tCampos(nuevaTabla(campos, claves))}{campos}
@@ -84,6 +87,8 @@ FI}
 ELSE
     tModificaciones(dameUno(ts)) = 0 $\land$ tablasVirgenes(sinUno(ts))
 FI}
+
+\tadAxioma{tBuscar(t, criterio, campos)}{recortaCR(rFiltrarPorCriterio(rRegistros(t), criterio), campos)}
 
 %\tadAxioma{unaClave(t) $\in$ tCampos(t) $\yluego$ esClave(t, unaClave(t))}{true}
 

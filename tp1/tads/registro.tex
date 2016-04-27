@@ -44,6 +44,9 @@
 %devuelve un conjunto con todos los campos que hay entre todos los registros de rs
 \tadOperacion{todosLosCampos}{conj(registro)/rs}{conj(campo)}{}
 
+\tadOperacion{rFiltrarPorCriterio}{conj(registro)/rs, conj(campo)/criterio}{conj(registro)}
+{ mismosCampos(rs) $\land$ rCampos(criterio) $\subseteq$ todosLosCampos(rs) }
+
 \tadAxiomas[\paratodo{registro}{r}, \paratodo{valor}{v}, \paratodo{campo}{c}]
 \tadAxioma{rValor(agregarValor(r, c, v), c')}{
     \IF c = c' THEN
@@ -118,6 +121,17 @@ FI}
     $\emptyset$
 ELSE
     rCampos(dameUno(rs)) $\cup$ todosLosCampos(sinUno(rs))
+FI}
+
+\tadAxioma{rFiltrarPorCriterio(rs)}{
+\IF $\emptyset$(rs) THEN
+    $\emptyset$
+ELSE
+    {\IF mismosValores(dameUno(rs), criterio, rCampos(criterio)) THEN
+        Ag(dameUno(rs), rFiltrarPorCriterio(sinUno(rs)))
+    ELSE
+        rFiltrarPorCriterio(sinUno(rs))
+    FI}
 FI}
 
 \end{tad}
