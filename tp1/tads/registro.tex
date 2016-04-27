@@ -60,7 +60,7 @@
 }
 \tadAxioma{unionRegistros(r, nuevoRegistro)}{r}
 \tadAxioma{unionRegistros(r, agregarValor(r',c,v))}{
-    \IF ($\forall$ c' : campo, c' $\in$ rCampos(r)) cNombre(c) $\neq$ cNombre(c') THEN
+    \IF $\neg$ rContieneNombre(r, cNombre(c)) THEN
         agregarValor(unionRegistros(r,r'),c,v)
     ELSE
         unionRegistros(r,r')

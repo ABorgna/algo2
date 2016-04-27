@@ -31,9 +31,7 @@
 
 \tadGeneradores
 \tadOperacion{nuevaDB}{dicc(nombreTabla,tabla)/tablas}{database}{
-    $\neg\emptyset$?(claves(tablas)) $\land$
-    (\paratodo{tabla}{t}, t $\in$ tablas) tModificaciones(t) \igobs 0
-}
+    $\neg\emptyset$?(claves(tablas)) $\land$ tablasVirgenes(valores(tablas))}
 \tadOperacion{insertar}{database/db, nombreTabla/nt, registro/r}{database}
     {dbTieneTabla(db,nt) $\land_L$ tCampos(dbTabla(db, nt)) $\subseteq$ rCampos(r) \\
     $\land$ $\neg$ tRegistroRepetido?(dbTabla(db, nt), r) }
@@ -73,6 +71,8 @@
 \tadOperacion{nombresTablas}{database/db}{conj(nombreTabla)}{}
 \tadOperacion{verJoinAux}{tabla/t, tabla/t', campo/c}{conj(registro)}{}
 \tadOperacion{joinRegistros}{tabla, conj(registro), tabla, campo, conj(registro)}{conj(registro)}{}
+
+\tadOperacion{valores}{diccionario($\alpha$)}{conj($\alpha$)}{}
 
 \tadAxiomas[\paratodo{database}{db}, \paratodo{nombreTabla}{nt,nt',ntInsert,ntTarget}, \paratodo{registro}{r},
     \paratodo{campo}{c}, \paratodo{valor}{v}, \\
@@ -210,5 +210,12 @@
       joinRegistros(t, sinUno(rsTabla), t', rsSuma)
     FI}
   FI}
+
+\tadAxioma{valores(d)}{
+\IF vacio(d) THEN
+    $\emptyset$
+ELSE
+    Ag(obtener(dameUno(claves(d)), d), valores(borrar(dameUno(claves(d)), d)))
+FI}
 
 \end{tad}

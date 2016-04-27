@@ -36,6 +36,7 @@
 \tadOperacion{tClaves}{tabla/t}{conj(campo)}{}
 \tadOperacion{dameRegistro}{tabla/t, campo/c, valor/v}{registro}{c $\in$ tClaves(t)}
 
+\tadOperacion{tablasVirgenes}{conj(tabla)/ts}{bool}{}
 
 \tadAxiomas[\paratodo{tabla}{t}]
 
@@ -77,6 +78,12 @@ ELSE
     FI}
 FI}
 
+\tadAxioma{tablasVirgenes(ts)}{
+\IF $\emptyset$?(ts) THEN
+    true
+ELSE
+    tModificaciones(dameUno(ts)) = 0 $\land$ tablasVirgenes(sinUno(ts))
+FI}
 
 %\tadAxioma{unaClave(t) $\in$ tCampos(t) $\yluego$ esClave(t, unaClave(t))}{true}
 
