@@ -35,10 +35,12 @@
 \tadOperacion{tRegistroRepetido?}{tabla/t, registro/r}{bool}{tCampos(t) $\subseteq$ rCampos(r)}
 \tadOperacion{tClaves}{tabla/t}{conj(campo)}{}
 \tadOperacion{dameRegistro}{tabla/t, campo/c, valor/v}{registro}{c $\in$ tClaves(t)}
+\tadOperacion{dameRegistroAux}{tabla/t, campos/c, valor/v, conj(registro)/tRegs}{registro}
+{mismosCampos(rRegs) $\land$ c $\in$ todosLosCampos(rRegs)}
 
 \tadOperacion{tablasVirgenes}{conj(tabla)/ts}{bool}{}
 
-\tadOperacion{\cuidado tBuscar}{tabla/t, registro/criterio, conj(campo)/campos}{conj(registro)}
+\tadOperacion{Buscar}{tabla/t, registro/criterio, conj(campo)/campos}{conj(registro)}
 {campos $\subseteq$ tCampos(t) $\land$ rCampos(criterio) $\subseteq$ tCampos(t)}
 
 \tadAxiomas[\paratodo{tabla}{t}]
