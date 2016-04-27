@@ -19,20 +19,18 @@
 \tadGeneradores
 \tadOperacion{nuevoRegistro}{}{registro}{}
 \tadOperacion{agregarValor}{registro/r, campo/c, valor/v}{registro}
-    {(($\forall c'$ : campo, $c'$ $\in$ rCampos($r$)) cNombre($c$) $\neq$ cNombre($c'$))
-        \\
-    $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))}
+    {$\neg$ rContieneNombre?(r, cNombre(c)) $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))}
 
 \tadOtrasOperaciones
 \tadOperacion{quitarRegistros}{conj(registro)/rs, campo/c, valor/v}{conj(registro)}
-    {($\forall r$ : registro, $r \in rs$) % 
-        $c$ $\in$ rCampos($r$) $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))%
-    }
+    {mismosCampos($rs$) $\land$ $c$ $\in$ todosCampos($rs$) $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))}
 \tadOperacion{unionRegistros}{registro, registro}{registro}{}
 \tadOperacion{rVacio?}{registro}{bool}{}
 \tadOperacion{mismosValores}{registro/r1, registro/r2, conj(campo)/cs}{bool}{
     $cs \subseteq$ rCampos(r1) $\land$ $cs \subseteq$ rCampos(r2)
 }
+
+\tadOperacion{\cuidado rContieneNombre?}{registro/r, string/nombre}{bool}{}
 
 \tadOperacion{\cuidado recortaR}{registro/r, conj(campo)/cs}{registro}{cs $\subseteq$ rCampos(r) }
 \tadOperacion{\cuidado recortaCR}{conj(registro)/rs, conj(campo)/cs}{conj(registro)}{mismosCampos(rs) $\land$ cs $\subseteq$ todosCampos(rs)}
