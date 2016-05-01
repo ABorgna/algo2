@@ -150,7 +150,7 @@
         dameUno(nts)
     ELSE
         {\IF tModificaciones(dbTabla(db, dameUno(nts))) \\
-            $\geq$ tModoficaciones(dbTabla(db, masModificadaAux(db, sinUno(nts)))) \\ 
+            $\geq$ tModoficaciones(dbTabla(db, masModificadaAux(db, sinUno(nts)))) \\
         THEN
             dameUno(nts)
         ELSE
@@ -165,7 +165,13 @@
                 \hspace*{1em} $\Pi_1$(obtener(dameUno(ntgs),dbTriggers(db))) \\
                 \hspace*{3em} $\igobs$ ntInsert $\land$ \\
                 \hspace*{1em} $\Pi_2$(obtener(dameUno(ntgs),dbTriggers(db))) \\
-                \hspace*{3em} $\igobs$ ntTarget \\
+                \hspace*{3em} $\igobs$ ntTarget $\land$ \\
+                \hspace*{1em} $\neg$ tRegistroRepetido?( \\
+                \hspace*{2em} correrTriggers(db,sinUno(ntgs),ntInsert, \\
+                \hspace*{9em} ntTarget, r), \\
+                \hspace*{2em} unionRegistros(r,$\Pi_3$(obtener(dameUno(ntgs), \\
+                \hspace*{9em} dbTriggers(db)))) \\
+                ) \\
             THEN
                 insertarEnTabla( \\
                 \hspace*{2em} correrTriggers(db,sinUno(ntgs),ntInsert, \\
