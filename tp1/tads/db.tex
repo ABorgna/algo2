@@ -70,7 +70,7 @@
 
 \tadOperacion{nombresTablas}{database/db}{conj(nombreTabla)}{}
 \tadOperacion{verJoinAux}{tabla/t, tabla/t', campo/c}{conj(registro)}{}
-\tadOperacion{joinRegistros}{tabla, conj(registro), tabla, campo, conj(registro)}{conj(registro)}{}
+\tadOperacion{joinRegistros}{conj(registro), tabla, campo}{conj(registro)}{}
 
 \tadOperacion{valores}{diccionario($\alpha$)}{conj($\alpha$)}{}
 
@@ -188,26 +188,24 @@
 
 
 \tadAxioma{verJoinAux(t, t', campo)}{
-  joinRegistros(t, tRegistros(t), t', campo, $\varnothing$)
+  joinRegistros(tRegistros(t), t', campo)
 }
 
-\tadAxioma{joinRegistros(t, rsTabla, t', campo, rsSuma)}{
-  \IF $\varnothing$?(rsTabla) THEN 
-    rsSuma
+\tadAxioma{joinRegistros(rsTabla, t, campo)}{
+  \IF $\varnothing$?(rsTabla) THEN
+    $\varnothing$
   ELSE
     {\IF
-        tieneRegistro(t', campo, \\
+        tieneRegistro(t, campo, \\
         \hspace*{3em} rValor(dameUno(rsTabla), campo))
-    THEN
-        joinRegistros(t, sinUno(rsTabla), t', \\
-        \hspace*{1em} Ag(unionRegistros(dameUno(rsTabla), \\
-        \hspace*{3em} dameRegistro(t', campo, \\
+    THEN 
+        Ag(unionRegistros(dameUno(rsTabla), \\
+        \hspace*{3em} dameRegistro(t, campo, \\
         \hspace*{3em} rValor(dameUno(rsTabla), campo))), \\
-        \hspace*{3em} rsSuma \\
-        \hspace*{1em} ) \\
+        \hspace*{1em} joinRegistros(sinUno(rsTabla), t, campo) \\
         )
     ELSE
-      joinRegistros(t, sinUno(rsTabla), t', rsSuma)
+      joinRegistros(sinUno(rsTabla), t, campo)
     FI}
   FI}
 
