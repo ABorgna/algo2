@@ -34,9 +34,12 @@
 %\tadOperacion{unaClave}{tabla/t}{campo}{}
 \tadOperacion{tRegistroRepetido?}{tabla/t, registro/r}{bool}{tCampos(t) $\subseteq$ rCampos(r)}
 \tadOperacion{tClaves}{tabla/t}{conj(campo)}{}
-\tadOperacion{dameRegistro}{tabla/t, campo/c, valor/v}{registro}{c $\in$ tClaves(t)}
+\tadOperacion{tieneRegistro}{tabla/t, campo/c, valor/v}{bool}{c $\in$ tClaves(t)}
+\tadOperacion{tieneRegistroAux}{tabla/t, campo/c, valor/v, conj(registro)/tRegs}{bool}
+    {mismosCampos(rRegs) $\land$ c $\in$ todosLosCampos(rRegs)}
+\tadOperacion{dameRegistro}{tabla/t, campo/c, valor/v}{registro}{c $\in$ tClaves(t) $\land_L$ tieneRegistro(t,c,v)}
 \tadOperacion{dameRegistroAux}{tabla/t, campos/c, valor/v, conj(registro)/tRegs}{registro}
-{mismosCampos(rRegs) $\land$ c $\in$ todosLosCampos(rRegs)}
+    {mismosCampos(rRegs) $\land$ c $\in$ todosLosCampos(rRegs)}
 
 \tadOperacion{tablasVirgenes}{conj(tabla)/ts}{bool}{}
 
@@ -80,16 +83,20 @@
 \tadAxioma{tClaves(insertarEnTabla(t, r))}{tClaves(t)}
 \tadAxioma{tClaves(borrarDeTabla(t, c, v))}{tClaves(t)}
 
-\tadAxioma{dameRegistro(t, c, v)}{dameRegistrosAux(t, c, v, tRegistros(t))}
-\tadAxioma{dameRegistroAux(t, c, v, tRegs)}{
-\IF $\varnothing$?(tRegs) THEN 
-    nuevoRegistro 
+\tadAxioma{tieneRegistro(t, c, v)}{tieneRegistrosAux(t, c, v, tRegistros(t))}
+\tadAxioma{tieneRegistroAux(t, c, v, tRegs)}{
+\IF $\varnothing$?(tRegs) THEN
+    false
 ELSE
-    {\IF rValor(dameUno(tRegs), c) == v THEN
-        dameUno(tRegs) 
-    ELSE 
-        dameRegistroAux(t, c , v, sinUno(tRegs)) 
-    FI}
+    rValor(dameUno(tRegs), c) == v $\lor$ dameRegistroAux(t, c , v, sinUno(tRegs))
+FI}
+
+\tadAxioma{dameRegistro(t, c, v)}{dameRegistrosAux(t, c, v, tRegistros(t))}
+\tadAxioma{dameRegistroAux(t, c, v, tRegs)}
+{\IF rValor(dameUno(tRegs), c) == v THEN
+    dameUno(tRegs)
+ELSE
+    dameRegistroAux(t, c , v, sinUno(tRegs))
 FI}
 
 \tadAxioma{tablasVirgenes(ts)}{

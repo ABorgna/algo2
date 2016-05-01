@@ -119,7 +119,7 @@
   verJoinAux( \\
   \hspace*{1em} dbTabla(insertar(db, nt, r), $\Pi_1$(obtener(dbJoins(db), nj))), \\
   \hspace*{1em} dbTabla(insertar(db, nt, r), $\Pi_2$(obtener(dbJoins(db), nj))), \\
-  \hspace*{1em} dameUno(tClaves(t) $\cap$ tClaves(t')) \\
+  \hspace*{1em} $\Pi_3$(obtener(dbJoins(db), nj)) \\
   )
 }
 
@@ -127,7 +127,7 @@
   verJoinAux( \\
   \hspace*{1em} dbTabla(borrar(db, nt, c, v), $\Pi_1$(obtener(dbJoins(db), nj))), \\
   \hspace*{1em} dbTabla(borrar(db, nt, c, v), $\Pi_2$(obtener(dbJoins(db), nj))), \\
-  \hspace*{1em} dameUno(tClaves(t) $\cap$ tClaves(t')) \\
+  \hspace*{1em} $\Pi_3$(obtener(dbJoins(db), nj)) \\
   )
 }
 \tadAxioma{dbVerJoin(crearJoin(db,nj',j), nj)}{dbVerJoin(db, nj)}
@@ -196,8 +196,8 @@
     rsSuma
   ELSE
     {\IF
-        $\neg$rVacio?(dameRegistro(t', campo, \\
-        \hspace*{3em} rValor(dameUno(rsTabla), campo)))
+        tieneRegistro(t', campo, \\
+        \hspace*{3em} rValor(dameUno(rsTabla), campo))
     THEN
         joinRegistros(t, sinUno(rsTabla), t', \\
         \hspace*{1em} Ag(unionRegistros(dameUno(rsTabla), \\
