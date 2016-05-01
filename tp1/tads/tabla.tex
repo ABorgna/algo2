@@ -43,6 +43,15 @@
 \tadOperacion{Buscar}{tabla/t, registro/criterio, conj(campo)/campos}{conj(registro)}
 {campos $\subseteq$ tCampos(t) $\land$ rCampos(criterio) $\subseteq$ tCampos(t)}
 
+\tadOperacion{quitarRegistros}{conj(registro)/rs, campo/c, valor/v}{conj(registro)}
+    {mismosCampos($rs$) $\land$ $c$ $\in$ todosLosCampos($rs$) $\land$ (cEsString?($c$) $\iff$ vEsString?($v$))}
+
+%dado un registro y un conjunto de campos, crea un registro de esos campos con los valores del registro
+\tadOperacion{recortaR}{registro/r, conj(campo)/cs}{registro}{cs $\subseteq$ rCampos(r) }
+
+%lo mismo que la anterior pero sobre un conjunto de registros
+\tadOperacion{recortaCR}{conj(registro)/rs, conj(campo)/cs}{conj(registro)}{mismosCampos(rs) $\land$ cs $\subseteq$ todosLosCampos(rs)}
+
 \tadAxiomas[\paratodo{tabla}{t}]
 
 \tadAxioma{tCampos(nuevaTabla(campos, claves))}{campos}
@@ -94,6 +103,31 @@ FI}
 
 %\tadAxioma{unaClave(t) $\in$ tCampos(t) $\yluego$ esClave(t, unaClave(t))}{true}
 
+\tadAxioma{quitarRegistros(rs, c, v)}{
+    \IF $\emptyset$?(rs) THEN
+        $\emptyset$
+    ELSE
+        {\IF c $\in$ rCampos(dameUno(rs)) $\land_L$ v = rValor(dameUno(rs),c) THEN
+            Ag(dameUno(rs),quitarRegistros(sinUno(rs), c, v))
+        ELSE
+            quitarRegistros(sinUno(rs), c, v) 
+        FI}
+    FI
+}
+
+\tadAxioma{recortaR(r, cs)}{
+\IF $\emptyset$?(cs) THEN
+    nuevoRegistro
+ELSE
+    agregarValor(recortaR(r, sinUno(cs)), rValor(r, dameUno(cs)), rValor(r, dameUno(cs)))
+FI}
+
+\tadAxioma{recortaCR(rs, cs)}{
+\IF $\emptyset$?(rs) THEN
+    $\emptyset$
+ELSE
+    Ag(recortaR(dameUno(rs), cs), recortaCR(sinUno(rs), cs))
+FI}
 
 \end{tad}
 
