@@ -6,7 +6,7 @@
     tRegistros(t) $\igobs$ tRegistros(t') $\land$ \\
     tModificaciones(t) $\igobs$ tModificaciones(t') $\land$ \\
     tCampos(t) $\igobs$ tCampos(t') $\land_L$ \\
-    (\paratodo{campo}{c}, c $\in$ tCampos(t)) \\
+    (\paratodo{campo}{c}) c $\in$ tCampos(t) $\Rightarrow _L$ \\
     \hspace*{2em} tEsClave(t, c) $\igobs$ tEsClave(t', c)
  }
 

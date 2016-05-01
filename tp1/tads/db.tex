@@ -7,9 +7,9 @@
     \hspace*{0.5em} (dbTieneTabla(db,nt) \igobs dbTieneTabla(db',nt)) \\
     $\land$ dbJoins(db) \igobs dbJoins(db') \\
     $\land$ dbTriggers(db) \igobs dbTriggers(db') \\
-    $\land_L$ (\paratodo{nombreTabla}{nt}, dbTieneTabla(db,nt)) \\
+    $\land_L$ (\paratodo{nombreTabla}{nt}) $\Rightarrow_L$ dbTieneTabla(db,nt) \\
     \hspace*{1em} (dbTabla(db,nt) \igobs dbTabla(db',nt)) \\
-    $\land$ (\paratodo{nombreJoin}{nj}, nj $\in$ claves(dbJoins(db,nj))) \\
+    $\land$ (\paratodo{nombreJoin}{nj}) $\Rightarrow_L$ nj $\in$ claves(dbJoins(db,nj)) \\
     \hspace*{1em} (dbVerJoin(db,nj) \igobs dbVerJoin(db',nj))
 }
 

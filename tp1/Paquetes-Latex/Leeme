@@ -1,0 +1,22 @@
+LINUX
+
+Para instalar los paquetes, copiar la carpeta de este directorio al home y luego ejecutar (desde el path del home)
+
+sudo texhash texmf/
+
+WINDOWS (MiKTeX 2.9)
+
+- Copiar las carpetas texmf/tex/latex/aed2-* de este directorio al directorio tex\latex\ de la carpeta de instalación del MiKTeX: C:\Program Files\MikTex 2.9\tex\latex\
+- Abrir las utilidad "Settings (Admin)" que se instala con MikTex
+- En la pestaña "General", pulsar "Refresh FNDB" y a continuación "Update Formats"
+- SI IGUAL NO COMPILA: Chequear tener instalado el paquete "xargs" de MikTex. En la instalación default, Miktex detecta al compilar un .tex si un paquete falta y pregunta si lo queremos instalar. Si no, lo instalamos a mano desde el Package Manager de Miktex.
+
+MAC OS X
+
+1. Situado en `Paquetes-Latex`, Copiar texmf a `~/Library/texmf` [1]
+  $ cp -a texmf/ ~/Library/texmf/
+
+2. Ejectar "texhash"
+  $ sudo texhash
+
+[1] Según `/usr/local/texlive/2013basic/texmf.cnf` , TEXMFHOME = ~/Library/texmf
