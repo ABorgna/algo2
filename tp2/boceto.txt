@@ -1,0 +1,34 @@
+
+Modulo: BaseDeDatos
+    
+    Interfaz:
+        Se explica con: BaseDeDatos
+        Generos: base
+        Usa: Nat, String, Tabla, Registro, Campo, Dato
+    
+    Operaciones:
+        NuevaDB() -> res : base
+            { true }
+            { res =obs nuevaDB() }
+            Comp: O( no especificado )
+            Desc: Genera una nueva base de datos vacia
+
+        AgregarTabla(i ta:tabla, io db:base)
+            { db =obs db0 && vacio(registros(ta)) }
+            { db =obs agregarTabla(ta, db0) 
+              && alias( ta =obs dameTabla(nombre(ta), db) ) }
+            Comp: O( no especificado )
+            Desc: Modifica la db agregando una tabla vacia
+                Le agrega alias a la tabla porque la agrega
+                por referencia.
+                \! AgregarTabla pisa la tabla que haya tenido antes con el mismo nombre?
+
+        InsertarEntrada(i reg:registro, i t:tabla, io db:base)
+            { db =obs db0 && t pertenece tablas(db) 
+              &&l puedoInsertar?(reg, dameTabla(t, db)) }
+            { db =obs insertarEntrada(reg, t, db0)
+              && alias( sobre el registro insertado ) }
+            Comp: O( T*L+log(n) ) en promedio, O( T*L ) si hay indice sobre campo Nat
+            Desc: Modifica la db insertando un nuevo registro en una tabla
+                \! Acadso genera aliasing sbre ese registro?
+
