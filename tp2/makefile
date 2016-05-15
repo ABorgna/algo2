@@ -2,7 +2,8 @@ targets = tp2.pdf
 
 includes = modulos/db.tex modulos/tabla.tex modulos/vistaJoin.tex
 
-libs = aed2-itef.sty aed2-symb.sty aed2-tad.sty aed2-tokenizer.sty caratula.sty aed2-interfaz.sty
+libs = aed2-itef.sty aed2-symb.sty aed2-tad.sty aed2-tokenizer.sty \
+       caratula.sty aed2-interfaz.sty aed2-newalgo.sty
 
 all: $(targets)
 

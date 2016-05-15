@@ -4,7 +4,25 @@
 
 \subsubsection{Servicios exportados}
 
+\textbf{Se explica con:} Tabla
+
+\textbf{Géneros:} tabla
+
 \subsubsection{Interfaz}
+
+\operacion{NuevaTabla}{}{tabla}
+{true}
+{res \igobs nuevaTabla()}
+{1}
+{}
+{}
+
+\operacion{AgregarRegistro}{\param{in/out}{t}{tabla}, \param{in}{r}{registro}}{}
+{$t \igobs t_0$}
+{$t$ \igobs agregarRegistro($t_0,r$)}
+{in}
+{}
+{in es O(log(n)) en promedio si hay un indice sobre un campo de tipo NAT, O(1) sino}
 
 \subsection{Pautas de implementación}
 
