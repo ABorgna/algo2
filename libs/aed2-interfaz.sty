@@ -1,0 +1,153 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%            Interfaz para Algo2 v0.2 - Federico Méndez - 2010/06/01
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Cambios en la version 0.2
+%
+%   *El entorno interfaz no usa mas minipage.
+%   *El comando \operacion usa minipage para que no se rompa la declaracion de una funcion por culpa de un cambio de pagina
+% *Agregado el comando \tupla{#1}, que genera el texto tupla<#1> (para una sola linea)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%Uso:
+%      \begin{interfaz}{Nombre}
+%         \begin{iparamformales}
+%            \func{\argumento op \argumento}{genero1, genero2,...}{genero resultado}{restriccion o comentario}
+%                        donde op:   \igobs 
+%                                       \igsub{abc} 
+%                                       \opsub{<}{xyz} 
+%         \end{paramformales}
+%
+%         \iusa{}
+%         \igenero{}  (sin s: generoS est� definido en la parte de tad, y se usa en parametros formales)
+%         \iseexplica{}
+%         \ioperaciones
+%
+%         \operacion{Nombre}{parametros (usando \param{in/inout/out}{nombre}{tipo})}{tipo res}{precondicion}{postcondicion}{complejidad}{aliasing}
+%               \abs{n} pone el sombrerito sobre la palabra. 
+%               precondicion y postcondicion tienen modo matematico directo
+%               \res escribe resultado en italica
+%               \y equivale a \land (y de logica)
+%      \end{interfaz}
+
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{interfaz}[2010/10/31 v0.1 Para especificar interfaces en formato AED2]
+
+% Imprimir un mensajito al procesar un .tex que use este package
+\typeout{Cargando package 'interfaz' v0.1 (31/10/2010)}
+
+\newcommand{\generos}[1]{\tadGeneros{#1}}
+
+%Esto es para la Representacion y demases
+%para escribir tupla mas facil (cuando es en una linea): \tupla{lo que va entre < >}
+\newcommand\tupla[1]{tupla\ensuremath{<}#1\ensuremath{>}}
+
+\def\flechita{$\rightarrow$ res: }
+
+\newcommand\iusa[1]{\textbf{usa:} \textbf{#1}\par}
+\newcommand\igenero[1]{\textbf{g�neros:} \textbf{#1}\par}
+\newcommand\iseexplica[1]{\textbf{se explica con:} \textbf{#1}\par}
+\def\ioperaciones{\textbf{operaciones:}\par}
+
+\def\y{\ensuremath{\land} }
+\def\o{\ensuremath{\lor} }
+\def\imp{\ensuremath{\Rightarrow} }
+\def\sii{\ensuremath{\Leftrightarrow} }
+\def\paratodo{$\forall$}
+\def\pertenece{\ensuremath{\in} }
+\def\conjvacio{\ensuremath{\emptyset} }
+
+
+\newcommand\donde[2]{\textbf{donde} #1 \textbf{es} #2}
+\newcommand\abs[1]{\ensuremath{\widehat{#1}}}
+\newcommand\res{\textit{res}}
+\newcommand\igres{\textit{res}\igobs}
+\newcommand\resultado[1]{$\rightarrow$ \res : \textbf{#1}}
+\newcommand\pre[1]{\textbf{Pre} $\equiv$ \{\ensuremath{#1}\}}
+\newcommand\post[1]{\textbf{Post} $\equiv$ \{\ensuremath{#1}\}}
+\newcommand\complejidad[1]{\textbf{Complejidad:} O(#1)}
+\newcommand\aliasing[1]{\textbf{Aliasing:} #1}
+\newcommand\desc[1]{\textbf{Descripci\'on:} #1}
+
+%cambiar lo que rodea a #1 para otro formato del nombre de la funcion
+\newcommand\operacion[7]{
+\begin{minipage}{1\textwidth}
+{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi}\ifblank{#4}\then{}\else{\par\hspace*{1em}\pre{#4}}\fi \ifblank{#5}\then{}\else{\par\hspace*{1em}\post{#5}}\fi\ifblank{#6}\then{}\else{\par\hspace*{1em}\complejidad{#6}}\fi\ifblank{#7}\then{}\else{\par\hspace*{1em}\aliasing{#7}}\fi
+%{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi}\par\hspace*{1em}\pre{#4}\par\hspace*{1em}\post{#5}
+%{\textsc{#1}(#2)\resultado{#3}}\par\hspace*{1em}\pre{#4}\par\hspace*{1em}\post{#5}
+\end{minipage}\vskip 1 em}
+
+\newcommand\operaciond[7]{
+\begin{minipage}{1\textwidth}
+{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi}\ifblank{#4}\then{}\else{\par\hspace*{1em}\pre{#4}}\fi \ifblank{#5}\then{}\else{\par\hspace*{1em}\post{#5}}\fi\ifblank{#6}\then{}\else{\par\hspace*{1em}\complejidad{#6}}\fi\ifblank{#7}\then{}\else{\par\hspace*{1em}\desc{#7}}\fi
+\end{minipage}\vskip 1 em}
+
+
+\newenvironment{interfaz}[1]
+%{{\noindent\textbf{\large interfaz #1}}\par\vspace{1em}\parindent 1 em \parskip 2pt} 
+{\noindent\par\vspace{1em}\parindent 1 em \parskip 2pt}
+{\par{\noindent\textbf{\large fin interfaz}}\par\vspace*{1em}} 
+
+
+%\newcommand\funcion[4]{\hspace{1em}\func{#1}{#2}{#3}{#4}}
+
+\newenvironment{iparamformales}[1]
+{{\noindent\textbf{\large par\'ametros formales}}\par\vspace{1em}\textbf{\large g\'eneros #1}}
+{\vspace*{1em}\par{\noindent\textbf{\large Operaciones}}\par\vspace*{1em}}
+
+\newcommand\funcion[7]{
+\begin{minipage}{1\textwidth}
+{\textbf{\large funci\'on}\par\hspace*{5em}\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi}\ifblank{#4}\then{}\else{\par\hspace*{5em}\pre{#4}}\fi \ifblank{#5}\then{}\else{\par\hspace*{5em}\post{#5}}\fi\ifblank{#6}\then{}\else{\par\hspace*{5em}\complejidad{#6}}\fi\ifblank{#7}\then{}\else{\par\hspace*{5em}\aliasing{#7}}\fi
+%{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi}\par\hspace*{1em}\pre{#4}\par\hspace*{1em}\post{#5}
+%{\textsc{#1}(#2)\resultado{#3}}\par\hspace*{1em}\pre{#4}\par\hspace*{1em}\post{#5}
+\end{minipage}\vskip 1 em}
+
+%Para el Rep
+%\begin{Rep}{estr}
+%   \repfunc{InterfacesEnHistorialCorrectas}{e}{\yluego}
+%   \repfunc{reglasCorrectas}{e}{}
+%\end{Rep}
+
+%\newenvironment{Rep}[2]
+%{\begin {minipage}{1\textwidth}\begin{changemargin}{0em}{4em}Rep : #1 $\rightarrow$ boolean\par \end{changemargin}(\paratodo\param{}{#2}{#1}) Rep(#2) $\equiv$ true $\Longleftrightarrow$\begin{changemargin}{2em}{0em}\begin{enumerate}}
+%{\end{enumerate}\end{changemargin}\end{minipage}}
+%\newcommand\repfunc[2]{\item\noindent \ensuremath{#1} #2 \par} %\hspace{2em}
+
+\newenvironment{Rep}[2]
+{\begin{changemargin}{0em}{4em}Rep : #1 $\rightarrow$ boolean\par \end{changemargin}(\paratodo\param{}{#2}{#1}) Rep(#2) $\equiv$ true $\Longleftrightarrow$\begin{changemargin}{2em}{0em}\begin{enumerate}}
+{\end{enumerate}\end{changemargin}}
+\newcommand\repfunc[2]{\item\noindent \ensuremath{#1} #2 \par}
+
+%\begin{ABS}{e}{estr}{C}{conj}
+\newenvironment{ABS}[4]
+{\begin{minipage}{1\textwidth}\begin{changemargin}{0em}{4em}Abs : \param{}{#1}{#2} $\rightarrow$ #4 \hfill Rep(#1) \end{changemargin} (\paratodo\param{}{#1}{#2}) Abs(#1) \igobs #3: #4 | \begin{changemargin}{2em}{4em}\begin {enumerate}}
+{\end{enumerate}\end{changemargin}\end{minipage}}
+\newcommand\absfunc[2]{\item\noindent \ensuremath{#1} #2 \par} %\hspace{2em}
+
+\newenvironment{ABSFW}[4]
+{\begin{minipage}{1\textwidth}\begin{changemargin}{0em}{4em}AbsIterFW : #2 $\rightarrow$ bool \hfill Rep(#1) \end{changemargin} \paratodo{#1}{#2} Abs(#1) \igobs #3: #4 / \begin{changemargin}{2em}{4em}}
+{\end{changemargin}\end{minipage}}
+
+\newenvironment{ABSBW}[4]
+{\begin{minipage}{1\textwidth}\begin{changemargin}{0em}{4em}AbsIterBW : #2 $\rightarrow$ bool \hfill Rep(#1) \end{changemargin} \paratodo{#1}{#2} Abs(#1) \igobs #3: #4 / \begin{changemargin}{2em}{4em}}
+{\end{changemargin}\end{minipage}}
+
+
+\newcommand\faux[6]{\func{#1}{#2}{#3}{#4} \axioma{#5}{#6}\vskip 4pt}
+\def\existe{$\exists$}
+
+%Sacado de http://help-csli.stanford.edu/tex/latex-margins.shtml
+%Para cambiar los margenes adentro del texto
+%USO
+%   \begin{changemargin}{1in}{.5in}
+%   \end{changemargin}
+%USO ESPECIAL: para que el texto alinee con la primer letra de un titulo subsection
+%   \begin{changemargin}{3.45em}{0cm}
+%
+\def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
+\let\endchangemargin=\endlist
+
+\newcommand\algoritmo[3]{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi\newline}
+
+\newcommand\com{}
+

@@ -1,8 +1,8 @@
 targets = tp2.pdf
 
-includes = 
+includes = modulos/db.tex
 
-libs = aed2-itef.sty aed2-symb.sty aed2-tad.sty aed2-tokenizer.sty caratula.sty
+libs = aed2-itef.sty aed2-symb.sty aed2-tad.sty aed2-tokenizer.sty caratula.sty aed2-interfaz.sty
 
 all: $(targets)
 
