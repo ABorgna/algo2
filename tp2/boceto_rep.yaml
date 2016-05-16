@@ -1,0 +1,46 @@
+- base: 
+    - tablas: trie(nombreTabla, tabla)
+    - vistasJoin: trie(nombreTabla, trie(nombreTabla, vistaJoin))
+    - tablaMaxima: puntero(tabla)
+
+- tabla:
+    - registros: lista(registro)
+    - indiceNat: campo
+    - indicesNat: avl(nat, itLista(registro))
+    - indiceString: campo
+    - indicesString: avl(string, itLista(registro))
+    - nombre: nombreTabla
+    - campos: registro
+    - claves: conj(campo) / avl(campo, _)
+    - accesos: nat
+# insertarEntrada devuelve un puntero al registro que inserto
+# borrar devuelve el registro que borro (con esto se puede actualizar los joins)
+
+- vistaJoin:
+    - campoJoin: campo
+    - campoEsNat: bool
+    - vistaString: avl(string, registro)
+    - vistaStringCompleta: avl(string, registroJoin)
+    - vistaNat: avl(nat, registro)
+    - vistaNatCompleta: avl(nat, registroJoin)
+    - buffer: lista(operacionJoin)
+
+- operacionJoin:
+    - esInsercion: bool
+    - insertado: puntero(registro)
+    - borrado: registro
+
+- registroJoin:
+    - a: puntero(registro)
+    - b: puntero(registro)
+
+- registro: es avl(campo, dato)
+
+- nombreTabla: es string
+
+- campo: es string
+
+- dato:
+    - esNat: bool
+    - valorNat: nat
+    - valorString: string
