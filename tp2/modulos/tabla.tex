@@ -2,27 +2,86 @@
 
 \subsection{Aspectos de la interfaz}
 
-\subsubsection{Servicios exportados}
-
 \textbf{Se explica con:} Tabla
 
 \textbf{Géneros:} tabla
 
-\subsubsection{Interfaz}
+\operacion{NuevaTabla}
+{   \param{in}{nombre}{string},
+    \param{in}{claves}{conj(campos)},
+    \param{in}{columnas}{registro}} % parametros
+{tabla} % tipo res
+{$\neg\emptyset?(claves) \land claves \subseteq campos(columnas)$} % pre
+{res \igobs nuevaTabla()} % post
+{1} % complejidad
+{} % aliasing
+{} % descripcion
 
-\operacion{NuevaTabla}{}{tabla}
+\operacion{AgregarRegistro}
+{   \param{in/out}{t}{tabla},
+    \param{in}{r}{registro}}
+{}
+{$t \igobs t_0 \land campos(r) \igobs campos(t) \land puedoInsertar?(r,t)$}
+{$t$ \igobs agregarRegistro(r,$t_0$)}
+{in}
+{}
+{in es O(log(n)) en promedio si hay un indice sobre un campo de tipo NAT, O(1) sino}
+
+\operacion{BorrarRegistro}
+{   \param{in/out}{t}{tabla},
+    \param{in}{crit}{registro}}
+{}
+{$t \igobs t_0 \land \#campos(crit) = 1 \land_L dameUno(campos(crit)) \in claves(t)$}
+{$t$ \igobs borrarRegistro($crit,t_0$)}
+{in}
+{}
+{in es O(log(n)) en promedio si hay un indice sobre un campo de tipo NAT, O(n) sino}
+
+\operacion{Indexar}
+{   \param{in/out}{t}{tabla},
+    \param{in}{c}{campo}}
+{}
+{$t \igobs t_0 \land puedeIndexar(c,t)$}
+{$t$ \igobs indexar($c,t_0$)}
+{in}
+{}
+{in es O(log(n)) en promedio si hay un indice sobre un campo de tipo NAT, O(n) sino}
+
+\operacion{Nombre}
+{   \param{in}{t}{tabla}}
+{string}
 {true}
-{res \igobs nuevaTabla()}
+{$res \igobs nombre(t)$}
 {1}
 {}
 {}
 
-\operacion{AgregarRegistro}{\param{in/out}{t}{tabla}, \param{in}{r}{registro}}{}
-{$t \igobs t_0$}
-{$t$ \igobs agregarRegistro($t_0,r$)}
-{in}
+\operacion{Claves}
+{   \param{in}{t}{tabla}}
+{conj(campo)}
+{true}
+{$res \igobs claves(t$}
+{1}
 {}
-{in es O(log(n)) en promedio si hay un indice sobre un campo de tipo NAT, O(1) sino}
+{}
+
+\operacion{Indices}
+{   \param{in}{t}{tabla}}
+{conj(campo)}
+{true}
+{$res \igobs indices(t$}
+{1}
+{}
+{}
+
+\operacion{Campos}
+{   \param{in}{t}{tabla}}
+{conj(campo)}
+{true}
+{$res \igobs campos(t$}
+{1}
+{}
+{}
 
 \subsection{Pautas de implementación}
 
