@@ -44,3 +44,9 @@
     - esNat: bool
     - valorNat: nat
     - valorString: string
+
+- trie(A, B): es un trie
+
+- avl(A, B): es un avl
+    - maximo: B
+    - minimo: B
