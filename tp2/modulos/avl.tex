@@ -1,10 +1,19 @@
 \section{AVL($\kappa, \alpha$)}
 
-El módulo AVL provee un diccionario con acceso, inserción y borrado en O(log($n$)), donde $n$ es la cantidad de elementos actuales.
+El módulo AVL provee un diccionario con acceso, inserción y borrado en \bigo(log($n$)), donde $n$ es la cantidad de elementos actuales.
 
 \subsection{Interfaz}
 
 \begin{iparamformales}{$\kappa, \alpha$}
+
+    \funcion{$\bullet = \bullet$} % Nombre
+        {\param{in}{$k_0$}{$\kappa$}, \param{in}{$k_1$}{$\kappa$}} % Parametros
+        {bool} % Tipo resultado
+        {true} % Pre
+        {res \igobs ($k_0 = k_1$)} % Post
+        {$\Theta(equal(k_0, k_1))$} % Complejidad
+        {} % Aliasing
+        {Función de igualdad de $\kappa$'s} % Descripcion
 
 \end{iparamformales}
 
