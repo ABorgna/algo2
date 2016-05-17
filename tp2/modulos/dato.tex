@@ -1,7 +1,5 @@
 \section{Dato}
 
-\subsection{Especificación}
-
 \subsection{Interfaz}
 
 \iusa{}
@@ -19,7 +17,17 @@
 
 \subsubsection{Invariante de represantación}
 
+\reptrue{$estr$}{$e$}
+
 \subsubsection{Función de abstracción}
+
+\begin{ABS}{e}{estr}{d}{dato}
+    $
+    e.esNat \iff tipo?(d) \land \\
+    (e.esNat \implies e.valorNat \igobs valorNat(d)) \land \\
+    (\neg e.esNat \implies e.valorString \igobs valorString(d))
+    $
+\end{ABS}
 
 \subsection{Algoritmos}
 
