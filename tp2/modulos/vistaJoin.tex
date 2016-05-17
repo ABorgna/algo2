@@ -2,6 +2,35 @@
 
 \subsection{Especificación}
 
+\begin{tad}{\tadNombre{VistaJoin}}
+    \tadIgualdadObservacional{vj}{vj'}{vistaJoin}{}
+
+\tadGeneros{vistaJoin}
+\tadExporta{vistaJoin, generadores, observadores, otras operaciones}
+\tadUsa{}
+
+\tadObservadores
+\tadOperacion{vjCampo}{vistaJoin/vj}{campo}{}
+\tadOperacion{vjCamposA}{vistaJoin/vj}{registro}{}
+\tadOperacion{vjCamposB}{vistaJoin/vj}{registro}{}
+\tadOperacion{vjJoins}{vistaJoin/vj}{conj(registro)}{}
+
+\tadGeneradores
+\tadOperacion{nuevaVistaJoin}{registro/colsA, registro/colsB, campo/c}{vistaJoin}
+    {$c \in$ campos(colsA) $\land c \in$ campos(colsB) $\land_L$
+    tipo?(obtener(c,colsA)) \igobs tipo?(obtener(c,colsB))}
+\tadOperacion{vjInsertA}{registro/r, vistaJoin/vj}{vistaJoin}{// registro valido}
+\tadOperacion{vjInsertB}{registro/r, vistaJoin/vj}{vistaJoin}{// registro valido}
+\tadOperacion{vjDeleteA}{registro/r, vistaJoin/vj}{vistaJoin}{// registro valido}
+\tadOperacion{vjDeleteB}{registro/r, vistaJoin/vj}{vistaJoin}{// registro valido}
+
+\tadOtrasOperaciones
+\tadOperacion{vjTipoCampo}{vistaJoin/vj}{tipo}{}
+
+\tadAxiomas[\paratodo{vistaJoin}{vj}]
+
+\end{tad}
+
 \subsection{Interfaz}
 
 \iusa{}
@@ -15,7 +44,7 @@
 -- todo: explicacion --
 
 \serepresenta{vistaJoin}{vec}
-\donde{vec}{tupla($campoJoin$: campo, $campoEsNat$: bool, $buffer$: buffer, \\
+\donde{vec}{tupla($camposA$: registro, $camposB$: registro, $campoJoin$: campo, $buffer$: buffer, \\
     $vistaString$: vString, $vistaStringCompleta$: vStringC, \\
     $vistaNat$: vNat, $vistaNatCompleta$: vNatC)}
 
