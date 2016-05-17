@@ -13,8 +13,9 @@
 -- todo: explicacion --
 
 \serepresenta{db}{vec}
-\donde{vec}{tupla($tablas$: tablas, $vistasJoin$: vistas, $tablaMaxima$: maxima)}
-\donde{tablas}{diccTrie($nombreTabla$, $tabla$)}
+\donde{vec}{tupla($tablas$: tablas, $tablasTree$: tablasTree, $vistasJoin$: vistas, $tablaMaxima$: maxima)}
+\donde{tablas}{lista($tabla$)}
+\donde{tablasTree}{diccTrie($nombreTabla$, itLista($tabla$))}
 \donde{vistas}{diccTrie($nombreTabla$, diccTrie($nombreTabla$, $vistaJoin$))}
 \donde{maxima}{puntero($tabla$)}
 
@@ -23,13 +24,28 @@
 \subsubsection{Invariante de representación}
 
 \begin{Rep}{$estr$}{$e$}
-    \repfunc{Checkear algo}
-        {e.algo \iff todo \land_L}
-    \repfunc{Checkear otra cosa}
-        {otra \: cosa}
+    \repfunc{tablasTree tiene las tablas}
+        {long(e.tablas) = \#claves(e.tablasTree) \land \\
+        (\forall t : tabla) (t \in e.tablas \implies def?(nombre(t), e.tablasTree) \land_L \\
+        \hspace*{10em} haySiguiente?(obtener(nombre(t), e.tablasTree)) \land_L \\
+        \hspace*{10em} Siguiente(obtener(nombre(t, e.tablasTree)) \igobs t)}
+
+    \repfunc{vistasJoin tiene tablas válidas}
+        {(\forall nt : nombreTabla) (def?(nt, e.vistasJoin) \implies \\
+        \hspace*{4em} def?(nt, e.tablasTree) \land_L \\
+        \hspace*{4em} (\forall nt' : nombreTabla) (def?(nt', obtener(nt,e.vistasJoin)) \implies \\
+        \hspace*{8em} def?(nt', e.tablasTree) \land_L  \\
+    \hspace*{8em} \text{// todo: coinciden los registros de vistaJoin (obtener(nt',obtener(nt,e.vistasJoin)))} \\
+    \hspace*{8em}\text{// con las tablas}}
+
+    \repfunc{Si hay tablas, e.tablaMaxima apunta a la tabla máxima}{}
 \end{Rep}
 
 \subsubsection{Función de abstracción}
+
+\begin{ABS}{$e$}{$estr$}{$t$}{$tabla$}
+    \absfunc{}{}
+\end{ABS}
 
 \subsection{Algoritmos}
 
