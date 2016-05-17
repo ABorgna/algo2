@@ -44,9 +44,9 @@
 
 \def\flechita{$\rightarrow$ res: }
 
-\newcommand\iusa[1]{\textbf{usa:} \textbf{#1}\par}
-\newcommand\igenero[1]{\textbf{g�neros:} \textbf{#1}\par}
-\newcommand\iseexplica[1]{\textbf{se explica con:} \textbf{#1}\par}
+\newcommand\iusa[1]{\textbf{usa:} #1\par}
+\newcommand\igenero[1]{\textbf{géneros:} #1\par}
+\newcommand\iseexplica[1]{\textbf{se explica con:} #1\par}
 \def\ioperaciones{\textbf{operaciones:}\par}
 
 \def\y{\ensuremath{\land} }
@@ -92,17 +92,17 @@
 \end{minipage}\vskip 1 em}
 
 
-\newenvironment{interfaz}[1]
+\newenvironment{interfaz}
 %{{\noindent\textbf{\large interfaz #1}}\par\vspace{1em}\parindent 1 em \parskip 2pt} 
 {\noindent\par\vspace{1em}\parindent 1 em \parskip 2pt}
-{\par{\noindent\textbf{\large fin interfaz}}\par\vspace*{1em}} 
+{\par{\noindent\textbf{fin interfaz}}\par\vspace*{1em}} 
 
 
 %\newcommand\funcion[4]{\hspace{1em}\func{#1}{#2}{#3}{#4}}
 
 \newenvironment{iparamformales}[1]
-{{\noindent\textbf{\large par\'ametros formales}}\par\vspace{1em}\textbf{\large g\'eneros #1}}
-{\vspace*{1em}\par{\noindent\textbf{\large Operaciones}}\par\vspace*{1em}}
+{{\noindent\textbf{par\'ametros formales}}\par\vspace{1em}\textbf{g\'eneros #1}}
+{\vspace*{1em}\par{\noindent\textbf{Operaciones}}\par\vspace*{1em}}
 
 \newcommand\funcion[7]{
 \begin{minipage}{1\textwidth}
