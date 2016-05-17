@@ -95,12 +95,12 @@
     $campos$: registro, $claves$: conj($campo$), $accesos$: nat)}
 
 \donde{regs}{lista($registro$)}
-\donde{treeNat}{avl($nat$, itLista($registro$))}
-\donde{treeString}{avl($string$, itLista($registro$))}
+\donde{treeNat}{diccAvl($nat$, itLista($registro$))}
+\donde{treeString}{diccAvl($string$, itLista($registro$))}
 
 \donde{campo}{string}
 \donde{nombreTabla}{string}
-\donde{registro}{avl($campo$, $dato$)}
+\donde{registro}{diccAvl($campo$, $dato$)}
 
 \subsubsection{Invariante de representación}
 

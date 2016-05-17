@@ -21,10 +21,10 @@
 
 \donde{buffer}{lista($operacionJoin$)}
 \donde{operacionJoin}{tupla($esInsercion$: bool, $insertado$: puntero($registro$), $borrado$: registro)}
-\donde{vString}{avl($string$,$registro$)}
-\donde{vStringC}{avl($string$,$registroJoin$)}
-\donde{vNat}{avl($nat$,$registro$)}
-\donde{vNatC}{avl($nat$,$registroJoin$)}
+\donde{vString}{diccAvl($string$,$registro$)}
+\donde{vStringC}{diccAvl($string$,$registroJoin$)}
+\donde{vNat}{diccAvl($nat$,$registro$)}
+\donde{vNatC}{diccAvl($nat$,$registroJoin$)}
 \donde{registroJoin}{tupla($a$: puntero($registro$), $b$: puntero($registro$))}
 
 \donde{campo}{string}

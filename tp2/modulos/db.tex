@@ -14,8 +14,8 @@
 
 \serepresenta{db}{vec}
 \donde{vec}{tupla($tablas$: tablas, $vistasJoin$: vistas, $tablaMaxima$: maxima)}
-\donde{tablas}{trie($nombreTabla$, $tabla$)}
-\donde{vistas}{trie($nombreTabla$, trie($nombreTabla$, $vistaJoin$))}
+\donde{tablas}{diccTrie($nombreTabla$, $tabla$)}
+\donde{vistas}{diccTrie($nombreTabla$, diccTrie($nombreTabla$, $vistaJoin$))}
 \donde{maxima}{puntero($tabla$)}
 
 \donde{nombreTabla}{string}
