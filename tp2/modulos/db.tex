@@ -35,16 +35,23 @@
         \hspace*{4em} def?(nt, e.tablasTree) \land_L \\
         \hspace*{4em} (\forall nt' : nombreTabla) (def?(nt', obtener(nt,e.vistasJoin)) \implies \\
         \hspace*{8em} def?(nt', e.tablasTree) \land_L  \\
-    \hspace*{8em} \text{// todo: coinciden los registros de vistaJoin (obtener(nt',obtener(nt,e.vistasJoin)))} \\
-    \hspace*{8em}\text{// con las tablas}}
+        \hspace*{8em} \text{// todo: coinciden los registros de vistaJoin (obtener(nt',obtener(nt,e.vistasJoin)))} \\
+        \hspace*{8em}\text{// con las tablas}}
 
     \repfunc{Si hay tablas, e.tablaMaxima apunta a la tabla máxima}{}
 \end{Rep}
 
 \subsubsection{Función de abstracción}
 
-\begin{ABS}{$e$}{$estr$}{$t$}{$tabla$}
-    \absfunc{}{}
+\begin{ABS}{$e$}{$estr$}{$db$}{$base$}
+    \absfunc{}{(\forall nt : nombreTabla) \: nt \in tablas(db) \iff (\exists t : tabla) (nombre(t) = nt \land esta?(t, e.tablas)) \; \land_L }
+    \absfunc{}{(\forall t : tabla) \: esta?(t, e.tablas) \implies_L \; dameTabla(nombre(t), db) \igobs t \; \land}
+    \absfunc{}
+        {(\forall nt, nt' : nombreTabla) \: nt \in tablas(db) \land nt' \in tablas(db) \implies \\
+        \hspace*{4em} (hayJoin?(nt, nt', db) \iff def?(nt, e.vistasJoin) \;\land_L\; def?(nt', obtener(nt, e.vistasJoin))) \; \land_L}
+    \absfunc{}
+        {(\forall nt, nt' : nombreTabla) hayJoin?(nt, nt', db) \implies \\
+        \hspace*{4em} campoVistaJoin(obtener(nt', obtener(nt, e.vistasJoin))) \igobs campoJoin(nt, nt', db)}
 \end{ABS}
 
 \subsection{Algoritmos}
