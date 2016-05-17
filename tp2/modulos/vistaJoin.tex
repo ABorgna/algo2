@@ -12,6 +12,24 @@
 
 \subsection{Representación}
 
+-- todo: explicacion --
+
+\serepresenta{vistaJoin}{vec}
+\donde{vec}{tupla($campoJoin$: campo, $campoEsNat$: bool, $buffer$: buffer, \\
+    \hspace*{9.5em} $vistaString$: vString, $vistaStringCompleta$: vStringC, \\
+    \hspace*{9.5em} $vistaNat$: vNat, $vistaNatCompleta$: vNatC)}
+
+\donde{buffer}{lista($operacionJoin$)}
+\donde{operacionJoin}{tupla($esInsercion$: bool, $insertado$: puntero($registro$), $borrado$: registro)}
+\donde{vString}{avl($string$,$registro$)}
+\donde{vStringC}{avl($string$,$registroJoin$)}
+\donde{vNat}{avl($nat$,$registro$)}
+\donde{vNatC}{avl($nat$,$registroJoin$)}
+\donde{registroJoin}{tupla($a$: puntero($registro$), $b$: puntero($registro$))}
+
+\donde{campo}{string}
+\donde{registro}{avl($campo$, $dato$)}
+
 \subsubsection{Invariante de represantación}
 
 \subsubsection{Función de abstracción}

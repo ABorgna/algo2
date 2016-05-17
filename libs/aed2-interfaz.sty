@@ -1,15 +1,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%            Interfaz para Algo2 v0.2 - Federico Méndez - 2010/06/01
+%            Interfaz para Algo2 v0.3 - Agustin Borgna - 2016/05/16
+%            Basado en Interfaz para Algo2 v0.2 - Federico Méndez - 2010/06/01
 %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Cambios en la version 0.2
 %
-%   *El entorno interfaz no usa mas minipage.
-%   *El comando \operacion usa minipage para que no se rompa la declaracion de una funcion por culpa de un cambio de pagina
-% *Agregado el comando \tupla{#1}, que genera el texto tupla<#1> (para una sola linea)
+%   Changelog:
+%
+%   0.2
+%       * El entorno interfaz no usa mas minipage.
+%       * El comando \operacion usa minipage para que no se rompa la
+%         declaracion de una funcion por culpa de un cambio de pagina
+%       * Agregado el comando \tupla{#1}, que genera el texto tupla<#1> (para una sola linea)
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%Uso:
+%
+%   Uso:
 %      \begin{interfaz}{Nombre}
 %         \begin{iparamformales}
 %            \func{\argumento op \argumento}{genero1, genero2,...}{genero resultado}{restriccion o comentario}
@@ -29,12 +35,13 @@
 %               \res escribe resultado en italica
 %               \y equivale a \land (y de logica)
 %      \end{interfaz}
+%
 
 \NeedsTeXFormat{LaTeX2e}
-\ProvidesPackage{interfaz}[2010/10/31 v0.1 Para especificar interfaces en formato AED2]
+\ProvidesPackage{interfaz}[2016/05/16 v0.3 Para especificar interfaces en formato AED2]
 
 % Imprimir un mensajito al procesar un .tex que use este package
-\typeout{Cargando package 'interfaz' v0.1 (31/10/2010)}
+\typeout{Cargando package 'interfaz' v0.3}
 
 \newcommand{\generos}[1]{\tadGeneros{#1}}
 
@@ -49,6 +56,7 @@
 \newcommand\iseexplica[1]{\textbf{se explica con:} #1\par}
 \def\ioperaciones{\textbf{operaciones:}\par}
 
+\newcommand{\code}{\texttt}
 \def\y{\ensuremath{\land} }
 \def\o{\ensuremath{\lor} }
 \def\imp{\ensuremath{\Rightarrow} }
@@ -57,14 +65,14 @@
 \def\pertenece{\ensuremath{\in} }
 \def\conjvacio{\ensuremath{\emptyset} }
 
-
-\newcommand\donde[2]{\textbf{donde} #1 \textbf{es} #2}
+\newcommand\serepresenta[2]{\indent \code{#1} \textbf{se representa con} \code{#2}}
+\newcommand\donde[2]{\par\indent donde \textbf{\code{#1}} es \textbf{\code{#2}}}
 \newcommand\abs[1]{\ensuremath{\widehat{#1}}}
 \newcommand\res{\textit{res}}
 \newcommand\igres{\textit{res}\igobs}
 \newcommand\resultado[1]{$\rightarrow$ \res : \textbf{#1}}
-\newcommand\pre[1]{\textbf{Pre} $\equiv$ \{#1\}}
-\newcommand\post[1]{\textbf{Post} $\equiv$ \{#1\}}
+\newcommand\pre[1]{\textbf{Pre} $\equiv$ \code{\{#1\}}}
+\newcommand\post[1]{\textbf{Post} $\equiv$ \code{\{#1\}}}
 \newcommand\complejidad[1]{\textbf{Complejidad:} O(#1)}
 \newcommand\aliasing[1]{\textbf{Aliasing:} #1}
 \newcommand\desc[1]{\textbf{Descripci\'on:} #1}
