@@ -22,7 +22,7 @@
 \subsubsection{Función de abstracción}
 
 \begin{ABS}{$e$}{$estr$}{$d$}{$dato$}
-    \absfunc{}{e.esNat \iff tipo?(d) \: \land }
+    \absfunc{}{e.esNat \iff Nat?(d) \: \land }
     \absfunc{}{(e.esNat \implies e.valorNat \igobs valorNat(d)) \: \land}
     \absfunc{}{(\neg e.esNat \implies e.valorString \igobs valorString(d))}
 \end{ABS}

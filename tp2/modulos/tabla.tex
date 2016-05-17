@@ -90,9 +90,9 @@
 -- todo: explicacion --
 
 \serepresenta{tabla}{vec}
-\donde{vec}{tupla($registros$: regs, $indiceNat$: campo, $indicesNat$: treeNat, \\
-    $indiceString$: campo, $indicesString$: treeString, $nombre$: nombreTabla,\\
-    $campos$: registro, $claves$: conj($campo$), $accesos$: nat)}
+\donde{vec}{tupla($registros$: regs, $hayIndiceNat$: bool, $indiceNat$: campo, $indicesNat$: treeNat, \\
+    $hayIndiceString$: bool, $indiceString$: campo, $indicesString$: treeString, \\
+    $nombre$: nombreTabla, $campos$: registro, $claves$: conj($campo$), $accesos$: nat)}
 
 \donde{regs}{lista($registro$)}
 \donde{treeNat}{diccAvl($nat$, itLista($registro$))}
@@ -104,7 +104,52 @@
 
 \subsubsection{Invariante de representación}
 
+\begin{Rep}{$estr$}{$e$}
+    \repfunc{Hay claves y están incluidas en campos}
+        {\neg\emptyset?(e.claves) \land e.claves \subseteq claves(e.campos)}
+
+    \repfunc{Los registros tienen los mismos campos y del mismo tipo}
+        {(\forall r : registro) (r \in e.registros \implies claves(r) = claves(e.campos) \land_L \\
+        \hspace*{2em} (\forall c : campo) (c \in claves(r) \implies_L \; tipo?(obtener(c,r)) = tipo?(obtener(c,e.campos))))}
+
+    \repfunc{Si no hay indice de tipo nat, indicesNat está vacio}
+        {\neg e.hayIndiceNat \implies \emptyset?(e.indicesNat)}
+
+    \repfunc{Si hay indice de tipo nat, indiceNat es un campo válido e indicesNat tiene todos los registros referenciados por el índice}
+        {e.hayIndiceNat \implies indiceNat \in claves(e.campos) \land_L Nat?(obtener(indiceNat,e.campos)) \land_L \\
+        \hspace*{2em} (\forall r : registro) (r \in e.registros \implies def?(obtener(indiceNat,r), e.indicesNat) \land_L \\
+        \hspace*{12em} haySiguiente?(obtener(obtener(indiceNat,r), e.indicesNat)) \land_L \\
+        \hspace*{12em} Siguiente(obtener(obtener(indiceNat,r), e.indicesNat)) \igobs r)}
+
+    \repfunc{Si no hay indice de tipo string, indicesString está vacio}
+        {\neg e.hayIndiceString \implies \emptyset?(e.indicesString)}
+
+    \repfunc{Si hay indice de tipo string, indiceString es un campo válido e indicesString tiene todos los registros referenciados por el índice}
+        {e.hayIndiceString \implies indiceString \in claves(e.campos) \land_L String?(obtener(indiceString,e.campos)) \land_L \\
+        \hspace*{2em} (\forall r : registro) (r \in e.registros \implies def?(obtener(indiceString,r), e.indicesString) \land_L \\
+        \hspace*{12em} haySiguiente?(obtener(obtener(indiceString,r), e.indicesString)) \land_L \\
+        \hspace*{12em} Siguiente(obtener(obtener(indiceString,r), e.indicesString)) \igobs r)}
+
+    \repfunc{Hay por lo menos tantos accesos como registros insertados}
+        {e.accesos \ge \#e.registros}
+
+\end{Rep}
+
 \subsubsection{Función de abstracción}
+
+\begin{ABS}{$e$}{$estr$}{$t$}{$tabla$}
+    \absfunc{}{e.nombre \igobs nombre(t) \; \land}
+    \absfunc{}{e.claves \igobs claves(t) \; \land}
+    \absfunc{}{e.accesos \igobs cantidadDeAccesos(t) \; \land}
+    \absfunc{}
+        {(\IFM e.hayIndiceNat THEN Ag(indiceNat, \emptyset) ELSE \emptyset FI) \: \cup \\
+        (\IFM e.hayIndiceString THEN Ag(indiceString, \emptyset) ELSE \emptyset FI) \igobs indices(t) \; \land}
+    \absfunc{}{claves(e.campos) \igobs campos(t) \; \land_L}
+    \absfunc{}{(\forall c : campo) \: (c \in claves(e.campos) \implies_L \: tipo?(obtener(c,e.campos)) \igobs tipoCampo(c,t)) \; \land}
+    \absfunc{}{(\forall r : registro) \: esta?(r, e.registros) \iff r \in registros(t)}
+\end{ABS}
+
+\ensuremath{\IF a THEN b ELSE c FI}
 
 \subsection{Algoritmos}
 
