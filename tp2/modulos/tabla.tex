@@ -115,8 +115,9 @@
     \repfunc{Si no hay indice de tipo nat, indicesNat está vacio}
         {\neg e.hayIndiceNat \implies \emptyset?(e.indicesNat)}
 
-    \repfunc{Si hay indice de tipo nat, indiceNat es un campo válido e indicesNat tiene todos los registros referenciados por el índice}
+    \repfunc{Si hay indice de tipo nat, indiceNat es un campo válido e indicesNat tiene los registros referenciados por el índice}
         {e.hayIndiceNat \implies indiceNat \in claves(e.campos) \land_L Nat?(obtener(indiceNat,e.campos)) \land_L \\
+        \hspace*{2em} long(e.registros) = \#claves(e.indicesNat) \land \\
         \hspace*{2em} (\forall r : registro) (r \in e.registros \implies def?(obtener(indiceNat,r), e.indicesNat) \land_L \\
         \hspace*{12em} haySiguiente?(obtener(obtener(indiceNat,r), e.indicesNat)) \land_L \\
         \hspace*{12em} Siguiente(obtener(obtener(indiceNat,r), e.indicesNat)) \igobs r)}
@@ -124,8 +125,9 @@
     \repfunc{Si no hay indice de tipo string, indicesString está vacio}
         {\neg e.hayIndiceString \implies \emptyset?(e.indicesString)}
 
-    \repfunc{Si hay indice de tipo string, indiceString es un campo válido e indicesString tiene todos los registros referenciados por el índice}
+    \repfunc{Si hay indice de tipo string, indiceString es un campo válido e indicesString tiene los registros referenciados por el índice}
         {e.hayIndiceString \implies indiceString \in claves(e.campos) \land_L String?(obtener(indiceString,e.campos)) \land_L \\
+        \hspace*{2em} long(e.registros) = \#claves(e.indicesString) \land \\
         \hspace*{2em} (\forall r : registro) (r \in e.registros \implies def?(obtener(indiceString,r), e.indicesString) \land_L \\
         \hspace*{12em} haySiguiente?(obtener(obtener(indiceString,r), e.indicesString)) \land_L \\
         \hspace*{12em} Siguiente(obtener(obtener(indiceString,r), e.indicesString)) \igobs r)}
