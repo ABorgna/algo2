@@ -92,11 +92,14 @@
 \serepresenta{tabla}{vec}
 \donde{vec}{tupla($registros$: regs, $hayIndiceNat$: bool, $indiceNat$: campo, $indicesNat$: treeNat, \\
     $hayIndiceString$: bool, $indiceString$: campo, $indicesString$: treeString, \\
+    $maxminNat$: mmNat, $maxminString$: mmString, \\
     $nombre$: nombreTabla, $campos$: registro, $claves$: conj($campo$), $accesos$: nat)}
 
-\donde{regs}{lista($registro$)}
-\donde{treeNat}{diccAvl($nat$, itLista($registro$))}
-\donde{treeString}{diccAvl($string$, itLista($registro$))}
+\donde{regs}{conj($registro$)}
+\donde{treeNat}{diccAvl($nat$, itConj($registro$))}
+\donde{treeString}{diccAvl($string$, itConj($registro$))}
+\donde{mmNat}{tupla($max$: nat, $min$: nat)}
+\donde{mmString}{tupla($max$: string, $min$: string)}
 
 \donde{campo}{string}
 \donde{nombreTabla}{string}
@@ -117,7 +120,7 @@
 
     \repfunc{Si hay indice de tipo nat, indiceNat es un campo válido e indicesNat tiene los registros referenciados por el índice}
         {e.hayIndiceNat \implies indiceNat \in claves(e.campos) \land_L Nat?(obtener(indiceNat,e.campos)) \land_L \\
-        \hspace*{2em} long(e.registros) = \#claves(e.indicesNat) \land \\
+        \hspace*{2em} \#e.registros = \#claves(e.indicesNat) \land \\
         \hspace*{2em} (\forall r : registro) (r \in e.registros \implies def?(obtener(indiceNat,r), e.indicesNat) \land_L \\
         \hspace*{12em} haySiguiente?(obtener(obtener(indiceNat,r), e.indicesNat)) \land_L \\
         \hspace*{12em} Siguiente(obtener(obtener(indiceNat,r), e.indicesNat)) \igobs r)}
@@ -127,13 +130,22 @@
 
     \repfunc{Si hay indice de tipo string, indiceString es un campo válido e indicesString tiene los registros referenciados por el índice}
         {e.hayIndiceString \implies indiceString \in claves(e.campos) \land_L String?(obtener(indiceString,e.campos)) \land_L \\
-        \hspace*{2em} long(e.registros) = \#claves(e.indicesString) \land \\
+        \hspace*{2em} \#e.registros = \#claves(e.indicesString) \land \\
         \hspace*{2em} (\forall r : registro) (r \in e.registros \implies def?(obtener(indiceString,r), e.indicesString) \land_L \\
         \hspace*{12em} haySiguiente?(obtener(obtener(indiceString,r), e.indicesString)) \land_L \\
         \hspace*{12em} Siguiente(obtener(obtener(indiceString,r), e.indicesString)) \igobs r)}
 
     \repfunc{Hay por lo menos tantos accesos como registros insertados}
         {e.accesos \ge \#e.registros}
+
+    \repfunc{Los max/min son válidos}
+        {e.hayIndiceString \land long(e.registros) \implies (\\
+        \hspace*{2em} valorString(max(dameColumna(e.indiceString,e.registros))) \igobs e.maxminString.max \land \\
+        \hspace*{2em} valorString(min(dameColumna(e.indiceString,e.registros))) \igobs e.maxminString.min) \land \\
+        e.hayIndiceNat \land long(e.registros) \implies (\\
+        \hspace*{2em} valorNat(max(dameColumna(e.indiceNat,e.registros))) \igobs e.maxminNat.max \land \\
+        \hspace*{2em} valorNat(min(dameColumna(e.indiceNat,e.registros))) \igobs e.maxminNat.min)\\
+    }
 
 \end{Rep}
 
@@ -142,13 +154,13 @@
 \begin{ABS}{$e$}{$estr$}{$t$}{$tabla$}
     \absfunc{}{e.nombre \igobs nombre(t) \; \land}
     \absfunc{}{e.claves \igobs claves(t) \; \land}
+    \absfunc{}{e.registros \igobs r \in registros(t) \; \land}
     \absfunc{}{e.accesos \igobs cantidadDeAccesos(t) \; \land}
     \absfunc{}
         {(\IFM e.hayIndiceNat THEN Ag(indiceNat, \emptyset) ELSE \emptyset FI) \: \cup \\
         (\IFM e.hayIndiceString THEN Ag(indiceString, \emptyset) ELSE \emptyset FI) \igobs indices(t) \; \land}
     \absfunc{}{claves(e.campos) \igobs campos(t) \; \land_L}
-    \absfunc{}{(\forall c : campo) \: (c \in claves(e.campos) \implies_L \: tipo?(obtener(c,e.campos)) \igobs tipoCampo(c,t)) \; \land}
-    \absfunc{}{(\forall r : registro) \: esta?(r, e.registros) \iff r \in registros(t)}
+    \absfunc{}{(\forall c : campo) \: (c \in claves(e.campos) \implies_L \: tipo?(obtener(c,e.campos)) \igobs tipoCampo(c,t))}
 \end{ABS}
 
 \subsection{Algoritmos}
