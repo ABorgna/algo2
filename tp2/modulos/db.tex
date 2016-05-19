@@ -22,7 +22,7 @@
 \donde{jNat}{diccAvl($nat$, $registro$)}
 \donde{jString}{diccAvl($string$, $registro$)}
 \donde{buffer}{lista($operacionJoin$)}
-\donde{operacionJoin}{tupla($esInsercion$: bool, $insertado$: puntero($registro$), $borrado$: registro)}
+\donde{operacionJoin}{tupla($esInsercion$: bool, $tabla$: bool, $reg$: $registro$)}
 
 \donde{nombreTabla}{string}
 \donde{campo}{string}
@@ -45,41 +45,140 @@
 
     \repfunc{El campo de las vistasJoin es válido}
         {(\forall nt,nt' : nombreTabla) def?(nt,e.vistasJoin) \land_L def?(nt', obtener(nt,e.vistasJoin)) \implies_L \\
-        \hspace*{4em} (\exists c : campo) \; (\exists t_a, t_b : tabla) \; c \igobs obtener(nt',obtener(nt,e.vistasJoin)).campo \land \\
-        \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
-        \hspace*{6em} c \in claves(t_a) \land \\
-        \hspace*{6em} c \in claves(t_b) \land_L \\
-        \hspace*{6em} tipoCampo(c, t_a) \igobs tipoCampo(c, t_b)}
+        \hspace*{4em} (\exists v : vistaJoin) \; (\exists t_a, t_b : tabla) \\
+        \hspace*{6em} v \igobs obtener(nt',obtener(nt,e.vistasJoin)) \land \\
+        \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\ \\
+        \hspace*{6em} v.campo \in claves(t_a) \land \\
+        \hspace*{6em} v.campo \in claves(t_b) \land_L \\
+        \hspace*{6em} tipoCampo(v.campo, t_a) \igobs tipoCampo(v.campo, t_b)}
 
-    \repfunc{Los joins cacheados en vistasJoins tienen las entradas que tienen que tener}
+    \repfunc{Los registros de cada buffer tienen los campos de las tablas correspondientes}
         {(\forall nt,nt' : nombreTabla) def?(nt,e.vistasJoin) \land_L def?(nt', obtener(nt,e.vistasJoin)) \implies_L \\
-        \hspace*{4em} (\exists c : campo) \; (\exists t_a, t_b : tabla) \; c \igobs obtener(nt',obtener(nt,e.vistasJoin)).campo \land \\
+        \hspace*{4em} (\exists v : vistaJoin) \; (\exists t_a, t_b : tabla) \\
+        \hspace*{6em} v \igobs obtener(nt',obtener(nt,e.vistasJoin)) \land \\
         \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
-        \hspace*{6em} \#combinarRegistros(c, registros(t_a), registros(t_b)) \igobs \\
-        \hspace*{8em} (\IFLM tipoCampo(c, obtener(nt, e.tablasTree)) THEN \\
-        \hspace*{10em} \#claves(obtener(nt',obtener(nt,e.vistasJoin)).joinsNat) \\
+        \\
+        \hspace*{6em} (\forall op : operacionJoin) \; op \in v.buffer \implies \\
+        \hspace*{8em} \IFLM \neg op.tabla THEN \\
+        \hspace*{10em} campos(op.reg) \igobs campos(t_a) \land_L mismosTipos(op.reg, t_a) \\
         \hspace*{8em} ELSE \\
-        \hspace*{10em} \#claves(obtener(nt',obtener(nt,e.vistasJoin)).joinsString) \\
-        \hspace*{8em} FI) \land \\
-        \hspace*{6em} (\forall r : registro) r \in combinarRegistros(c, registros(t_a), registros(t_b)) \implies_L (\\
-        \hspace*{8em} \IFLM tipoCampo(c, obtener(nt, e.tablasTree)) THEN \\
-        \hspace*{10em} def?(valorNat(obtener(c,r)), \\
-        \hspace*{13em} obtener(c,obtener(nt',obtener(nt,e.vistasJoin)).joinsNat)) \land_L \\
-        \hspace*{10em} obtener(valorNat(obtener(c,r)), \\
-        \hspace*{13em} obtener(c,obtener(nt',obtener(nt,e.vistasJoin)).joinsNat)) \igobs r \\
+        \hspace*{10em} campos(op.reg) \igobs campos(t_b) \land_L mismosTipos(op.reg, t_b) \\
+        \hspace*{8em} FI
+    }
+
+    \repfunc{No hay dos inserciones seguidas en un buffer (sin borrar antes)}
+        {(\forall nt,nt' : nombreTabla) def?(nt,e.vistasJoin) \land_L def?(nt', obtener(nt,e.vistasJoin)) \implies_L \\
+        \hspace*{4em} (\exists v : vistaJoin) \; (\exists t_a, t_b : tabla) \\
+        \hspace*{6em} v \igobs obtener(nt',obtener(nt,e.vistasJoin)) \land \\
+        \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
+        \\
+        \hspace*{6em} (\forall op, op' : operacionJoin) \; (op \in v.buffer \; \land \; op' \in v.buffer \; \land_L \\
+        \hspace*{10em} op.esInsercion \; \land \; op'.esInsercion \; \land \\
+        \hspace*{10em} obtener(v.campo,op.reg) \igobs obtener(v.campo,op'.reg)) \implies \\
+        \hspace*{8em} (\exists op'' : operacionJoin) \; (op'' \in v.buffer \; \land_L \\
+        \hspace*{10em} \neg op''.esInsercion \; \land \\
+        \hspace*{10em} obtener(v.campo,op.reg) \igobs obtener(v.campo,op'.reg) \; \land \\
+        \hspace*{10em} estaDespues?(op'', op, v.buffer) \; \land \\
+        \hspace*{10em} estaDespues?(op', op'', v.buffer))
+    }
+
+    \repfunc{No hay inserciones de indices ya cacheados en un buffer (sin borrar antes)}
+        {(\forall nt,nt' : nombreTabla) def?(nt,e.vistasJoin) \land_L def?(nt', obtener(nt,e.vistasJoin)) \implies_L \\
+        \hspace*{4em} (\exists v : vistaJoin) \; (\exists t_a, t_b : tabla) \\
+        \hspace*{6em} v \igobs obtener(nt',obtener(nt,e.vistasJoin)) \land \\
+        \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
+        \\
+        \hspace*{6em} (\forall r : registro) \; (\forall op : operacionJoin) \; (op \in v.buffer \; \land \; op.esInsercion \land \\
+        \hspace*{10em} r \in (\IFLM tipoCampo(v.campo, t_a) THEN v.joinsNat ELSE v.joinsString FI) \; \land_L \\
+        \hspace*{10em} obtener(v.campo, op.reg) \igobs obtener(v.campo, r) ) \implies \\
+        \hspace*{8em} (\exists op' : operacionJoin) \; (op' \in v.buffer \; \land_L \\
+        \hspace*{10em} \neg op'.esInsercion \; \land \\
+        \hspace*{10em} obtener(v.campo,op.reg) \igobs obtener(v.campo,op'.reg) \; \land \\
+        \hspace*{10em} estaDespues?(op', op, v.buffer))
+    }
+
+    \repfunc{Todos los joins posibles están cacheados en vistasJoins y no hay modificaciones en el buffer, o la inserción está en el buffer y no se la borra luego}
+        {(\forall nt,nt' : nombreTabla) def?(nt,e.vistasJoin) \land_L def?(nt', obtener(nt,e.vistasJoin)) \implies_L \\
+        \hspace*{4em} (\exists v : vistaJoin) \; (\exists t_a, t_b : tabla) \\
+        \hspace*{6em} v \igobs obtener(nt',obtener(nt,e.vistasJoin)) \land \\
+        \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
+        \\
+        \hspace*{6em} (\forall r : registro) r \in combinarRegistros(v.campo, registros(t_a), registros(t_b)) \implies_L (\\
+        \hspace*{8em} \IFLM tipoCampo(v.campo, t_a) THEN \\
+        \hspace*{10em} (def?(valorNat(obtener(v.campo,r)), v.joinsNat) \land_L \\
+        \hspace*{12em} r \igobs obtener(valorNat(obtener(v.campo,r)), v.joinsNat) \land \\
+        \hspace*{12em} \neg(\exists op' : operacionJoin) \; (op' \in v.buffer \; \land \\
+        \hspace*{14em} valorNat(obtener(v.campo,r)) \igobs valorNat(op'.reg))) \lor \\
+        \hspace*{10em} ((\exists op : operacionJoin) \; op \in v.buffer \; \land \; op.esInsercion \; \land_L \\
+        \hspace*{12em} coincidenTodos(r, campos(op.reg), op.reg) \land \\
+        \hspace*{12em} \neg(\exists op' : operacionJoin) \; (op' \in v.buffer \; \land \\
+        \hspace*{14em} valorNat(obtener(v.campo,r)) \igobs valorNat(op'.reg) \land \\
+        \hspace*{14em} estaDespues?(op', op, v.buffer)))\\
         \hspace*{8em} ELSE \\
-        \hspace*{10em} def?(valorString(obtener(c,r)), \\
-        \hspace*{13em} obtener(c,obtener(nt',obtener(nt,e.vistasJoin)).joinsString)) \land_L \\
-        \hspace*{10em} obtener(valorString(obtener(c,r)), \\
-        \hspace*{13em} obtener(c,obtener(nt',obtener(nt,e.vistasJoin)).joinsString)) \igobs r \\
-        \hspace*{8em} FI) \\
-    \text{// todo: no estabos tomando en cuenta el buffer}}
+        \hspace*{10em} (def?(valorString(obtener(v.campo,r)), v.joinsString) \land_L \\
+        \hspace*{12em} r \igobs obtener(valorString(obtener(v.campo,r)), v.joinsString) \land \\
+        \hspace*{12em} \neg(\exists op' : operacionJoin) \; (op' \in v.buffer \; \land \\
+        \hspace*{14em} valorString(obtener(v.campo,r)) \igobs valorString(op'.reg))) \lor \\
+        \hspace*{10em} ((\exists op : operacionJoin) \; op \in v.buffer \; \land \; op.esInsercion \; \land_L \\
+        \hspace*{12em} coincidenTodos(r, campos(op.reg), op.reg) \land \\
+        \hspace*{12em} \neg(\exists op' : operacionJoin) \; (op' \in v.buffer \; \land \\
+        \hspace*{14em} valorString(obtener(v.campo,r)) \igobs valorString(op'.reg) \land \\
+        \hspace*{14em} estaDespues?(op', op, v.buffer))) \\
+        \hspace*{8em} FI)}
 
-    \repfunc{Buffer}{\text{// todo}}
+    \repfunc{vistasJoins tiene o joins válidos, o joins que seran eliminados, y se borrarán todos los inválidos que están para agregar}
+        {(\forall nt,nt' : nombreTabla) def?(nt,e.vistasJoin) \land_L def?(nt', obtener(nt,e.vistasJoin)) \implies_L \\
+        \hspace*{4em} (\exists v : vistaJoin) \; (\exists t_a, t_b : tabla) \\
+        \hspace*{6em} v \igobs obtener(nt',obtener(nt,e.vistasJoin)) \land \\
+        \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
+        \\
+        \hspace*{6em} \IFLM tipoCampo(v.campo, t_a) THEN \\
+        \hspace*{8em} (\forall r : registro) \; (def?(valorNat(obtener(v.campo,r)), v.joinsNat) \land_L \\
+        \hspace*{10em} r \igobs obtener(valorNat(obtener(v.campo,r)), v.joinsNat)) \implies_L (\\
+        \hspace*{12em} r \in combinarRegistros(v.campo, registros(t_a), registros(t_b))\\
+        \hspace*{10em}  \lor \\
+        \hspace*{10em} ((\exists op : operacionJoin) \; op \in v.buffer \; \land \; \neg op.esInsercion \; \land_L \\
+        \hspace*{12em} valorNat(obtener(v.campo,r)) \igobs valorNat(op.reg) \land \\
+        \hspace*{12em} \neg(\exists op' : operacionJoin) \; (op' \in v.buffer \; \land \\
+        \hspace*{14em} valorNat(obtener(v.campo,r)) \igobs valorNat(op'.reg) \land \\
+        \hspace*{14em} estaDespues?(op', op, v.buffer)))) \; \land \\
+        \hspace*{8em} (\forall op : operacionJoin) \; (op \in v.buffer \land op.esInsercion \land \\
+        \hspace*{18em} \emptyset?(coincidencias(op.reg, \\
+        \hspace*{20em} combinarRegistros(v.campo, registros(t_a), \\
+        \hspace*{22em} registros(t_b))))) \implies \\
+        \hspace*{10em} ((\exists op' : operacionJoin) \; op' \in v.buffer \; \land \; \neg op.esInsercion \; \land \\
+        \hspace*{12em} valorNat(obtener(v.campo,r)) \igobs valorNat(op.reg) \; \land \\
+        \hspace*{12em} estaDespues?(op', op, v.buffer)) \\
+        \hspace*{6em} ELSE \\
+        \hspace*{8em} (\forall r : registro) \; (def?(valorString(obtener(v.campo,r)), v.joinsString) \land_L \\
+        \hspace*{10em} r \igobs obtener(valorString(obtener(v.campo,r)), v.joinsString)) \implies_L (\\
+        \hspace*{12em} r \in combinarRegistros(v.campo, registros(t_a), registros(t_b)) \\
+        \hspace*{10em}  \lor \\
+        \hspace*{10em} ((\exists op : operacionJoin) \; op \in v.buffer \; \land \; \neg op.esInsercion \; \land_L \\
+        \hspace*{12em} valorString(obtener(v.campo,r)) \igobs valorString(op.reg) \land \\
+        \hspace*{12em} \neg(\exists op' : operacionJoin) \; (op' \in v.buffer \; \land \\
+        \hspace*{14em} valorString(obtener(v.campo,r)) \igobs valorString(op'.reg) \land \\
+        \hspace*{14em} estaDespues?(op', op, v.buffer)))) \; \land \\
+        \hspace*{8em} (\forall op : operacionJoin) \; (op \in v.buffer \land op.esInsercion \land \\
+        \hspace*{18em} \emptyset?(coincidencias(op.reg, \\
+        \hspace*{20em} combinarRegistros(v.campo, registros(t_a), \\
+        \hspace*{22em} registros(t_b))))) \implies \\
+        \hspace*{10em} ((\exists op' : operacionJoin) \; op' \in v.buffer \; \land \; \neg op.esInsercion \; \land \\
+        \hspace*{12em} valorString(obtener(v.campo,r)) \igobs valorString(op.reg) \; \land \\
+        \hspace*{12em} estaDespues?(op', op, v.buffer)) \\
+        \hspace*{6em} FI}
 
-    \repfunc{Si hay tablas, e.tablaMaxima apunta a la tabla máxima}{}
+    \repfunc{Si hay tablas, e.tablaMaxima apunta a una de las tablas con mas cantidadDeAccesos}{}
 
 \end{Rep}
+
+\subsubsection{Operaciones auxiliares del invariante de representación}
+
+\tadOperacion{estaDespues?}{$\alpha$/a, $\alpha$/b, secu($\alpha$)}{bool}{esta?(a,s) $\land$ esta?(b,s)}
+
+\tadAxiomas[\paratodo{secu($\alpha$)}{s}, \paratodo{$\alpha$}{a,b}]
+
+\tadAxioma{estaDespues?(a,b,s)}{$\neg$(prim(s) $=$ a) $\land_L$ (prim(s) $=$ b $\lor_L$ estaDespues?(a,b,fin(s)))}
 
 \subsubsection{Función de abstracción}
 
