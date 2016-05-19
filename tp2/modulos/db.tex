@@ -183,14 +183,14 @@
 \subsubsection{Función de abstracción}
 
 \begin{ABS}{$e$}{$estr$}{$db$}{$base$}
-    \absfunc{}{(\forall nt : nombreTabla) \: nt \in tablas(db) \iff (\exists t : tabla) (nombre(t) = nt \land esta?(t, e.tablas)) \; \land_L }
-    \absfunc{}{(\forall t : tabla) \: esta?(t, e.tablas) \implies_L \; dameTabla(nombre(t), db) \igobs t \; \land}
+    \absfunc{}{tablas(db) \igobs claves(e.tablasTree) \; \land_L }
+    \absfunc{}{(\forall t : tabla) \: t \in e.tablas \implies_L \; dameTabla(nombre(t), db) \igobs t \; \land}
     \absfunc{}
         {(\forall nt, nt' : nombreTabla) \: nt \in tablas(db) \land nt' \in tablas(db) \implies \\
         \hspace*{4em} (hayJoin?(nt, nt', db) \iff def?(nt, e.vistasJoin) \;\land_L\; def?(nt', obtener(nt, e.vistasJoin))) \; \land_L}
     \absfunc{}
         {(\forall nt, nt' : nombreTabla) hayJoin?(nt, nt', db) \implies \\
-        \hspace*{4em} campoVistaJoin(obtener(nt', obtener(nt, e.vistasJoin))) \igobs campoJoin(nt, nt', db)}
+        \hspace*{4em} obtener(nt', obtener(nt, e.vistasJoin)).campo \igobs campoJoin(nt, nt', db)}
 \end{ABS}
 
 \subsection{Algoritmos}
