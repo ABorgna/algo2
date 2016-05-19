@@ -8,6 +8,73 @@
 
 \ioperaciones
 
+\operacion{datoNat}
+{\param{in}{$n$}{$nat$}} % parametros
+{dato} % tipo res
+{true} % pre
+{res \igobs datoNat(n)} % post
+{\bigo(1)} % complejidad
+{} % aliasing
+{} % descripcion
+
+\operacion{datoString}
+{\param{in}{$str$}{$string$}}
+{dato}
+{}
+{res \igobs datoString(str)}
+{\bigo(1)}
+{true}
+{}
+
+\operacion{isNat}
+{\param{in}{$d$}{$dato$}}
+{bool}
+{true}
+{res $\iff$ Nat?(d)}
+{\bigo(1)}
+{}
+{}
+
+\operacion{isString}
+{\param{in}{$d$}{$dato$}}
+{bool}
+{true}
+{res $\iff$ String?(d)}
+{\bigo(1)}
+{}
+{}
+
+\operacion{getNat}
+{\param{in}{$d$}{$dato$}}
+{nat}
+{Nat?(d)}
+{res $\iff$ valorNat(d)}
+{\bigo(1)}
+{}
+{}
+
+\operacion{getString}
+{\param{in}{$d$}{$dato$}}
+{string}
+{String?(d)}
+{res $\iff$ valorStr(d)}
+{\bigo(1)}
+{}
+{}
+
+\operacion{$\bullet = \bullet$}
+{\param{in}{$d_1$}{$dato$}, \param{in}{$d_2$}{$dato$}}
+{bool}
+{true}
+{res $\iff$ \IFL Nat?($d_1$) THEN \\
+    \hspace*{10.5em} Nat?($d_2$) $\land_L$ valorNat($d_1$) \igobs valorNat($d_2$) \\
+    \hspace*{9em} ELSE \\
+    \hspace*{10.5em} String?($d_2$) $\land_L$ valorString($d_1$) \igobs valorString($d_2$) \\
+    \hspace*{9em} FI }
+{\bigo(eq($string$))}
+{}
+{}
+
 \subsection{Representación}
 
 -- todo: explicacion --
@@ -28,6 +95,10 @@
 \end{ABS}
 
 \subsection{Algoritmos}
+
+\algoritmo{iDatoNat(\param{in}{$n$}{$nat$})}{\bigo(1)}{
+    \State $res \gets 0$ \comment{\bigo(1)}
+}
 
 \subsection{Servicios usados}
 

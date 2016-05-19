@@ -181,7 +181,14 @@
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist
 
-\newcommand\algoritmo[3]{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi\newline}
+\newcommand\algoritmo[3]{
+    \begin{algorithm}
+        \caption{#1 \hfill #2}
+        \begin{algorithmic}
+            #3
+        \end{algorithmic}
+    \end{algorithm}
+}
 
 \newcommand\com{}
 
