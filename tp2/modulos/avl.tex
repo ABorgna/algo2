@@ -1,6 +1,6 @@
-\section{diccAVL($\kappa, \alpha$)}
+\section{diccLog($\kappa, \alpha$)}
 
-El módulo diccAVL provee un diccionario con acceso, inserción y borrado en \bigo(log($n$)), donde $n$ es la cantidad de elementos actuales.
+El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bigo(log($n$)), donde $n$ es la cantidad de elementos actuales.
 
 \subsection{Interfaz}
 
@@ -24,17 +24,27 @@ El módulo diccAVL provee un diccionario con acceso, inserción y borrado en \bi
         {} % Aliasing
         {Función orden estricto de $\kappa$'s} % Descripcion
 
+    \funcion{Copiar}
+        {\param{in}{$k$}{$\kappa$}}
+        {$\kappa$}
+        {true}
+        {$res \igobs k$}
+        {\bigo($copy(k)$)}
+        {}
+        {Funcion de copia de $\kappa$'s}
+
+
 \end{iparamformales}
 
 \iusa{}
 \iseexplica{Diccionario($\kappa, \alpha$)}
-\igenero{diccAVL($\kappa, \alpha$)}
+\igenero{diccLog($\kappa, \alpha$), itDiccLog($\kappa, \alpha$)}
 
 \ioperaciones
 
-\operacion{NuevoDiccAvl}
+\operacion{NuevoDiccLog}
 {}
-{diccAVL($\kappa, \alpha$)}
+{diccLog($\kappa, \alpha$)}
 {true}
 {$res \igobs vacio$}
 {\bigo(1)}
@@ -42,44 +52,158 @@ El módulo diccAVL provee un diccionario con acceso, inserción y borrado en \bi
 {Crea un diccionario vacio}
 
 \operacion{Definir}
-{   \param{in/out}{$d$}{diccAVL($\kappa, \alpha$)},
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in}{$c$}{$\kappa$},
     \param{in}{$v$}{$\alpha$}}
 {}
 {$d \igobs d_0$}
 {$d \igobs definir(c, v, d_0)$}
-{\bigo($log(n)$), donde $n = \#(claves(d))$}
-{}
+{\bigo($log(n)cmp + copy(c)$), donde $n = \#(claves(d))$ y $cmp = equal(c, c')+greater(c, c')$}
+{alias($obtener(c, d) = v$), hasta que se redefina o se borre la clave}
 {Modifica el diccionario agregando o reemplazando el significado de una clave 
     con un nuevo valor}
 
-\operacion{Def?}
-{   \param{in}{$d$}{diccAVL($\kappa, \alpha$)},
+\operacion{Definido?}
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in}{$c$}{$\kappa$}}
 {bool}
 {true}
 {$res \igobs def?(c, d)$}
-{\bigo($log(n)$), donde $n = \#(claves(d))$}
+{\bigo($log(n)cmp$), donde $n = \#(claves(d))$ y $cmp = equal(c, c')+greater(c, c')$}
 {}
 {Devuelve true si una clave se encuentra definida en el diccionario}
 
 \operacion{Obtener}
-{   \param{in}{$d$}{diccAVL($\kappa, \alpha$)},
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in}{$c$}{$\kappa$}}
 {$\alpha$}
 {$def?(c, d)$}
 {$res$ \igobs $obtener(c, d)$}
-{\bigo($log(n)$), donde $n = \#(claves(d))$}
+{\bigo($log(n)cmp$), donde $n = \#(claves(d))$ y $cmp = equal(c, c')+greater(c, c')$}
 {}
 {Devuelve el significado definido para la clave $c$}
 
+\operacion{Borrar}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in}{$c$}{$\kappa$}}
+{}
+{$d \igobs d_0 \land def?(c, d)$}
+{$d \igobs borrar(c, d_0)$}
+{\bigo($log(n)cmp$), donde $n = \#(claves(d))$ y $cmp = equal(c, c')+greater(c, c')$}
+{}
+{Borra el significado asociado a la clave $c$}
 
 
-\subsection{Representación}
+
+\subsubsection{Operaciones del iterador}
+
+\operacion{CrearIt}
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
+{itDiccLog($\kappa, \alpha$)}
+{true}
+{alias(\cuidado ver alias)}
+{\bigo(1)}
+{Tengo que ver como decir que siguientes(res)
+    es una permutacion de los elementos del diccionario. Seguramente 
+    hacer una operacion auxiliar sobre diccionario que devuelta una 
+    secuencia de tuplas kv.}
+{}
+
+\operacion{HaySiguiente}
+{    \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
+{bool}
+{true}
+{$res \igobs haySiguiente?(it)$}
+{\bigo(1)}
+{}
+{Devuelve true si hay elementos para avanzar}
+
+\operacion{Siguiente}
+{   \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
+{tupla(clave: $\kappa$, significado: $\alpha$)}
+{$haySiguiente?(it)$}
+{alias($res \igobs siguiente(it)$)}
+{\bigo(1)}
+{$res$.significado es una referencia al significado de diccionario.
+    \cuidado ver como decir bien esto}
+{}
+
+\operacion{Avanzar}
+{   \param{in/out}{$it$}{itDiccLog($\kappa, \alpha$)}}
+{}
+{$it \igobs it_0 \land haySiguiente?(it)$}
+{$it \igobs avanzar(it_0)$}
+{\bigo(1)}
+{}
+{Avanza a la siguiente posición del iterador}
+
+\operacion{EliminarSiguiente}
+{   \param{in/out}{$it$}{itDiccLog($\kappa, \alpha$)}}
+{}
+{$it \igobs it_0 \land haySiguiente?(it)$}
+{$it \igobs eliminarSiguiente(it_0)$}
+{\bigo($log(n)$), donde $n = $ cantidad de elementos en el 
+    diccionario sobre el que se itera \cuidado}
+{}
+{Elimina del diccionario la clave del siguiente elemento}
+
+
+
+
+\subsection{Representación del diccionario}
+
+\serepresenta{diccLog($\kappa, \alpha$)}{avl}
+\donde{avl}{tupla(\\
+    $raiz$: puntero(nodo),\\
+    $maxClave$: $\kappa$, $maxValor$: $\alpha$,\\
+    $minClave$: $\kappa$, $minValor$: $\alpha$ )}
+\donde{nodo}{tupla(\\
+    $clave$: $\kappa$, $valor$: $\alpha$,\\
+    $menor$: nodo, $mayor$: nodo, $padre$: nodo\\
+    $fdb$: nat )}
+
 
 \subsubsection{Invariante de representación}
 
+\begin{Rep}{$avl$}{$a$}
+    \repfunc{ raiz es null $\lor_L$ }
+    {}
+    \repfunc{ para cada nodo el factor de balanceo esta entre -1 y 1 }
+    {}
+    \repfunc{ para cada nodo el factor de balanceo es igual a la diferencia 
+        de altura de sus dos hijos }
+    {}
+    \repfunc{ para cada nodo, si tiene un nodo menor, su valor es mayor al 
+        de todos los nodos (del maximo) de la rama menor }
+    {}
+    \repfunc{ para cada nodo, si tiene un nodo mayor, su valor es menor al 
+        de todos los nodos (del minimo) de la rama mayor }
+    {}
+    \repfunc{ el padre de raiz siembre debe ser null }
+    {}
+    \repfunc{ para cada nodo n, si tiene mayor o menor, sus padres debe ser n }
+    {}
+    \repfunc{ para cada dos nodos distintos, $n_1$ y $n_2$, sus hijos deben ser distintos }
+    {}
+    \repfunc{ para cada nodo ninguno puede apuntar a la raiz // esto deberia estar
+        demas porque si el padre de la raiz debe ser null ya ningun nodo podria
+        tenerlo de hijo }
+    {}
+    \repfunc{ maxClave y maxValor son iguales a la clave y valor del maximo de raiz }
+    {}
+    \repfunc{ minClave y minValor son iguales a la clave y valor del minimo de raiz }
+    {}
+
+\end{Rep}
+
+
 \subsubsection{Función de abstracción}
+
+
+
+
+\subsection{Representación del iterador}
+
 
 \subsection{Algoritmos}
 
