@@ -20,9 +20,9 @@
 \operacion{datoString}
 {\param{in}{$str$}{$string$}}
 {dato}
-{}
+{true}
 {res \igobs datoString(str)}
-{\bigo(1)}
+{\bigo(copy($string$))}
 {true}
 {}
 
@@ -75,6 +75,19 @@
 {}
 {}
 
+\operacion{$\bullet > \bullet$}
+{\param{in}{$d_1$}{$dato$}, \param{in}{$d_2$}{$dato$}}
+{bool}
+{tipo?($d_1$) \igobs tipo?($d_2$)}
+{res $\iff$ \IFL Nat?($d_1$) THEN \\
+    \hspace*{10.5em} valorNat($d_1$) > valorNat($d_2$) \\
+    \hspace*{9em} ELSE \\
+    \hspace*{10.5em} valorString($d_1$) > valorString($d_2$) \\
+    \hspace*{9em} FI }
+{\bigo(cmp($string$))}
+{}
+{}
+
 \subsection{Representación}
 
 -- todo: explicacion --
@@ -101,9 +114,9 @@
     \State $res.valorNat \gets n$                                   \comment \bigo(1)
 }
 
-\algoritmo{iDatoString}{\param{in}{$str$}{$string$}}{dato}{\bigo(1)}{
+\algoritmo{iDatoString}{\param{in}{$str$}{$string$}}{dato}{\bigo(copy($string$))}{
     \State $res.esNat \gets false$                                  \comment \bigo(1)
-    \State $res.valorString \gets str$                              \comment \bigo(1)
+    \State $res.valorString \gets str$                              \comment \bigo(copy($string$))
 }
 
 \algoritmo{iIsNat}{\param{in}{$d$}{$dato$}}{bool}{\bigo(1)}{
@@ -128,6 +141,15 @@
         \State $res \gets d_1.valorNat == d_2.valorNat$             \comment \bigo(1)
     \Else
         \State $res \gets d_1.valorString == d_2.valorString$       \comment \bigo(cmp($string$))
+    \EndIf
+}
+
+\algoritmo{$\bullet > \bullet$}{\param{in}{$d_1$}{$dato$}, \param{in}{$d_2$}{$dato$}}
+        {bool}{\bigo(cmp($string$))}{
+    \If{$d_1$.esNat}
+        \State $res \gets d_1.valorNat > d_2.valorNat$              \comment \bigo(1)
+    \Else
+        \State $res \gets d_1.valorString > d_2.valorString$        \comment \bigo(cmp($string$))
     \EndIf
 }
 
