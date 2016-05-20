@@ -7,7 +7,7 @@
 %%
 
 \NeedsTeXFormat{LaTeX2e}[1994/06/01]
-\ProvidesPackage{newalgo}[2005/09/20 Format code algorithms nicely]
+\ProvidesPackage{aed2-newalgo}[2005/09/20 Format code algorithms nicely]
 
 %\RequirePackage[latin1]{inputenc}
 
@@ -30,7 +30,7 @@
 {\catcode`\!=8 % funny catcode so ! will be a delimiter
  \catcode`\Q=3 % funny catcode so Q will be a delimiter
 \long\gdef\ifgiven#1\then{\Ifbl@nk#1QQQ\empty!}% negative of \ifblank
-\long\gdef\ifblank#1\then{\Ifbl@nk#1QQ..!}% if null or spaces
+\long\gdef\ifelseblank#1\then{\Ifbl@nk#1QQ..!}% if null or spaces
 \long\gdef\Ifbl@nk#1#2Q#3!{\ifx#3}
 \long\gdef\ifnull#1\then{\IfN@LL#1* {#1}!}% if null
 \long\gdef\IfN@LL#1 #2!{\ifblank{#2}\then}
