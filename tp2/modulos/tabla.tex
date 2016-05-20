@@ -43,7 +43,7 @@
     \param{in}{$d$}{$dato$}}
 {$conj(registro)$}
 {$t \igobs t_0 \land c \in claves(t) \land_L tipo?(d) \igobs tipoCampo(c,t)$}
-{$t$ \igobs borrarRegistro($crit,t_0$)}
+{$t \igobs borrarRegistro(crit,t_0)$}
 {\bigo($L + in$)}
 {}
 {$in$ es \bigo($log(n)$) si el campo de borrado es un índice, \bigo($n$) sino}
@@ -53,10 +53,10 @@
     \param{in}{c}{$campo$}}
 {}
 {$t \igobs t_0 \land puedeIndexar(c,t)$}
-{$t$ \igobs indexar($c,t_0$)}
-{\bigo(in)}
+{$t \igobs indexar(c,t_0)$}
+{\bigo($n \; log(n)$)}
 {}
-{in es O(log(n)) en promedio si hay un indice sobre un campo de tipo NAT, O(n) sino}
+{}
 
 \operacion{Nombre}
 {   \param{in}{$t$}{$tabla$}}
@@ -71,7 +71,7 @@
 {   \param{in}{$t$}{$tabla$}
     \param{in}{$c$}{$campo$}}
 {bool}
-{true}
+{$c \in campos(t)$}
 {$res \igobs c \in claves(t$}
 {\bigo(1)}
 {}
@@ -81,19 +81,30 @@
 {   \param{in}{$t$}{$tabla$}
     \param{in}{$c$}{$campo$}}
 {bool}
-{true}
-{$res \igobs indices(t$}
+{$c \in campos(t)$}
+{$res \igobs c \in indices(t$}
 {\bigo(1)}
 {}
 {}
 
 \operacion{Campos}
 {   \param{in}{$t$}{$tabla$}}
-{conj(campo)}
+{registro}
 {true}
-{$res \igobs campos(t)$}
+{$claves(res) \igobs campos(t) \land_L \\
+    \hspace*{5em} (\forall c : campo) c \in campos(t) \implies_L \; tipo?(obtener(c,res)) \igobs tipoCampo(c,t)$}
 {\bigo(1)}
 {No se debe modificar el conjunto retornado}
+{}
+
+\operacion{TipoCampo}
+{   \param{in}{$t$}{$tabla$},
+    \param{in}{$c$}{$campo$}}
+{bool}
+{$c \in campos(t)$}
+{$res \igobs tipoCampo(c,t)$}
+{\bigo(1)}
+{}
 {}
 
 \operacion{Accesos}
@@ -273,6 +284,8 @@
                                     \comment Como la máxima cantidad de valores del índice string es \bigo($2^L$),
         \Statex                     \comment insertar un nuevo valor del índice se hace en \bigo($log(2^L)$) $=$ \bigo($L$)
     \EndIf
+    \State
+    \State $t.accesos \gets t.accesos + 1$                          \comment \bigo(1)
 }
 
 \algoritmo{iBorrarRegistro}{
@@ -282,9 +295,8 @@
         }{$conj(registro)$}{\bigo($L + in$)}{
     \var $esta : bool$
     \var $it : itConj(registro)$
-    \var $r : registro$
     \State $res \gets vacio()$                                      \comment \bigo(1)
-    \State $esta \gets false$                                       \comment \bigo(1
+    \State $esta \gets false$                                       \comment \bigo(1)
 
     \State
     \If{$t.hayIndiceNat \algAnd t.indiceNat == c$}                  \comment \bigo(1)
@@ -299,7 +311,7 @@
         \EndIf
     \Else
         \State $it \gets crearIt(t.registros)$                      \comment \bigo(1)
-        \While{$haySiguiente(it) \algAnd significado(siguiente(it),c) \!= d$}   \comment \bigo($1$)
+        \While{$haySiguiente(it) \algAnd significado(siguiente(it),c) \;!= d$}   \comment \bigo(1)
             \Statex             \comment El loop se repite a lo sumo $n$ veces
             \State avanzar(it)                                      \comment \bigo(1)
         \EndWhile
@@ -310,6 +322,7 @@
 
     \State
     \If{$esta$}
+        \var $r : registro$
         \State $r \gets copiar(siguiente(it))$                      \comment \bigo($L$)
         \State $agregarRapido(res, r)$                              \comment \bigo(1)
         \State $eliminarSiguiente(it)$                              \comment \bigo(1)
@@ -319,6 +332,146 @@
         \If{$t.hayIndiceString$}                                    \comment \bigo(1)
             \State $borrar(t.indicesString, significado(r, t.indiceString))$    \comment \bigo($log(n)$)
         \EndIf
+
+        \State
+        \State $t.accesos \gets t.accesos + 1$                      \comment \bigo(1)
+    \EndIf
+
+    \State todo: maxmin!!!
+}
+
+\algoritmo{iIndexar}{
+        \param{in/out}{$t$}{$tabla$},
+        \param{in}{$c$}{$campo$}
+        }{}{\bigo($n \; log(n)$)}{
+        \var it : itConj(registro)
+        \State $it \gets crearIt(t.registros)$                      \comment \bigo(1)
+
+        \If{tipoCampo(t,c)}                                         \comment \bigo(1)
+            \State $t.hayIndiceNat \gets true$                      \comment \bigo(1)
+            \State $t.indiceNat \gets c$                            \comment \bigo(1)
+            \State $t.indicesNat \gets vacio()$                     \comment \bigo(1)
+            \While{$haySiguiente(it)$}                              \comment \bigo(1)
+                \Statex             \comment El loop se repite a lo sumo $n$ veces
+                \State $definirRapido(t.indicesNat, significado(siguiente(it),c), copy(it))$
+                                                                    \comment \bigo($log(n)$)
+                \State $avanzar(it)$                                \comment \bigo(1)
+            \EndWhile
+        \Else
+            \State $t.hayIndiceString \gets true$                   \comment \bigo(1)
+            \State $t.indiceString \gets c$                         \comment \bigo(1)
+            \State $t.indicesString \gets vacio()$                  \comment \bigo(1)
+            \While{$haySiguiente(it)$}                              \comment \bigo(1)
+                \Statex             \comment El loop se repite a lo sumo $n$ veces
+                \State $definirRapido(t.indicesString, significado(siguiente(it),c), copy(it))$
+                                                                    \comment \bigo($log(n)$)
+                \State $avanzar(it)$                                \comment \bigo(1)
+            \EndWhile
+        \EndIf
+}
+
+\algoritmo{iNombre}{
+        \param{in}{$t$}{$tabla$}
+        }{string}{\bigo(1)}{
+        \State $res \gets t.nombre$                                 \comment \bigo(1)
+}
+
+\algoritmo{iEsClave}{
+        \param{in}{$t$}{$tabla$},
+        \param{in}{$c$}{$campo$}
+        }{bool}{\bigo(1)}{
+        \var $it : itConj(campo)$
+        \State $it \gets crearIt(t.claves)$                         \comment \bigo(1)
+
+        \While{$haySiguiente(it) \algAnd siguiente(it) \;!= c$}     \comment \bigo(1)
+            \Statex     \comment El loop se repite a lo sumo $|campos|$ veces, acotado por constante
+            \State avanzar(it)                                      \comment \bigo(1)
+        \EndWhile
+        \State $res \gets haySiguiente(it)$                         \comment \bigo(1)
+}
+
+\algoritmo{iEsIndice}{
+        \param{in}{$t$}{$tabla$},
+        \param{in}{$c$}{$campo$}
+        }{bool}{\bigo(1)}{
+        \If{tipoCampo(t,c)}                                         \comment \bigo(1)
+            \State $res \gets c == t.indiceNat$                     \comment \bigo(1)
+        \Else
+            \State $res \gets c == t.indiceString$                  \comment \bigo(1)
+        \EndIf
+}
+
+\algoritmo{iCampos}{
+        \param{in}{$t$}{$tabla$}
+        }{registro}{\bigo(1)}{
+        \State $res \gets t.campos$                                 \comment \bigo(1)
+}
+
+\algoritmo{iTipoCampo}{
+        \param{in}{$t$}{$tabla$},
+        \param{in}{$c$}{$campo$}
+        }{registro}{\bigo(1)}{
+        \State $res \gets isNat(significado(t.campos,c))$           \comment \bigo(1)
+}
+
+\algoritmo{iAccesos}{
+        \param{in}{$t$}{$tabla$}
+        }{nat}{\bigo(1)}{
+        \State $res \gets t.accesos$                                \comment \bigo(1)
+}
+
+\algoritmo{maxNat}{
+        \param{in}{$t$}{$tabla$}
+        }{nat}{\bigo(1)}{
+        \State $res \gets t.maxminNat.max$                          \comment \bigo(1)
+}
+
+\algoritmo{minNat}{
+        \param{in}{$t$}{$tabla$}
+        }{nat}{\bigo(1)}{
+        \State $res \gets t.maxminNat.min$                          \comment \bigo(1)
+}
+
+\algoritmo{maxString}{
+        \param{in}{$t$}{$tabla$}
+        }{string}{\bigo(1)}{
+        \State $res \gets t.maxminString.max$                       \comment \bigo(1)
+}
+
+\algoritmo{minString}{
+        \param{in}{$t$}{$tabla$}
+        }{string}{\bigo(1)}{
+        \State $res \gets t.maxminString.min$                       \comment \bigo(1)
+}
+
+\algoritmo{iBuscar}{
+        \param{in/out}{$t$}{$tabla$},
+        \param{in}{$c$}{$campo$},
+        \param{in}{$d$}{$dato$}
+        }{$conj(registro)$}{\bigo($L + in$)}{
+    \var $it : itConj(registro)$
+    \State $res \gets vacio()$                                      \comment \bigo(1)
+
+    \State
+    \If{$t.hayIndiceNat \algAnd t.indiceNat == c$}                  \comment \bigo(1)
+        \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n)$)
+            \State $it \gets significado(t.indicesNat, getNat(d))$  \comment \bigo($log(n)$)
+            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($L$)
+        \EndIf
+    \ElsIf{$t.hayIndiceString \algAnd t.indiceString == c$}         \comment \bigo(1)
+        \If{$definido(t.indicesString,getString(d))$}               \comment \bigo($log(n)$)
+            \State $it \gets significado(t.indicesString, getString(d))$        \comment \bigo($log(n)$)
+            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($L$)
+        \EndIf
+    \Else
+        \State $it \gets crearIt(t.registros)$                      \comment \bigo(1)
+        \While{$haySiguiente(it)$}                                  \comment \bigo(1)
+            \Statex             \comment El loop se repite $n$ veces
+            \If{$significado(siguiente(it),c) = d$}
+                \State $agregarRapido(res, siguiente(it))$          \comment \bigo($L$)
+            \EndIf
+            \State avanzar(it)                                      \comment \bigo(1)
+        \EndWhile
     \EndIf
 }
 
