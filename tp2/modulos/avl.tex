@@ -94,6 +94,29 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {Borra el significado asociado a la clave $c$}
 
 
+\cuidado Definir funcion auxiliar maximo y minimo sobre claves del diccionario
+
+\operacion{Maximo}
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
+{itDiccLog($\kappa, \alpha$)}
+{$\neg (d \igobs vacio)$}
+{$siguiente(res) \igobs tupla(maximo(d), obtener(maximo(d)))$}
+{\bigo(1)}
+{}
+{Obtiene un iterador a la clave y el significado del elemento con la clave 
+    mas grande en el diccionario}
+
+\operacion{Minimo}
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
+{itDiccLog($\kappa, \alpha$)}
+{$\neg (d \igobs vacio)$}
+{$siguiente(res) \igobs tupla(minimo(d), obtener(minimo(d)))$}
+{\bigo(1)}
+{}
+{Obtiene un iterador a la clave y el significado del elemento con la clave 
+    mas pequeña en el diccionario}
+
+
 
 \subsubsection{Operaciones del iterador}
 
@@ -155,8 +178,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 \serepresenta{diccLog($\kappa, \alpha$)}{avl}
 \donde{avl}{tupla(\\
     $raiz$: puntero(nodo),\\
-    $maxClave$: $\kappa$, $maxValor$: $\alpha$,\\
-    $minClave$: $\kappa$, $minValor$: $\alpha$ )}
+    $max$: puntero(nodo), $min$: puntero(nodo) )}
 \donde{nodo}{tupla(\\
     $clave$: $\kappa$, $valor$: $\alpha$,\\
     $menor$: nodo, $mayor$: nodo, $padre$: nodo\\
@@ -166,7 +188,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 \subsubsection{Invariante de representación}
 
 \begin{Rep}{$avl$}{$a$}
-    \repfunc{ raiz es null $\lor_L$ }
+    \repfunc{ raiz es null (y max y min tambien son null) $\lor_L$ }
     {}
     \repfunc{ para cada nodo el factor de balanceo esta entre -1 y 1 }
     {}
@@ -189,9 +211,9 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
         demas porque si el padre de la raiz debe ser null ya ningun nodo podria
         tenerlo de hijo }
     {}
-    \repfunc{ maxClave y maxValor son iguales a la clave y valor del maximo de raiz }
+    \repfunc{ max es igual al nodo con la clave mas grande }
     {}
-    \repfunc{ minClave y minValor son iguales a la clave y valor del minimo de raiz }
+    \repfunc{ min es igual al nodo con la clave mas pequeña }
     {}
 
 \end{Rep}
