@@ -81,23 +81,23 @@
 %cambiar lo que rodea a #1 para otro formato del nombre de la funcion
 \newcommand\operacion[8]{
 \begin{minipage}{1\textwidth}
-{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi}
-\ifblank{#4}\then{}\else{\par\hspace*{1em}\pre{#4}}\fi
-\ifblank{#5}\then{}\else{\par\hspace*{1em}\post{#5}}\fi
-\ifblank{#6}\then{}\else{\par\hspace*{1em}\complejidad{#6}}\fi
-\ifblank{#7}\then{}\else{\par\hspace*{1em}\aliasing{#7}}\fi
-\ifblank{#8}\then{}\else{\par\hspace*{1em}\desc{#8}}\fi
-%{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi}\par\hspace*{1em}\pre{#4}\par\hspace*{1em}\post{#5}
+{\textsc{#1}(#2)\ifelseblank{#3}\then{}\else{\resultado{#3}}\fi}
+\ifelseblank{#4}\then{}\else{\par\hspace*{1em}\pre{#4}}\fi
+\ifelseblank{#5}\then{}\else{\par\hspace*{1em}\post{#5}}\fi
+\ifelseblank{#6}\then{}\else{\par\hspace*{1em}\complejidad{#6}}\fi
+\ifelseblank{#7}\then{}\else{\par\hspace*{1em}\aliasing{#7}}\fi
+\ifelseblank{#8}\then{}\else{\par\hspace*{1em}\desc{#8}}\fi
+%{\textsc{#1}(#2)\ifelseblank{#3}\then{}\else{\resultado{#3}}\fi}\par\hspace*{1em}\pre{#4}\par\hspace*{1em}\post{#5}
 %{\textsc{#1}(#2)\resultado{#3}}\par\hspace*{1em}\pre{#4}\par\hspace*{1em}\post{#5}
 \end{minipage}\vskip 1 em}
 
 \newcommand\operaciond[7]{
 \begin{minipage}{1\textwidth}
-{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi}
-\ifblank{#4}\then{}\else{\par\hspace*{1em}\pre{#4}}\fi
-\ifblank{#5}\then{}\else{\par\hspace*{1em}\post{#5}}\fi
-\ifblank{#6}\then{}\else{\par\hspace*{1em}\complejidad{#6}}\fi
-\ifblank{#7}\then{}\else{\par\hspace*{1em}\desc{#7}}\fi
+{\textsc{#1}(#2)\ifelseblank{#3}\then{}\else{\resultado{#3}}\fi}
+\ifelseblank{#4}\then{}\else{\par\hspace*{1em}\pre{#4}}\fi
+\ifelseblank{#5}\then{}\else{\par\hspace*{1em}\post{#5}}\fi
+\ifelseblank{#6}\then{}\else{\par\hspace*{1em}\complejidad{#6}}\fi
+\ifelseblank{#7}\then{}\else{\par\hspace*{1em}\desc{#7}}\fi
 \end{minipage}\vskip 1 em}
 
 
@@ -118,12 +118,12 @@
 \newcommand\funcion[8]{
 \begin{minipage}{1\textwidth}
     {\textbf{función}
-    \textsc{#1} (#2) \ifblank{#3}\then{}\else{\resultado{#3}}\fi}
-    \ifblank{#4}\then{}\else{\par\hspace*{4em}\pre{#4}}\fi
-    \ifblank{#5}\then{}\else{\par\hspace*{4em}\post{#5}}\fi
-    \ifblank{#6}\then{}\else{\par\hspace*{4em}\complejidad{#6}}\fi
-    \ifblank{#7}\then{}\else{\par\hspace*{4em}\aliasing{#7}}\fi
-    \ifblank{#8}\then{}\else{\par\hspace*{4em}\desc{#8}}\fi
+    \textsc{#1} (#2) \ifelseblank{#3}\then{}\else{\resultado{#3}}\fi}
+    \ifelseblank{#4}\then{}\else{\par\hspace*{4em}\pre{#4}}\fi
+    \ifelseblank{#5}\then{}\else{\par\hspace*{4em}\post{#5}}\fi
+    \ifelseblank{#6}\then{}\else{\par\hspace*{4em}\complejidad{#6}}\fi
+    \ifelseblank{#7}\then{}\else{\par\hspace*{4em}\aliasing{#7}}\fi
+    \ifelseblank{#8}\then{}\else{\par\hspace*{4em}\desc{#8}}\fi
 %{\textsc{#1}(#2)\resultado{#3}}\par\hspace*{1em}\pre{#4}\par\hspace*{1em}\post{#5}
 \end{minipage}\vskip 1 em}
 
@@ -139,8 +139,8 @@
     \begin{itemize}}
 {\end{itemize}\end{changemargin}}
 \newcommand\repfunc[2]{\item\noindent
-    \ifblank{#1}\then{}\else{#1 \par}\fi
-    \ifblank{#2}\then{}\else{\ensuremath{#2} \par}\fi
+    \ifelseblank{#1}\then{}\else{#1 \par}\fi
+    \ifelseblank{#2}\then{}\else{\ensuremath{#2} \par}\fi
 }
 \newcommand\reptrue[2]{
     \begin{changemargin}{0em}{4em}Rep : #1 $\rightarrow$ boolean
@@ -154,8 +154,8 @@
     \begin{itemize}}
 {\end{itemize}\end{changemargin}}
 \newcommand\absfunc[2]{\item\noindent
-    \ifblank{#1}\then{}\else{#1 \par}\fi
-    \ifblank{#2}\then{}\else{\ensuremath{#2} \par}\fi
+    \ifelseblank{#1}\then{}\else{#1 \par}\fi
+    \ifelseblank{#2}\then{}\else{\ensuremath{#2} \par}\fi
 }
 
 \newenvironment{ABSFW}[4]
@@ -181,7 +181,36 @@
 \def\changemargin#1#2{\list{}{\rightmargin#2\leftmargin#1}\item[]}
 \let\endchangemargin=\endlist
 
-\newcommand\algoritmo[3]{\textsc{#1}(#2)\ifblank{#3}\then{}\else{\resultado{#3}}\fi\newline}
+\providetoggle{algoritmo}
+\captionsetup[algorithm]{labelformat=empty}
+\newcommand\algoritmo[5]{
+    \begin{algorithm}[H]
+        \toggletrue{algoritmo}
 
-\newcommand\com{}
+        \caption{\; #1(#2)
+                   \ifelseblank{#3}\then{}\else{\resultado{#3}}\fi
+                   \hfill #4}
+        \begin{algorithmic}
+            #5
+        \end{algorithmic}
+
+        \togglefalse{algoritmo}
+    \end{algorithm}
+}
+
+\makeatletter
+
+% https://tex.stackexchange.com/questions/226009/algorithm2e-style-comments-in-algorithmicx<Paste>
+\let\fslash=/
+\catcode`\/=\active
+\newcommand{/}{\@ifnextchar/{\fslash@}\fslash}
+\def\fslash@/{\hfill \fslash\fslash\itshape}
+\AtBeginEnvironment{algorithmic}{%
+  \let\olditem\item
+  \renewcommand{\item}{\upshape\olditem}
+}
+\catcode`\/=12
+\makeatother
+
+\newcommand\comment{\iftoggle{algoritmo}{\hfill // }{}}
 
