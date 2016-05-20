@@ -32,19 +32,21 @@
 {}
 {$t \igobs t_0 \land campos(r) \igobs campos(t) \land puedoInsertar?(r,t)$}
 {$t$ \igobs agregarRegistro(r,$t_0$)}
-{\bigo(in)}
-{El registro no debe ser modificado luego}
-{in es O(log(n)) en promedio si hay un indice sobre un campo de tipo NAT, O(1) sino}
+{L + \bigo($in$)}
+{}
+{$in$ es \bigo($log(n)$) si hay un indice sobre un campo de tipo NAT, \bigo(1) sino. \\
+ }
 
 \operacion{BorrarRegistro}
 {   \param{in/out}{$t$}{$tabla$},
-    \param{in}{$crit$}{$registro$}}
-{}
-{$t \igobs t_0 \land \#campos(crit) = 1 \land_L dameUno(campos(crit)) \in claves(t)$}
+    \param{in}{$c$}{$campo$},
+    \param{in}{$d$}{$dato$}}
+{$conj(registro)$}
+{$t \igobs t_0 \land c \in claves(t) \land_L tipo?(d) \igobs tipoCampo(c,t)$}
 {$t$ \igobs borrarRegistro($crit,t_0$)}
-{\bigo(in)}
+{\bigo($L + in$)}
 {}
-{in es O(log(n)) en promedio si hay un indice sobre un campo de tipo NAT, O(n) sino}
+{$in$ es \bigo($log(n)$) si el campo de borrado es un índice, \bigo($n$) sino}
 
 \operacion{Indexar}
 {   \param{in/out}{$t$}{$tabla$},
@@ -243,7 +245,7 @@
         \param{in}{$claves$}{$conj(campos)$},
         \param{in}{$columnas$}{$registro$}
         }{tabla}{\bigo(1)}{
-    \State $res.registros \gets NuevoDiccAvl()$                     \comment \bigo(1)
+    \State $res.registros \gets nuevoDiccAvl()$                     \comment \bigo(1)
     \State $res.hayIndiceNat \gets false$                           \comment \bigo(1)
     \State $res.hayIndiceString \gets false$                        \comment \bigo(1)
     \State $res.nombre \gets nombre$                                \comment \bigo(1)
@@ -255,8 +257,69 @@
 \algoritmo{iAgregarRegistro}{
         \param{in/out}{$t$}{$tabla$},
         \param{in}{$r$}{$registro$}
-        }{tabla}{\bigo(in)}{
-    \State $res.registros \gets NuevoDiccAvl()$                     \comment \bigo(1)
+        }{}{\bigo($L + in$)}{
+    \var $it : itConj(registro)$
+    \State $it \gets AgregarRapido(t.registros, r)$                 \comment \bigo($L$)
+
+    \If{$t.hayIndiceNat$}
+        \var $k : nat$
+        \State $k \gets getNat(significado(r, t.indiceNat))$        \comment \bigo(1)
+        \State $definirRapido(t.indicesNat, k, it)$                 \comment \bigo($log(n)$)
+    \EndIf
+    \If{$t.hayIndiceString$}
+        \var $k : string$
+        \State $k \gets getString(significado(r, t.indiceString))$  \comment \bigo(1)
+        \State $definirRapido(t.indicesString, k, it)$
+                                    \comment Como la máxima cantidad de valores del índice string es \bigo($2^L$),
+        \Statex                     \comment insertar un nuevo valor del índice se hace en \bigo($log(2^L)$) $=$ \bigo($L$)
+    \EndIf
+}
+
+\algoritmo{iBorrarRegistro}{
+        \param{in/out}{$t$}{$tabla$},
+        \param{in}{$c$}{$campo$},
+        \param{in}{$d$}{$dato$}
+        }{$conj(registro)$}{\bigo($L + in$)}{
+    \var $esta : bool$
+    \var $it : itConj(registro)$
+    \var $r : registro$
+    \State $res \gets vacio()$                                      \comment \bigo(1)
+    \State $esta \gets false$                                       \comment \bigo(1
+
+    \State
+    \If{$t.hayIndiceNat \algAnd t.indiceNat == c$}                  \comment \bigo(1)
+        \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n)$)
+            \State $it \gets significado(t.indicesNat, getNat(d))$  \comment \bigo($log(n)$)
+            \State $esta \gets true$                                \comment \bigo(1)
+        \EndIf
+    \ElsIf{$t.hayIndiceString \algAnd t.indiceString == c$}         \comment \bigo(1)
+        \If{$definido(t.indicesString,getString(d))$}               \comment \bigo($log(n)$)
+            \State $it \gets significado(t.indicesString, getString(d))$        \comment \bigo($log(n)$)
+            \State $esta \gets true$                                \comment \bigo(1)
+        \EndIf
+    \Else
+        \State $it \gets crearIt(t.registros)$                      \comment \bigo(1)
+        \While{$haySiguiente(it) \algAnd significado(siguiente(it),c) \!= d$}   \comment \bigo($1$)
+            \Statex             \comment El loop se repite a lo sumo $n$ veces
+            \State avanzar(it)                                      \comment \bigo(1)
+        \EndWhile
+        \If{haySiguiente(it)}                                       \comment \bigo(1)
+            \State $esta \gets true$                                \comment \bigo(1)
+        \EndIf
+    \EndIf
+
+    \State
+    \If{$esta$}
+        \State $r \gets copiar(siguiente(it))$                      \comment \bigo($L$)
+        \State $agregarRapido(res, r)$                              \comment \bigo(1)
+        \State $eliminarSiguiente(it)$                              \comment \bigo(1)
+        \If{$t.hayIndiceNat$}                                       \comment \bigo(1)
+            \State $borrar(t.indicesNat, significado(r, t.indiceNat))$          \comment \bigo($log(n)$)
+        \EndIf
+        \If{$t.hayIndiceString$}                                    \comment \bigo(1)
+            \State $borrar(t.indicesString, significado(r, t.indiceString))$    \comment \bigo($log(n)$)
+        \EndIf
+    \EndIf
 }
 
 \subsection{Servicios usados}
