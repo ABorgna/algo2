@@ -15,6 +15,15 @@ El módulo diccAVL provee un diccionario con acceso, inserción y borrado en \bi
         {} % Aliasing
         {Función de igualdad de $\kappa$'s} % Descripcion
 
+    \funcion{$\bullet > \bullet$} % Nombre
+        {\param{in}{$k_0$}{$\kappa$}, \param{in}{$k_1$}{$\kappa$}} % Parametros
+        {bool} % Tipo resultado
+        {true} % Pre
+        {res \igobs ($k_0 > k_1$)} % Post
+        {$\Theta(greater(k_0, k_1))$} % Complejidad
+        {} % Aliasing
+        {Función orden estricto de $\kappa$'s} % Descripcion
+
 \end{iparamformales}
 
 \iusa{}
