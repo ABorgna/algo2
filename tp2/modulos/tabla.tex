@@ -178,14 +178,11 @@
 \serepresenta{tabla}{vec}
 \donde{vec}{tupla($registros$: regs, $hayIndiceNat$: bool, $indiceNat$: campo, $indicesNat$: treeNat, \\
     $hayIndiceString$: bool, $indiceString$: campo, $indicesString$: treeString, \\
-    $maxminNat$: mmNat, $maxminString$: mmString, \\
     $nombre$: nombreTabla, $campos$: registro, $claves$: conj($campo$), $accesos$: nat)}
 
 \donde{regs}{conj($registro$)}
 \donde{treeNat}{diccAvl($nat$, itConj($registro$))}
 \donde{treeString}{diccAvl($string$, itConj($registro$))}
-\donde{mmNat}{tupla($max$: nat, $min$: nat)}
-\donde{mmString}{tupla($max$: string, $min$: string)}
 
 \donde{campo}{string}
 \donde{nombreTabla}{string}
@@ -223,15 +220,6 @@
 
     \repfunc{Hay por lo menos tantos accesos como registros insertados}
         {e.accesos \ge \#e.registros}
-
-    \repfunc{Los max/min son válidos}
-        {e.hayIndiceString \land long(e.registros) \implies (\\
-        \hspace*{2em} valorString(max(dameColumna(e.indiceString,e.registros))) \igobs e.maxminString.max \land \\
-        \hspace*{2em} valorString(min(dameColumna(e.indiceString,e.registros))) \igobs e.maxminString.min) \land \\
-        e.hayIndiceNat \land long(e.registros) \implies (\\
-        \hspace*{2em} valorNat(max(dameColumna(e.indiceNat,e.registros))) \igobs e.maxminNat.max \land \\
-        \hspace*{2em} valorNat(min(dameColumna(e.indiceNat,e.registros))) \igobs e.maxminNat.min)\\
-    }
 
 \end{Rep}
 
@@ -336,8 +324,6 @@
         \State
         \State $t.accesos \gets t.accesos + 1$                      \comment \bigo(1)
     \EndIf
-
-    \State todo: maxmin!!!
 }
 
 \algoritmo{iIndexar}{
@@ -423,25 +409,25 @@
 \algoritmo{maxNat}{
         \param{in}{$t$}{$tabla$}
         }{nat}{\bigo(1)}{
-        \State $res \gets t.maxminNat.max$                          \comment \bigo(1)
+        \State $res \gets maximo(t.indicesNat)_0$                   \comment \bigo(1)
 }
 
 \algoritmo{minNat}{
         \param{in}{$t$}{$tabla$}
         }{nat}{\bigo(1)}{
-        \State $res \gets t.maxminNat.min$                          \comment \bigo(1)
+        \State $res \gets minimo(t.indicesNat)_0$                   \comment \bigo(1)
 }
 
 \algoritmo{maxString}{
         \param{in}{$t$}{$tabla$}
         }{string}{\bigo(1)}{
-        \State $res \gets t.maxminString.max$                       \comment \bigo(1)
+        \State $res \gets maximo(t.indicesString)_0$                \comment \bigo(1)
 }
 
 \algoritmo{minString}{
         \param{in}{$t$}{$tabla$}
         }{string}{\bigo(1)}{
-        \State $res \gets t.maxminString.min$                       \comment \bigo(1)
+        \State $res \gets minimo(t.indicesString)_0$                \comment \bigo(1)
 }
 
 \algoritmo{iBuscar}{
