@@ -28,7 +28,52 @@ El módulo diccAVL provee un diccionario con acceso, inserción y borrado en \bi
 
 \iusa{}
 \iseexplica{Diccionario($\kappa, \alpha$)}
-\igenero{diccAvl($\kappa, \alpha$)}
+\igenero{diccAVL($\kappa, \alpha$)}
+
+\ioperaciones
+
+\operacion{NuevoDiccAvl}
+{}
+{diccAVL($\kappa, \alpha$)}
+{true}
+{$res \igobs vacio$}
+{\bigo(1)}
+{}
+{Crea un diccionario vacio}
+
+\operacion{Definir}
+{   \param{in/out}{$d$}{diccAVL($\kappa, \alpha$)},
+    \param{in}{$c$}{$\kappa$},
+    \param{in}{$v$}{$\alpha$}}
+{}
+{$d \igobs d_0$}
+{$d \igobs definir(c, v, d_0)$}
+{\bigo($log(n)$), donde $n = \#(claves(d))$}
+{}
+{Modifica el diccionario agregando o reemplazando el significado de una clave 
+    con un nuevo valor}
+
+\operacion{Def?}
+{   \param{in}{$d$}{diccAVL($\kappa, \alpha$)},
+    \param{in}{$c$}{$\kappa$}}
+{bool}
+{true}
+{$res \igobs def?(c, d)$}
+{\bigo($log(n)$), donde $n = \#(claves(d))$}
+{}
+{Devuelve true si una clave se encuentra definida en el diccionario}
+
+\operacion{Obtener}
+{   \param{in}{$d$}{diccAVL($\kappa, \alpha$)},
+    \param{in}{$c$}{$\kappa$}}
+{$\alpha$}
+{$def?(c, d)$}
+{$res$ \igobs $obtener(c, d)$}
+{\bigo($log(n)$), donde $n = \#(claves(d))$}
+{}
+{Devuelve el significado definido para la clave $c$}
+
+
 
 \subsection{Representación}
 
