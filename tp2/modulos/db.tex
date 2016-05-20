@@ -19,14 +19,14 @@
 \donde{maxima}{puntero($tabla$)}
 \donde{vistas}{diccTrie($nombreTabla$, diccTrie($nombreTabla$, $vistaJoin$))}
 \donde{vistaJoin}{tupla($campo$: campo, $buffer$: buffer, $joinsNat$: jNat, $joinsString$, jString)}
-\donde{jNat}{diccAvl($nat$, $registro$)}
-\donde{jString}{diccAvl($string$, $registro$)}
+\donde{jNat}{diccLog($nat$, $registro$)}
+\donde{jString}{diccLog($string$, $registro$)}
 \donde{buffer}{lista($operacionJoin$)}
 \donde{operacionJoin}{tupla($esInsercion$: bool, $tabla$: bool, $reg$: $registro$)}
 
 \donde{nombreTabla}{string}
 \donde{campo}{string}
-\donde{registro}{diccAvl($campo$,$dato$)}
+\donde{registro}{diccLog($campo$,$dato$)}
 
 \subsubsection{Invariante de representación}
 

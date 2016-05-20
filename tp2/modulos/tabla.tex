@@ -181,12 +181,12 @@
     $nombre$: nombreTabla, $campos$: registro, $claves$: conj($campo$), $accesos$: nat)}
 
 \donde{regs}{conj($registro$)}
-\donde{treeNat}{diccAvl($nat$, itConj($registro$))}
-\donde{treeString}{diccAvl($string$, itConj($registro$))}
+\donde{treeNat}{diccLog($nat$, itConj($registro$))}
+\donde{treeString}{diccLog($string$, itConj($registro$))}
 
 \donde{campo}{string}
 \donde{nombreTabla}{string}
-\donde{registro}{diccAvl($campo$, $dato$)}
+\donde{registro}{diccLog($campo$, $dato$)}
 
 \subsubsection{Invariante de representación}
 
@@ -244,7 +244,7 @@
         \param{in}{$claves$}{$conj(campos)$},
         \param{in}{$columnas$}{$registro$}
         }{tabla}{\bigo(1)}{
-    \State $res.registros \gets nuevoDiccAvl()$                     \comment \bigo(1)
+    \State $res.registros \gets nuevoDiccLog()$                     \comment \bigo(1)
     \State $res.hayIndiceNat \gets false$                           \comment \bigo(1)
     \State $res.hayIndiceString \gets false$                        \comment \bigo(1)
     \State $res.nombre \gets nombre$                                \comment \bigo(1)
