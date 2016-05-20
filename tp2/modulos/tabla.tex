@@ -8,6 +8,13 @@
 
 \ioperaciones
 
+\begin{itemize}
+    \item{$n$ es la cantidad de registros presentes en la tabla}
+    \item{$L$ es el máximo de largo de un dato string}
+    \item{La cantidad de campos se asume acotada por constante}
+    \item{Los nombres de tablas y campos se asumen acotados por constante}
+\end{itemize}
+
 \operacion{NuevaTabla}
 {   \param{in}{$nombre$}{$string$},
     \param{in}{$claves$}{$conj(campos)$},
@@ -16,7 +23,7 @@
 {$\neg\emptyset?(claves) \land claves \subseteq campos(columnas)$} % pre
 {res \igobs nuevaTabla()} % post
 {\bigo(1)} % complejidad
-{} % aliasing
+{Los parámetros pasados no deben ser modificados luego} % aliasing
 {} % descripcion
 
 \operacion{AgregarRegistro}
@@ -26,7 +33,7 @@
 {$t \igobs t_0 \land campos(r) \igobs campos(t) \land puedoInsertar?(r,t)$}
 {$t$ \igobs agregarRegistro(r,$t_0$)}
 {\bigo(in)}
-{}
+{El registro no debe ser modificado luego}
 {in es O(log(n)) en promedio si hay un indice sobre un campo de tipo NAT, O(1) sino}
 
 \operacion{BorrarRegistro}
@@ -55,21 +62,23 @@
 {true}
 {$res \igobs nombre(t)$}
 {\bigo(1)}
-{}
+{No se debe modificar la string retornada}
 {}
 
-\operacion{Claves}
-{   \param{in}{$t$}{$tabla$}}
-{conj(campo)}
+\operacion{EsClave}
+{   \param{in}{$t$}{$tabla$}
+    \param{in}{$c$}{$campo$}}
+{bool}
 {true}
-{$res \igobs claves(t$}
+{$res \igobs c \in claves(t$}
 {\bigo(1)}
 {}
-{}
+{La complejidad es \bigo($|campos| * cmp(string)$), pero ambos entán acotados}
 
-\operacion{Indices}
-{   \param{in}{$t$}{$tabla$}}
-{conj(campo)}
+\operacion{EsIndice}
+{   \param{in}{$t$}{$tabla$}
+    \param{in}{$c$}{$campo$}}
+{bool}
 {true}
 {$res \igobs indices(t$}
 {\bigo(1)}
@@ -80,10 +89,74 @@
 {   \param{in}{$t$}{$tabla$}}
 {conj(campo)}
 {true}
-{$res \igobs campos(t$}
+{$res \igobs campos(t)$}
+{\bigo(1)}
+{No se debe modificar el conjunto retornado}
+{}
+
+\operacion{Accesos}
+{   \param{in}{$t$}{$tabla$}}
+{nat}
+{true}
+{$res \igobs cantidadDeAccesos(t)$}
 {\bigo(1)}
 {}
 {}
+
+\operacion{MaxNat}
+{   \param{in}{$t$}{$tabla$}}
+{nat}
+{$\neg\emptyset?(registros(t)) \land
+    (\exists c : campo) c \in indices(t) \land_L tipoCampo(c,t)$}
+{$(\exists c : campo) c \in indices(t) \land_L tipoCampo(c,t) \land
+    res \igobs valorNat(maximo(c,t))$}
+{\bigo(1)}
+{}
+{}
+
+\operacion{MinNat}
+{   \param{in}{$t$}{$tabla$}}
+{nat}
+{$\neg\emptyset?(registros(t)) \land
+    (\exists c : campo) c \in indices(t) \land_L tipoCampo(c,t)$}
+{$(\exists c : campo) c \in indices(t) \land_L tipoCampo(c,t) \land
+    res \igobs valorNat(minimo(c,t))$}
+{\bigo(1)}
+{}
+{}
+
+\operacion{MaxString}
+{   \param{in}{$t$}{$tabla$}}
+{string}
+{$\neg\emptyset?(registros(t)) \land
+    (\exists c : campo) c \in indices(t) \land_L \neg tipoCampo(c,t)$}
+{$(\exists c : campo) c \in indices(t) \land_L \neg tipoCampo(c,t) \land
+    res \igobs valorString(maximo(c,t))$}
+{\bigo(1)}
+{No se debe modificar el resultado}
+{}
+
+\operacion{MinString}
+{   \param{in}{$t$}{$tabla$}}
+{string}
+{$\neg\emptyset?(registros(t)) \land
+    (\exists c : campo) c \in indices(t) \land_L \neg tipoCampo(c,t)$}
+{$(\exists c : campo) c \in indices(t) \land_L \neg tipoCampo(c,t) \land
+    res \igobs valorString(minimo(c,t))$}
+{\bigo(1)}
+{No se debe modificar el resultado}
+{}
+
+\operacion{Buscar}
+{   \param{in}{$t$}{$tabla$},
+    \param{in}{$c$}{$campo$},
+    \param{in}{$d$}{$dato$}}
+{conj(registro)}
+{$c \in campos(t) \land_L tipo?(d) \igobs tipoCampo(c,t)$}
+{$ $}
+{\bigo(in)}
+{No se debe modificar los resultados}
+{in es $log(n) * L$ si $c$ es índice, $n * L$ sino}
 
 \subsection{Representación}
 
@@ -164,6 +237,27 @@
 \end{ABS}
 
 \subsection{Algoritmos}
+
+\algoritmo{iNuevaTabla}{
+        \param{in}{$nombre$}{$string$},
+        \param{in}{$claves$}{$conj(campos)$},
+        \param{in}{$columnas$}{$registro$}
+        }{tabla}{\bigo(1)}{
+    \State $res.registros \gets NuevoDiccAvl()$                     \comment \bigo(1)
+    \State $res.hayIndiceNat \gets false$                           \comment \bigo(1)
+    \State $res.hayIndiceString \gets false$                        \comment \bigo(1)
+    \State $res.nombre \gets nombre$                                \comment \bigo(1)
+    \State $res.campos \gets columnas$                              \comment \bigo(1)
+    \State $res.claves \gets claves$                                \comment \bigo(1)
+    \State $res.accesos \gets 0$                                    \comment \bigo(1)
+}
+
+\algoritmo{iAgregarRegistro}{
+        \param{in/out}{$t$}{$tabla$},
+        \param{in}{$r$}{$registro$}
+        }{tabla}{\bigo(in)}{
+    \State $res.registros \gets NuevoDiccAvl()$                     \comment \bigo(1)
+}
 
 \subsection{Servicios usados}
 
