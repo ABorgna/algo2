@@ -87,6 +87,15 @@
 {}
 {}
 
+\operacion{Registros}
+{   \param{in}{$t$}{$tabla$}}
+{conj(registro)}
+{true}
+{$res \igobs registros(t)$}
+{\bigo(1)}
+{No se debe modificar el conjunto retornado}
+{}
+
 \operacion{Campos}
 {   \param{in}{$t$}{$tabla$}}
 {registro}
@@ -395,6 +404,12 @@
         \Else
             \State $res \gets c == t.indiceString$                  \comment \bigo(1)
         \EndIf
+}
+
+\algoritmo{iRegistros}{
+        \param{in}{$t$}{$tabla$}
+        }{conj(registro)}{\bigo(1)}{
+        \State $res \gets t.registros$                              \comment \bigo(1)
 }
 
 \algoritmo{iCampos}{
