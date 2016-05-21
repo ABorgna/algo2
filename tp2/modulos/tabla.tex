@@ -172,6 +172,15 @@
 {No se debe modificar los resultados}
 {in es $log(n) * L$ si $c$ es índice, $n * L$ sino}
 
+\operacion{CantidadRegistros}
+{   \param{in}{$t$}{$tabla$}}
+{nat}
+{true}
+{$res \igobs \#registros(t)$}
+{\bigo(1)}
+{}
+{}
+
 \subsection{Representación}
 
 -- todo: explicacion --
@@ -183,7 +192,7 @@
 
 \donde{regs}{conj($registro$)}
 \donde{treeNat}{diccLog($nat$, itConj($registro$))}
-\donde{treeString}{diccLog($string$, itConj($registro$))}
+\donde{treeString}{diccTrie(itConj($registro$))}
 
 \donde{campo}{string}
 \donde{nombreTabla}{string}
@@ -422,6 +431,7 @@
 \algoritmo{maxString}{
         \param{in}{$t$}{$tabla$}
         }{string}{\bigo(1)}{
+        \State \comment \cuidado el trie tiene que proveer $maximo$ y $minimo$
         \State $res \gets maximo(t.indicesString)_0$                \comment \bigo(1)
 }
 
@@ -460,6 +470,12 @@
             \State avanzar(it)                                      \comment \bigo(1)
         \EndWhile
     \EndIf
+}
+
+\algoritmo{iCantidadRegistros}{
+        \param{in}{$t$}{$tabla$}
+        }{nat}{\bigo(1)}{
+        \State $res \gets cardinal(t.registros)$                    \comment \bigo(1)
 }
 
 \subsection{Servicios usados}
