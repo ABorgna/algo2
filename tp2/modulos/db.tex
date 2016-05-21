@@ -153,22 +153,9 @@
 {   \param{in}{$db$}{$base$},
     \param{in}{$nt_1$}{$nombreTabla$},
     \param{in}{$nt_2$}{$nombreTabla$}}
-{$itDiccLog(dato,registro)$}
+{$itConj(registro)$}
 {$hayJoin?(nt_1,nt_2,db)$}
 {$\neg hayAnterior(res) \land haySiguiente(res)$ \cuidado el mismo tema, cómo vemos que res es válido?}
-{\bigo($in$)}
-{No se debe modificar los resultados}
-{$in$ es \bigo($R * (L + log(n * m))$) donde R es la cantidad de modificaciónes desde la generación \\
-    \hspace*{4em} o última visualización del join, u \bigo(1) si $R = 0$}
-
-\operacion{Buscar}
-{   \param{in}{$db$}{$base$},
-    \param{in}{$nt$}{$nombreTabla$},
-    \param{in}{$c$}{$campo$},
-    \param{in}{$d$}{$dato$}}
-{$conj(registro)$}
-{$nt \in tablas(db) \land_L c \in campos(dameTabla(nt,db)) \land_L tipo?(d) \igobs tipoCampo(dameTabla(nt,db))$}
-{$res \igobs buscar(definir(c,d,vacio), nt, db)$}
 {\bigo($in$)}
 {No se debe modificar los resultados}
 {$in$ es \bigo($R * (L + log(n * m))$) donde R es la cantidad de modificaciónes desde la generación \\
@@ -551,6 +538,129 @@
         \State $definir(db.vistasJoin, nt_1, nuevoTrie())$          \comment \bigo(1)
     \EndIf
     \State $definir(obtener(db.vistasJoin, nt_1), nt_2, v)$         \comment \bigo(1)
+}
+
+\algoritmo{iHayTabla}{
+    \param{in}{$db$}{$base$},
+    \param{in}{$nt$}{$nombreTabla$}
+    }{bool}{\bigo(1)}{
+    \State $res \gets definido?(db.tablasTree,nt)$                  \comment \bigo(1)
+}
+
+\algoritmo{iTabla}{
+    \param{in}{$db$}{$base$},
+    \param{in}{$nt$}{$nombreTabla$}
+    }{tabla}{\bigo(1)}{
+    \State $res \gets obtener(db.tablasTree,nt)$                    \comment \bigo(1)
+}
+
+\algoritmo{iTablas}{
+    \param{in}{$db$}{$base$}
+    }{itConj(tabla)}{\bigo(1)}{
+    \State $res \gets crearIt(db.tablas)$                           \comment \bigo(1)
+}
+
+\algoritmo{iTablaMaxima}{
+    \param{in}{$db$}{$base$}
+    }{tabla}{\bigo(1)}{
+    \State $res \gets *db.tablaMaxima$                              \comment \bigo(1)
+}
+
+\algoritmo{iHayJoin}{
+    \param{in}{$db$}{$base$},
+    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_2$}{$nombreTabla$}
+    }{bool}{\bigo(1)}{
+    \State $res \gets definido?(db.vistasJoin,nt_1) \algAnd definido?(obtener(db.vistasJoin,nt_1),nt_2)$
+                                                                    \comment \bigo(1)
+}
+
+\algoritmo{iCampoJoin}{
+    \param{in}{$db$}{$base$},
+    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_2$}{$nombreTabla$}
+    }{campo}{\bigo(1)}{
+    \State $res \gets obtener(obtener(db.vistasJoin,nt_1),nt_2).campo$
+                                                                    \comment \bigo(1)
+}
+
+\algoritmo{iBorrarJoin}{
+    \param{in}{$db$}{$base$},
+    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_2$}{$nombreTabla$}
+    }{}{\bigo(1)}{
+    \State $borrar(obtener(db.vistasJoin,nt_1),nt_2)$               \comment \bigo(1)
+    \If{$!haySiguiente(crearIt(obtener(db.vistasJoin,nt_1)))$}      \comment \bigo(1)
+        \State $borrar(db.vistasJoin,nt_1)$                         \comment \bigo(1)
+    \EndIf
+}
+
+\algoritmo{iVistaJoin}{
+    \param{in}{$db$}{$base$},
+    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_2$}{$nombreTabla$}
+    }{itConj(registro)}{\bigo(in)}{
+    \var $v : vistaJoin$
+    \var $it : itLista(operacionJoin)$
+    \var $t_1, t_2 : tabla$
+    \State $v \gets obtener(obtener(db.vistasJoin,nt_1),nt_2)$      \comment \bigo(1)
+    \State $t_1 \gets tabla(db,nt_1)$                               \comment \bigo(1)
+    \State $t_2 \gets tabla(db,nt_2)$                               \comment \bigo(1)
+
+    \State
+    \State $it \gets crearIt(v.buffer)$                             \comment \bigo(1)
+    \While{$haySiguiente(it)$}                                      \comment \bigo(1)
+        \State         \icomment El loop se repite $R$ veces
+        \var $op : operacionJoin$
+        \var $d : dato$
+        \State $op \gets siguiente(it)$                             \comment \bigo(1)
+        \State $d \gets obtener(op.reg, v.campo)$                   \comment \bigo(1)
+
+        \If{$op.esInsercion$}
+            \var $rs : conj(registro)$
+            \var $r, r_b : registro$
+            \If{$!op.tabla$}                                        \comment \bigo(1)
+                \State $rs \gets buscar(t_2, v.campo, d)$           \comment \bigo($L + log(m)$) si es índice, \bigo($L * m$) sino
+            \Else
+                \State $rs \gets buscar(t_1, v.campo, d)$           \comment \bigo($L + log(n)$) si es índice, \bigo($L * n$) sino
+            \EndIf
+            \If{$!esVacio?(rs)$}                                    \comment \bigo(1)
+                \State $r_b \gets siguiente(crearIt(rs))$           \comment \bigo(1)
+
+                \State
+                \If{$!op.tabla$}                                    \comment \bigo(1)
+                    \State $r \gets combinarRegistros(op.reg, r_b)$ \comment \bigo(1)
+                \Else
+                    \State $r \gets combinarRegistros(r_b, op.reg)$ \comment \bigo(1)
+                \EndIf
+
+                \State
+                \State $it_{reg} \gets agregarRapido(v.joins, r)$   \comment \bigo(1)
+                \If{$v.tipo$}
+                    \State $definirRapido(v.joinsNat, valorNat(d), it_{reg})$           \comment \bigo(1)
+                \Else
+                    \State $definirRapido(v.joinsString, valorString(d), it_{reg})$     \comment \bigo(1)
+                \EndIf
+            \EndIf
+        \Else
+            \If{$v.tipo$}                                           \comment \bigo(1)
+                \If{$definido?(v.joinsNat, valorNat(d))$}           \comment \bigo(1)
+                    \State $eliminarSiguiente(obtener(v.joinsNat, valorNat(d)))$        \comment \bigo(1)
+                    \State $borrar(v.joinsNat, valorNat(d))$        \comment \bigo($log(n+m)$)
+                \EndIf
+            \Else
+                \If{$definido?(v.joinsString, valorString(d))$}     \comment \bigo(1)
+                    \State $eliminarSiguiente(obtener(v.joinsString, valorString(d)))$  \comment \bigo(1)
+                    \State $borrar(v.joinsString, valorString(d))$  \comment \bigo($L$)
+                \EndIf
+            \EndIf
+        \EndIf
+
+        \State $avanzar(it)$                                        \comment \bigo(1)
+    \EndWhile
+
+    \State
+    \State $res \gets crearIt(v.joins)$                             \comment \bigo(1)
 }
 
 \subsubsection{Funciones auxiliares de los algoritmos}
