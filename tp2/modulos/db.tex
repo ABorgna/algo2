@@ -16,7 +16,7 @@
     \item{Los nombres de tablas y campos se asumen acotados por constante}
 \end{itemize}
 
-\operacion{NuevaTabla}
+\operacion{NuevaDB}
 {} % parametros
 {base} % tipo res
 {} % pre
@@ -32,7 +32,7 @@
 {$db \igobs db_0 \land \emptyset?(registros(t)) \land \neg(nombre(t) \in tablas(db))$}
 {$db \igobs agregarTabla(t,db_0)$}
 {\bigo(1)}
-{}
+{No se debe modificar la tabla después de insertada}
 {}
 
 \operacion{InsertarEntrada}
@@ -328,6 +328,67 @@
 \end{ABS}
 
 \subsection{Algoritmos}
+
+\algoritmo{iNuevaDB}{}{base}{\bigo(1)}{
+    \State $res.tablas \gets vacio()$                               \comment \bigo(1)
+    \State $res.tablasTree \gets nuevoDiccLog()$                    \comment \bigo(1)
+    \State $res.vistasJoin \gets nuevoTrie()$                       \comment \bigo(1)
+    \State $res.tablaMaxima \gets NULL$                             \comment \bigo(1)
+}
+
+\algoritmo{iAgregarTabla}{
+    \param{in/out}{$db$}{$base$},
+    \param{in}{$t$}{$tabla$}
+    }{}{\bigo(1)}{
+    \var $it : itConj(tabla)$
+    \State $it \gets agregarRapido(db.tablas, t)$                   \comment \bigo(1)
+    \State $definir(res.tablasTree, nombre(t), it)$                 \comment \bigo(1)
+    \If{$db.tablaMaxima == NULL$}                                   \comment \bigo(1)
+        \State $db.tablaMaxima = \&t$                               \comment \bigo(1)
+    \EndIf
+}
+
+\algoritmo{iInsertarEntrada}{
+    \param{in/out}{$db$}{$base$},
+    \param{in}{$nt$}{$nombreTabla$}
+    \param{in}{$r$}{$registro$}
+    }{base}{\bigo($T * L + in$)}{
+    \var $t : tabla$
+    \var $it : itConj(tabla)$
+    \State $t \gets tabla(db,nt)$                                   \comment \bigo(1)
+    \State $agregarRegistro(t,r)$                                   \comment \bigo($L + in$)
+    \If{$accesos(*db.tablaMaxima) < accesos(t)$}                    \comment \bigo(1)
+        \State $db.tablaMaxima = \&t$                               \comment \bigo(1)
+    \EndIf
+    \State
+    \While{$haySiguiente(it)$}                                      \comment \bigo(1)
+        \State                 \icomment El loop se repite $T$ veces
+        \var $t' : tabla$
+        \State $t' \gets siguiente(it)$                             \comment \bigo(1)
+        \If{$nombre(t') \;!= nombre(t)$}                            \comment \bigo(1)
+            \If{$definido?(db.vistasJoin, nombre(t))$}              \comment \bigo(1)
+                \var $joinsT : diccTrie(nombreTabla, vistaJoin)$
+                \State $joinsT \gets obtener(db.vistasJoin, nombre(t))$                 \comment \bigo(1)
+                \If{$definido?(joinsT, nombre(t'))$}                \comment \bigo(1)
+                    \var $b : buffer$
+                    \State $b \gets obtener(joinsT, nombre(t')).buffer$                 \comment \bigo(1)
+                    \State $agregarAtras(b, <esInsercion: true, tabla: false, reg: r>)$ \comment \bigo($L$)
+                \EndIf
+            \EndIf
+            \State
+            \If{$definido?(db.vistasJoin, nombre(t'))$}             \comment \bigo(1)
+                \var $joinsT' : diccTrie(nombreTabla, vistaJoin)$
+                \State $joinsT' \gets obtener(db.vistasJoin, nombre(t'))$               \comment \bigo(1)
+                \If{$definido?(joinsT', nombre(t))$}                \comment \bigo(1)
+                    \var $b : buffer$
+                    \State $b \gets obtener(joinsT', nombre(t)).buffer$                 \comment \bigo(1)
+                    \State $agregarAtras(b, <esInsercion: true, tabla: true, reg: r>)$  \comment \bigo($L$)
+                \EndIf
+            \EndIf
+        \EndIf
+        \State $avanzar(it)$                                        \comment \bigo(1)
+    \EndWhile
+}
 
 \subsection{Servicios usados}
 

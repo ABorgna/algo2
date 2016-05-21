@@ -212,7 +212,8 @@
 \catcode`\/=12
 \makeatother
 
-\newcommand\comment{\iftoggle{algoritmo}{\hfill // }{}}
+\newcommand\comment{\iftoggle{algoritmo}{\hfill \icomment}{}}
+\newcommand\icomment{\iftoggle{algoritmo}{// }{}}
 \newcommand\var{\iftoggle{algoritmo}{\State \textbf{var}}{} }
 \newcommand\algAnd{\iftoggle{algoritmo}{\;\&\&\;}{} }
 
