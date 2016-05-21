@@ -553,5 +553,39 @@
     \State $definir(obtener(db.vistasJoin, nt_1), nt_2, v)$         \comment \bigo(1)
 }
 
+\subsubsection{Funciones auxiliares de los algoritmos}
+
+\operacion{CombinarRegistros}
+{   \param{in}{$r_1$}{$registro$},
+    \param{in}{$r_2$}{$registro$}}
+{registro}
+{true}
+{$res \igobs agregarCampos(r_1, r_2)$}
+{\bigo(1)}
+{}
+{La complejidad es constante pues la cantidad de campos está acotada}
+
+\algoritmo{iCombinarRegistros}{
+    \param{in}{$r_1$}{$registro$},
+    \param{in}{$r_2$}{$registro$}
+    }{registro}{\bigo(1)}{
+    \var $it : itDiccLog(campo,dato)$
+    \State $res \gets vacio()$                                      \comment \bigo(1)
+
+    \State
+    \State $it \gets crearIt(r_1)$                                  \comment \bigo(1)
+    \While{$haySiguiente(it)$}                                      \comment \bigo(1)
+        \State \icomment El loop se ejecuta |campos(r)| veces, acotado por constante
+        \State $definir(res, siguiente(it).clave, siguiente(it).significado)$   \comment \bigo(1)
+    \EndWhile
+
+    \State
+    \State $it \gets crearIt(r_2)$                                  \comment \bigo(1)
+    \While{$haySiguiente(it)$}                                      \comment \bigo(1)
+        \State \icomment El loop se ejecuta |campos(r)| veces, acotado por constante
+        \State $definir(res, siguiente(it).clave, siguiente(it).significado)$   \comment \bigo(1)
+    \EndWhile
+}
+
 \subsection{Servicios usados}
 
