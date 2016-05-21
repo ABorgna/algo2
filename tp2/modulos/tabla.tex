@@ -10,7 +10,7 @@
 
 \begin{itemize}
     \item{$n$ es la cantidad de registros presentes en la tabla}
-    \item{$L$ es el máximo de largo de un dato string}
+    \item{$L$ es el máximo largo de un dato string}
     \item{La cantidad de campos se asume acotada por constante}
     \item{Los nombres de tablas y campos se asumen acotados por constante}
 \end{itemize}
@@ -32,7 +32,7 @@
 {}
 {$t \igobs t_0 \land campos(r) \igobs campos(t) \land puedoInsertar?(r,t)$}
 {$t$ \igobs agregarRegistro(r,$t_0$)}
-{L + \bigo($in$)}
+{\bigo($L + in$)}
 {}
 {$in$ es \bigo($log(n)$) si hay un indice sobre un campo de tipo NAT, \bigo(1) sino. \\
  }

@@ -81,7 +81,7 @@
 %cambiar lo que rodea a #1 para otro formato del nombre de la funcion
 \newcommand\operacion[8]{
 \begin{minipage}{1\textwidth}
-{\textsc{#1}(#2)\ifelseblank{#3}\then{}\else{\resultado{#3}}\fi}
+{\textsc{#1}(#2)\ifelseblank{#3}\then{}\else{ \resultado{#3}}\fi}
 \ifelseblank{#4}\then{}\else{\par\hspace*{1em}\pre{#4}}\fi
 \ifelseblank{#5}\then{}\else{\par\hspace*{1em}\post{#5}}\fi
 \ifelseblank{#6}\then{}\else{\par\hspace*{1em}\complejidad{#6}}\fi
@@ -140,7 +140,7 @@
 {\end{itemize}\end{changemargin}}
 \newcommand\repfunc[2]{\item\noindent
     \ifelseblank{#1}\then{}\else{#1 \par}\fi
-    \ifelseblank{#2}\then{}\else{\ensuremath{#2} \par}\fi
+    \ifelseblank{#2}\then{}\else{\ensuremath{#2} \par\par}\fi
 }
 \newcommand\reptrue[2]{
     \begin{changemargin}{0em}{4em}Rep : #1 $\rightarrow$ boolean

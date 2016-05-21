@@ -78,15 +78,17 @@
 \operacion{$\bullet > \bullet$}
 {\param{in}{$d_1$}{$dato$}, \param{in}{$d_2$}{$dato$}}
 {bool}
-{tipo?($d_1$) \igobs tipo?($d_2$)}
-{res $\iff$ \IFL Nat?($d_1$) THEN \\
+{true}
+{res $\iff$ \IFL tipo?($d_1$) $\neq$ tipo?($d_2$) THEN \\
+    \hspace*{10.5em} tipo?($d_2$) \\
+    \hspace*{9em} ELSE {\kern-0.5em\IFL Nat?($d_1$) THEN \\
     \hspace*{10.5em} valorNat($d_1$) > valorNat($d_2$) \\
     \hspace*{9em} ELSE \\
     \hspace*{10.5em} valorString($d_1$) > valorString($d_2$) \\
-    \hspace*{9em} FI }
+    \hspace*{9em} FI} FI }
 {\bigo(cmp($string$))}
 {}
-{}
+{Se asume que los valores string son mayores a los valores nat para poder usarlo como orden total}
 
 \subsection{Representación}
 
