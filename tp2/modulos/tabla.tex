@@ -21,7 +21,7 @@
     \param{in}{$columnas$}{$registro$}} % parametros
 {tabla} % tipo res
 {$\neg\emptyset?(claves) \land claves \subseteq campos(columnas)$} % pre
-{res \igobs nuevaTabla()} % post
+{$res \igobs nuevaTabla()$} % post
 {\bigo(1)} % complejidad
 {Los parámetros pasados no deben ser modificados luego} % aliasing
 {} % descripcion
@@ -31,7 +31,7 @@
     \param{in}{r}{$registro$}}
 {}
 {$t \igobs t_0 \land campos(r) \igobs campos(t) \land puedoInsertar?(r,t)$}
-{$t$ \igobs agregarRegistro(r,$t_0$)}
+{$t \igobs agregarRegistro(r,t_0)$}
 {\bigo($L + in$)}
 {}
 {$in$ es \bigo($log(n)$) si hay un indice sobre un campo de tipo NAT, \bigo(1) sino. \\
@@ -166,7 +166,8 @@
     \param{in}{$d$}{$dato$}}
 {conj(registro)}
 {$c \in campos(t) \land_L tipo?(d) \igobs tipoCampo(c,t)$}
-{$ $}
+{$res \igobs \IFLM (\exists r : registro) \; r \in registros(t) \land_L obtener(c,r) \igobs d
+    THEN Ag(r,\emptyset) ELSE \emptyset FI$}
 {\bigo(in)}
 {No se debe modificar los resultados}
 {in es $log(n) * L$ si $c$ es índice, $n * L$ sino}

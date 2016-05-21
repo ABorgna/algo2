@@ -77,17 +77,6 @@
     \hspace*{4em} \bigo($n * (m + L + log(n))$) si el campo no es un índice, \\
     \hspace*{4em} donde $n = |registros(t_1)|$ y $m = |registros(t_2)|$}
 
-\operacion{BorrarJoin}
-{   \param{in/out}{$db$}{$base$},
-    \param{in}{$nt_1$}{$nombreTabla$},
-    \param{in}{$nt_2$}{$nombreTabla$}}
-{}
-{$db \igobs db_0 \land hayJoin?(nt_1,nt_2,db)$}
-{$db \igobs borrar(nt_1,nt_2,db_0)$}
-{\bigo($n + m$)}
-{}
-{}
-
 \operacion{HayTabla}
 {   \param{in}{$db$}{$base$},
     \param{in}{$nt$}{$nombreTabla$}}
@@ -117,6 +106,15 @@
 {No se debe modificar las tablas}
 {El iterador devuelto tiene $siguiente()$ en \bigo(1)}
 
+\operacion{TablaMaxima}
+{   \param{in}{$db$}{$base$}}
+{$tabla$}
+{$\#tablas(db) > 0$}
+{$res \igobs dameTabla(tablaMaxima(db),db)$}
+{\bigo(1)}
+{No se debe modificar la tabla devuelta}
+{}
+
 \operacion{HayJoin}
 {   \param{in}{$db$}{$base$},
     \param{in}{$nt_1$}{$nombreTabla$},
@@ -139,16 +137,41 @@
 {}
 {}
 
+\operacion{BorrarJoin}
+{   \param{in/out}{$db$}{$base$},
+    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_2$}{$nombreTabla$}}
+{}
+{$db \igobs db_0 \land hayJoin?(nt_1,nt_2,db)$}
+{$db \igobs borrar(nt_1,nt_2,db_0)$}
+{\bigo($n + m$)}
+{}
+{}
+
 \operacion{VistaJoin}
 {   \param{in}{$db$}{$base$},
     \param{in}{$nt_1$}{$nombreTabla$},
     \param{in}{$nt_2$}{$nombreTabla$}}
 {$itDiccLog(dato,registro)$}
 {$hayJoin?(nt_1,nt_2,db)$}
-{$res \igobs campoJoin(nt_1,nt_2,db)$}
-{\bigo(1)}
-{}
-{}
+{$\neg hayAnterior(res) \land haySiguiente(res)$ \cuidado el mismo tema, cómo vemos que res es válido?}
+{\bigo($in$)}
+{No se debe modificar los resultados}
+{$in$ es \bigo($R * (L + log(n * m))$) donde R es la cantidad de modificaciónes desde la generación \\
+    \hspace*{4em} o última visualización del join, u \bigo(1) si $R = 0$}
+
+\operacion{Buscar}
+{   \param{in}{$db$}{$base$},
+    \param{in}{$nt$}{$nombreTabla$},
+    \param{in}{$c$}{$campo$},
+    \param{in}{$d$}{$dato$}}
+{$conj(registro)$}
+{$nt \in tablas(db) \land_L c \in campos(dameTabla(nt,db)) \land_L tipo?(d) \igobs tipoCampo(dameTabla(nt,db))$}
+{$res \igobs buscar(definir(c,d,vacio), nt, db)$}
+{\bigo($in$)}
+{No se debe modificar los resultados}
+{$in$ es \bigo($R * (L + log(n * m))$) donde R es la cantidad de modificaciónes desde la generación \\
+    \hspace*{4em} o última visualización del join, u \bigo(1) si $R = 0$}
 
 \subsection{Representación}
 
