@@ -339,7 +339,7 @@
         \hspace*{10em} obtener(v.campo,op.reg) \igobs obtener(v.campo,op'.reg) \; \land \\
         \hspace*{10em} estaDespues?(op', op, v.buffer))}
 
-    \repfunc{Si hay tablas, e.tablaMaxima apunta a una de las tablas con mas cantidadDeAccesos}{}
+    \repfunc{Si hay tablas e.tablaMaxima apunta a una de las tablas con mas cantidadDeAccesos, sino es nulo}{}
 
 \end{Rep}
 
@@ -489,27 +489,68 @@
     \param{in}{$nt_2$}{$nombreTabla$},
     \param{in}{$c$}{$campo$} \\ \hspace*{9.5em}
     }{itDiccLog(dato,registro)}{\bigo($in$)}{
+    \var $firstT_1 : bool$
     \var $t_1, t_2 : tabla$
+    \var $pT_a, pT_b : *tabla$
     \var $it : itConj(tabla)$
     \var $v : vistaJoin$
     \State $t_1 \gets tabla(db,nt_1)$                               \comment \bigo(1)
     \State $t_2 \gets tabla(db,nt_2)$                               \comment \bigo(1)
-    \State $v \gets \; <campo: c, \; buffer: vacia(), \; joins: nuevoDiccLog()>$
+    \State $v \gets \; <campo: c, tipo: tipoCampo(t_1,c) \; buffer: vacia(),$ \\
+        \hspace*{3em} $joins: vacio(), joinsNat: nuevoDiccLog(), joinString: nuevoTrie()>$      \comment \bigo(1)
 
     \State
-    \If{$(esIndice(t_1, c) \algAnd esIndice(t_2, c) \algAnd cantidadRegistros(t_1) < cantidadRegistros(t_2)) \algOr $\\
-    \hspace*{8em} $esIndice(t_2, c)$}
-        \State $it \gets registros$
-    \ElsIf{$(esIndice(t_1, c) \algAnd esIndice(t_2, c) \algAnd cantidadRegistros(t_1) > cantidadRegistros(t_2)) \algOr $\\
-    \hspace*{8em} $esIndice(t_1, c)$}
+    \If{$(esIndice(t_1, c) \algAnd esIndice(t_2, c) \algAnd cantidadRegistros(t_1) < cantidadRegistros(t_2)) \algOr esIndice(t_2, c)$}
+        \State $firstT_1 \gets true$                                \comment \bigo(1)
+        \State $pT_a \gets \&t_1$                                   \comment \bigo(1)
+        \State $pT_b \gets \&t_2$                                   \comment \bigo(1)
     \Else
+        \State $firstT_1 \gets false$                               \comment \bigo(1)
+        \State $pT_a \gets \&t_2$                                   \comment \bigo(1)
+        \State $pT_b \gets \&t_1$                                   \comment \bigo(1)
     \EndIf
+
+    \State
+    \State $it \gets registros(*pT_a)$                              \comment \bigo(1)
+    \While{$haySiguiente(it)$}                                      \comment \bigo(1)
+        \State         \icomment El loop se repite $|registros(*pT_a)|$ veces
+        \var $d : dato$
+        \var $rs : conj(registro)$
+        \var $r, r_a, r_b : registro$
+        \var $it_{reg} : itConj(registro)$
+        \State $d \gets significado(r_a, c)$                        \comment \bigo(1)
+        \State $rs \gets buscar(*pT_b, c, d)$      \comment \bigo($L + log(|registros(t_b)|)$) si hay un índice sobre $t_b$,
+                                                            \bigo($L * |registros(t_b)|$) sino
+
+        \State
+        \If{$!esVacio?(rs)$}                                        \comment \bigo(1)
+            \State $r_b \gets siguiente(crearIt(rs))$               \comment \bigo(1)
+
+            \State
+            \If{$firstT_1$}
+                \State $r \gets combinarRegistros(r_a, r_b)$        \comment \bigo(1)
+            \Else
+                \State $r \gets combinarRegistros(r_b, r_a)$        \comment \bigo(1)
+            \EndIf
+
+            \State $it_{reg} \gets agregarRapido(v.joins, r)$       \comment \bigo(1)
+
+            \State
+            \If{$v.tipo$}
+                \State $definirRapido(v.joinsNat, valorNat(d), it_{reg})$           \comment \bigo(1)
+            \Else
+                \State $definirRapido(v.joinsString, valorString(d), it_{reg})$     \comment \bigo(1)
+            \EndIf
+        \EndIf
+
+        \State $avanzar(it)$                                        \comment \bigo(1)
+    \EndWhile
 
     \State
     \If{$!definido?(db.vistasJoin, nt_1)$}                          \comment \bigo(1)
-        \State $definir(db.vistasJoin, nt_1, nuevoTrie())$
+        \State $definir(db.vistasJoin, nt_1, nuevoTrie())$          \comment \bigo(1)
     \EndIf
-    \State $definir(obtener(db.vistasJoin, nt_1), nt_2, v)$
+    \State $definir(obtener(db.vistasJoin, nt_1), nt_2, v)$         \comment \bigo(1)
 }
 
 \subsection{Servicios usados}

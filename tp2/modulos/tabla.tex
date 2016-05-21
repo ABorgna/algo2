@@ -89,9 +89,9 @@
 
 \operacion{Registros}
 {   \param{in}{$t$}{$tabla$}}
-{conj(registro)}
+{itConj(registro)}
 {true}
-{$res \igobs registros(t)$}
+{\cuidado res es un it...}
 {\bigo(1)}
 {No se debe modificar el conjunto retornado}
 {}
@@ -408,8 +408,8 @@
 
 \algoritmo{iRegistros}{
         \param{in}{$t$}{$tabla$}
-        }{conj(registro)}{\bigo(1)}{
-        \State $res \gets t.registros$                              \comment \bigo(1)
+        }{itConj(registro)}{\bigo(1)}{
+        \State $res \gets crearIt(t.registros)$                     \comment \bigo(1)
 }
 
 \algoritmo{iCampos}{
