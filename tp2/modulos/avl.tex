@@ -37,7 +37,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 \end{iparamformales}
 
 \iusa{}
-\iseexplica{Diccionario($\kappa, \alpha$)}
+\iseexplica{Diccionario($\kappa, \alpha$), Iterador Unidireccional Modificable( tupla($\kappa, \alpha$) )}
 \igenero{diccLog($\kappa, \alpha$), itDiccLog($\kappa, \alpha$)}
 
 \ioperaciones
@@ -124,28 +124,25 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
 {itDiccLog($\kappa, \alpha$)}
 {true}
-{alias(\cuidado ver alias)}
+{$res \igobs crearItMod(<>, listaDeTupas(d))$ $\land$ alias($SecuSuby(res) = listaDeTuplas(d)$)}
 {\bigo(1)}
-{Tengo que ver como decir que siguientes(res)
-    es una permutacion de los elementos del diccionario. Seguramente 
-    hacer una operacion auxiliar sobre diccionario que devuelta una 
-    secuencia de tuplas kv.}
+{\cuidado Hacer funcion auxiliar listaDeTuplas(dicc)}
 {}
 
-\operacion{HaySiguiente}
+\operacion{HayMas?}
 {    \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {bool}
 {true}
-{$res \igobs haySiguiente?(it)$}
+{$res \igobs hayMas?(it)$}
 {\bigo(1)}
 {}
 {Devuelve true si hay elementos para avanzar}
 
-\operacion{Siguiente}
+\operacion{Actual}
 {   \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {tupla(clave: $\kappa$, significado: $\alpha$)}
-{$haySiguiente?(it)$}
-{alias($res \igobs siguiente(it)$)}
+{$hayMas?(it)$}
+{alias($res \igobs actual(it)$)}
 {\bigo(1)}
 {$res$.significado es una referencia al significado de diccionario.
     \cuidado ver como decir bien esto}
@@ -154,7 +151,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 \operacion{Avanzar}
 {   \param{in/out}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {}
-{$it \igobs it_0 \land haySiguiente?(it)$}
+{$it \igobs it_0 \land hayMas?(it)$}
 {$it \igobs avanzar(it_0)$}
 {\bigo(1)}
 {}
@@ -163,8 +160,8 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 \operacion{EliminarSiguiente}
 {   \param{in/out}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {}
-{$it \igobs it_0 \land haySiguiente?(it)$}
-{$it \igobs eliminarSiguiente(it_0)$}
+{$it \igobs it_0 \land hayMas?(it)$}
+{$it \igobs eliminar(it_0)$}
 {\bigo($log(n)$), donde $n = $ cantidad de elementos en el 
     diccionario sobre el que se itera \cuidado}
 {}
@@ -189,40 +186,221 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 
 \begin{Rep}{$avl$}{$a$}
     \repfunc{ raiz es null (y max y min tambien son null) $\lor_L$ }
-    {}
+    {
+        a.raiz = NULL \implies (a.max = NULL \land a.min = NULL)
+    }
     \repfunc{ para cada nodo el factor de balanceo esta entre -1 y 1 }
-    {}
+    {
+        fdbsEnRango(a.raiz)
+    }
     \repfunc{ para cada nodo el factor de balanceo es igual a la diferencia 
         de altura de sus dos hijos }
-    {}
+    {
+        fdbsCoinciden(a.raiz)
+    }
     \repfunc{ para cada nodo, si tiene un nodo menor, su valor es mayor al 
         de todos los nodos (del maximo) de la rama menor }
-    {}
+    {
+        menoresSonMenores(a.raiz)
+    }
     \repfunc{ para cada nodo, si tiene un nodo mayor, su valor es menor al 
         de todos los nodos (del minimo) de la rama mayor }
-    {}
+    {
+        mayoresSonMayores(a.raiz)
+    }
     \repfunc{ el padre de raiz siembre debe ser null }
-    {}
+    {
+        a.raiz \neq NULL \implies (*a.raiz).padre = NULL
+    }
     \repfunc{ para cada nodo n, si tiene mayor o menor, sus padres debe ser n }
-    {}
+    {
+        a.raiz \neq NULL \implies padresCorrectos(a.raiz)
+    }
     \repfunc{ para cada dos nodos distintos, $n_1$ y $n_2$, sus hijos deben ser distintos }
-    {}
+    {
+        verificarHijos(a.raiz, a.raiz)
+    }
     \repfunc{ para cada nodo ninguno puede apuntar a la raiz // esto deberia estar
         demas porque si el padre de la raiz debe ser null ya ningun nodo podria
         tenerlo de hijo }
-    {}
+    { }
     \repfunc{ max es igual al nodo con la clave mas grande }
-    {}
+    {
+        a.raiz \neq NULL \implies a.max = \&maximo(a.raiz)
+    }
     \repfunc{ min es igual al nodo con la clave mas pequeña }
-    {}
+    {
+        a.raiz \neq NULL \implies a.min = \&minimo(a.raiz)
+    }
 
 \end{Rep}
 
+\subsubsection{Operaciones auxiliares del invariante de representación}
+
+\tadOperacion{fdbsEnRango}
+{puntero(nodo)/n}
+{bool}
+{}
+
+\tadOperacion{fdbsCoinciden}
+{puntero(nodo)/n}
+{bool}
+{}
+
+\tadOperacion{atura}
+{puntero(nodo)/n}
+{nat}
+{}
+
+\tadOperacion{menoresSonMenores}
+{puntero(nodo)/n}
+{bool}
+{}
+
+\tadOperacion{minimo}
+{puntero(nodo)/n}
+{nodo}
+{$n \neq NULL$}
+
+\tadOperacion{mayoresSonMayores}
+{puntero(nodo)/n}
+{bool}
+{}
+
+\tadOperacion{maximo}
+{puntero(nodo)/n}
+{nodo}
+{$n \neq NULL$}
+
+\tadOperacion{padresCorrectos}
+{puntero(nodo)/n}
+{bool}
+{$n \neq NULL$}
+
+\tadOperacion{verificarHijos}
+{puntero(nodo)/r, puntero(nodo)/n}
+{bool}
+{}
+
+\tadOperacion{hijosDistintos}
+{nodo/a, nodo/b}
+{bool}
+{}
+
+\tadAxiomas[$\forall$ puntero(nodo) $n$]
+
+\tadAxioma{fdbsEnRango(n)}{$
+    \IFLM n = NULL THEN true ELSE \\
+    \hspace*{2em} -1 \leq (*n).fdb \leq 1 \land fdbsEnRango((*n).menor) \land fdbsEnRango((*n).mayor) \\
+    FI
+$}
+
+\tadAxioma{fdbsCoinciden(n)}{$
+    \IFLM n = NULL THEN true ELSE \\
+    \hspace*{2em} (*n).fdb = altura((*n).menor) - altura((*n).mayor) \\
+    \hspace*{2em} \land fdbsCoinciden((*n).menor) \land fdbsCoinciden((*n).mayor) \\
+    FI
+$}
+
+\tadAxioma{altura(n)}{$
+    \IFLM n = NULL THEN 0 ELSE \\
+    \hspace*{2em} 1 + max(altura((*n).menor), altura((*n).mayor)) \\
+    FI
+$}
+
+\tadAxioma{menoresSonMenores(n)}{$
+    \IFLM n = NULL \lor (*n).menor = NULL THEN true ELSE \\
+    \hspace*{2em} maximo((*n).menor).clave < (*n).clave \\
+    \hspace*{2em} \land menoresSonMenores((*n).menor) \land menoresSonMenores((*n).mayor) \\
+    FI
+$}
+
+\tadAxioma{maximo(n)}{$
+    \IFLM (*n).mayor = NULL THEN (*n) ELSE \\
+    \hspace*{2em} maximo((*n).mayor) \\
+    FI
+$}
+
+\tadAxioma{mayoresSonMayores(n)}{$
+    \IFLM n = NULL \lor (*n).mayor = NULL THEN true ELSE \\
+    \hspace*{2em} minimo((*n).mayor).clave < (*n).clave \\
+    \hspace*{2em} \land mayoresSonMayores((*n).menor) \land mayoresSonMayores((*n).mayor) \\
+    FI
+$}
+
+\tadAxioma{minimo(n)}{$
+    \IFLM (*n).menor = NULL THEN (*n) ELSE \\
+    \hspace*{2em} minimo((*n).menor) \\
+    FI
+$}
+
+\tadAxioma{padresCorrectos(n)}{$
+    ((*n).menor \neq NULL \implies ( (*n).menor.padre = n \land padresCorrectos((*n).menor) ) \\
+    \land 
+    ((*n).mayor \neq NULL \implies ( (*n).mayor.padre = n \land padresCorrectos((*n).mayor) )
+$}
+
+\tadAxioma{verificarHijos(r, n)}{$
+    \IFLM r = NULL \lor n = NULL THEN true ELSE \\
+    \hspace*{2em} (r \neq n \implies hijosDistintos(*r, *n)) \\
+    \hspace*{2em} \land verificarHijos((*r).menor, n) \\
+    \hspace*{2em} \land verificarHijos((*r).mayor, n) \\
+    \hspace*{2em} \land verificarHijos(r, (*n).menor) \\
+    \hspace*{2em} \land verificarHijos(r, (*n).mayor) \\
+    FI
+$}
+
+\tadAxioma{hijosDistintos(a, b)}{$
+    a.menor \neq NULL \implies \\ 
+    ( a.menor \neq a.mayor \land a.menor \neq b.menor \land a.menor \neq b.mayor ) \\
+    a.mayor \neq NULL \implies \\
+    ( a.mayor \neq b.menor \land a.mayor \neq b.mayor ) \\
+    b.menor \neq NULL \implies \\
+    ( b.menor \neq b.mayor )
+$}
 
 \subsubsection{Función de abstracción}
 
+\begin{ABS}{$a$}{$avl$}{$d$}{$dicc$}
+    \absfunc{}
+    {
+        (\forall c : \kappa)\ def?(c, d) \Leftrightarrow existe(c, a.raiz)\ \land_L
+    }
+    \absfunc{}
+    {
+        (\forall c : \kappa)\ def?(c, d) \implies obtener(c, d) = obtener(c, a.raiz)
+    }
+\end{ABS}
 
+\subsubsection{Operaciones auxiliares de la función de abstracciónn}
 
+\tadOperacion{existe}
+{$\kappa$/c, puntero(nodo)/n}
+{bool}
+{}
+
+\tadOperacion{obtener}
+{$\kappa$/c, puntero(nodo)/n}
+{$\alpha$}
+{existe(c, n)}
+
+\tadAxiomas[$\forall$ puntero(nodo) $n$, $\kappa\ c$]
+
+\tadAxioma{existe(c, n)}{$
+    \IFLM n = NULL THEN false ELSE \\
+    \hspace*{2em} (*n).clave = c \lor_L existe(c, (*n).menor) \lor existe(c, (*n).mayor) \\
+    FI
+$}
+
+\tadAxioma{obtener(c, n)}{$
+    \IFLM (*n).clave = c THEN (*n).valor ELSE \\
+    \hspace*{2em} \IFLM existe(c, (*n).menor) THEN \\
+    \hspace*{4em}     obtener(c, (*n).menor) \\
+    \hspace*{2em} ELSE \\
+    \hspace*{4em}     obtener(c, (*n).mayor) \\
+    \hspace*{2em} FI \\
+    FI
+$}
 
 \subsection{Representación del iterador}
 
