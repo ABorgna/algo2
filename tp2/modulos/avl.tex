@@ -404,6 +404,19 @@ $}
 
 \subsection{Representación del iterador}
 
+\serepresenta{itDiccLog($\kappa, \alpha$)}{iter}
+\donde{iter}{tupla(\\
+    $actual$: puntero(nodo),\\
+    $siguientes$: lista(puntero(nodo)),\\
+    $dicc$: puntero(avl)}
+
+\subsubsection{Invariante de representación}
+
+\begin{Rep}{$iter$}{$it$}
+    \repfunc{  }
+    {
+        a.raiz = NULL \implies (a.max = NULL \land a.min = NULL)
+    }
 
 \subsection{Algoritmos}
 
