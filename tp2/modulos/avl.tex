@@ -37,7 +37,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 \end{iparamformales}
 
 \iusa{}
-\iseexplica{Diccionario($\kappa, \alpha$)}
+\iseexplica{Diccionario($\kappa, \alpha$), Iterador Unidireccional Modificable( tupla($\kappa, \alpha$) )}
 \igenero{diccLog($\kappa, \alpha$), itDiccLog($\kappa, \alpha$)}
 
 \ioperaciones
@@ -124,28 +124,25 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
 {itDiccLog($\kappa, \alpha$)}
 {true}
-{alias(\cuidado ver alias)}
+{$res \igobs crearItMod(<>, listaDeTupas(d))$ $\land$ alias($SecuSuby(res) = listaDeTuplas(d)$)}
 {\bigo(1)}
-{Tengo que ver como decir que siguientes(res)
-    es una permutacion de los elementos del diccionario. Seguramente 
-    hacer una operacion auxiliar sobre diccionario que devuelta una 
-    secuencia de tuplas kv.}
+{\cuidado Hacer funcion auxiliar listaDeTuplas(dicc)}
 {}
 
-\operacion{HaySiguiente}
+\operacion{HayMas?}
 {    \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {bool}
 {true}
-{$res \igobs haySiguiente?(it)$}
+{$res \igobs hayMas?(it)$}
 {\bigo(1)}
 {}
 {Devuelve true si hay elementos para avanzar}
 
-\operacion{Siguiente}
+\operacion{Actual}
 {   \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {tupla(clave: $\kappa$, significado: $\alpha$)}
-{$haySiguiente?(it)$}
-{alias($res \igobs siguiente(it)$)}
+{$hayMas?(it)$}
+{alias($res \igobs actual(it)$)}
 {\bigo(1)}
 {$res$.significado es una referencia al significado de diccionario.
     \cuidado ver como decir bien esto}
@@ -154,7 +151,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 \operacion{Avanzar}
 {   \param{in/out}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {}
-{$it \igobs it_0 \land haySiguiente?(it)$}
+{$it \igobs it_0 \land hayMas?(it)$}
 {$it \igobs avanzar(it_0)$}
 {\bigo(1)}
 {}
@@ -163,8 +160,8 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 \operacion{EliminarSiguiente}
 {   \param{in/out}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {}
-{$it \igobs it_0 \land haySiguiente?(it)$}
-{$it \igobs eliminarSiguiente(it_0)$}
+{$it \igobs it_0 \land hayMas?(it)$}
+{$it \igobs eliminar(it_0)$}
 {\bigo($log(n)$), donde $n = $ cantidad de elementos en el 
     diccionario sobre el que se itera \cuidado}
 {}
@@ -189,32 +186,52 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 
 \begin{Rep}{$avl$}{$a$}
     \repfunc{ raiz es null (y max y min tambien son null) $\lor_L$ }
-    {}
+    {
+        a.raiz = NULL \implies (a.max = NULL \land a.min = NULL)
+    }
     \repfunc{ para cada nodo el factor de balanceo esta entre -1 y 1 }
-    {}
+    {
+        fdbsEnRango(a.raiz)
+    }
     \repfunc{ para cada nodo el factor de balanceo es igual a la diferencia 
         de altura de sus dos hijos }
-    {}
+    {
+        fdbsCoinciden(a.raiz)
+    }
     \repfunc{ para cada nodo, si tiene un nodo menor, su valor es mayor al 
         de todos los nodos (del maximo) de la rama menor }
-    {}
+    {
+        menoresSonMenores(a.raiz)
+    }
     \repfunc{ para cada nodo, si tiene un nodo mayor, su valor es menor al 
         de todos los nodos (del minimo) de la rama mayor }
-    {}
+    {
+        mayoresSonMayores(a.raiz)
+    }
     \repfunc{ el padre de raiz siembre debe ser null }
-    {}
+    {
+        a.raiz \neq NULL \implies (*a.raiz).padre = NULL
+    }
     \repfunc{ para cada nodo n, si tiene mayor o menor, sus padres debe ser n }
-    {}
+    {
+        a.raiz \neq NULL \implies padresCorrectos(a.raiz)
+    }
     \repfunc{ para cada dos nodos distintos, $n_1$ y $n_2$, sus hijos deben ser distintos }
-    {}
+    {
+        verificarHijos(a.raiz, a.raiz)
+    }
     \repfunc{ para cada nodo ninguno puede apuntar a la raiz // esto deberia estar
         demas porque si el padre de la raiz debe ser null ya ningun nodo podria
         tenerlo de hijo }
-    {}
+    { }
     \repfunc{ max es igual al nodo con la clave mas grande }
-    {}
+    {
+        a.raiz \neq NULL \implies a.max = \&maximo(a.raiz)
+    }
     \repfunc{ min es igual al nodo con la clave mas pequeña }
-    {}
+    {
+        a.raiz \neq NULL \implies a.min = \&minimo(a.raiz)
+    }
 
 \end{Rep}
 
