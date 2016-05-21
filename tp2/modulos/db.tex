@@ -52,23 +52,24 @@
     \param{in}{$c$}{$campo$},
     \param{in}{$d$}{$dato$}}
 {}
-{$db \igobs db_0 \land nt \in tablas(db) \land_L tipo?(d) \igobs tipoCampo(c,dameTabla(nt,db))$}
+{$db \igobs db_0 \land nt \in tablas(db) \land c \in claves(dameTabla(nt,db)) \land_L \\
+    \hspace*{4em} tipo?(d) \igobs tipoCampo(c,dameTabla(nt,db))$}
 {$db \igobs borrar(definir(c,d,vacio),db_0)$}
-{\bigo($T * L + in$)}
+{\bigo($T * L + in$) \cuidado piden esta complejidad, pero seria $L * in$ si comparamos las strings}
 {}
 {$in$ es \bigo($log(n)$) si el campo de borrado es un índice, \bigo($n$) sino}
 
 \operacion{GenerarVistaJoin}
 {   \param{in/out}{$db$}{$base$},
-    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_1$}{$nombreTabla$}, \\ \hspace*{9.6em}
     \param{in}{$nt_2$}{$nombreTabla$},
     \param{in}{$c$}{$campo$}}
-{}
+{itDiccLog(dato,registro)}
 {$db \igobs db_0 \land nt_2 \in tablas(db) \land nt_1 \in tablas(db) \land nt_1 \neq nt_2 \land_L \\
     \hspace*{4em} c \in claves(dameTabla(nt_1,db)) \land c \in claves(dameTabla(nt_2,db)) \land_L \\
     \hspace*{4em} tipoCampo(c,dameTabla(nt_1,db)) \igobs tipoCampo(c,dameTabla(nt_2,db)) \land \\
     \hspace*{4em} \neg hayJoin?(nt_1,nt_2,db)$}
-{$db \igobs generarVistaJoin(nt_1,nt_2,c,db_0)$}
+{$db \igobs generarVistaJoin(nt_1,nt_2,c,db_0) \land \neg hayAnterion(res) \land haySiguiente(res)$ \cuidado que onda el iterador?}
 {$in$}
 {}
 {$in$ es \bigo($min(n,m) * (L + log(n + m))$) si el campo es indice de ambas tablas, \\
@@ -183,8 +184,11 @@
 \donde{tablasTree}{diccTrie($nombreTabla$, itConj($tabla$))}
 \donde{maxima}{puntero($tabla$)}
 \donde{vistas}{diccTrie($nombreTabla$, diccTrie($nombreTabla$, $vistaJoin$))}
-\donde{vistaJoin}{tupla($campo$: campo, $buffer$: buffer, $joins$: joins)}
-\donde{joins}{diccLog($dato$, $registro$)}
+\donde{vistaJoin}{tupla($campo$: campo, $tipo$: bool, $buffer$: buffer, \\
+    $joins$: joins, $joinsNat$: jNat, $joinsString$: jString)}
+\donde{joins}{conj($registro$)}
+\donde{joinsNat}{diccLog($nat, itConj(registro)$)}
+\donde{joinsString}{diccTrie($itConj(registro)$)}
 \donde{buffer}{lista($operacionJoin$)}
 \donde{operacionJoin}{tupla($esInsercion$: bool, $tabla$: bool, $reg$: $registro$)}
 
@@ -214,7 +218,8 @@
         \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\ \\
         \hspace*{6em} v.campo \in claves(t_a) \land \\
         \hspace*{6em} v.campo \in claves(t_b) \land_L \\
-        \hspace*{6em} tipoCampo(v.campo, t_a) \igobs tipoCampo(v.campo, t_b)}
+        \hspace*{6em} tipoCampo(v.campo, t_a) \igobs tipoCampo(v.campo, t_b) \land \\
+        \hspace*{6em} v.tipo \igobs tipoCampo(v.campo, t_b) }
 
     \repfunc{Los registros de cada buffer tienen los campos de las tablas correspondientes}
         {(\forall nt,nt' : nombreTabla) def?(nt,e.vistasJoin) \land_L def?(nt', obtener(nt,e.vistasJoin)) \implies_L \\
@@ -228,6 +233,40 @@
         \hspace*{8em} ELSE \\
         \hspace*{10em} campos(op.reg) \igobs campos(t_b) \land_L mismosTipos(op.reg, t_b) \\
         \hspace*{8em} FI
+    }
+
+    \repfunc{Los joins cacheados tienen los campos de ambas tablas}
+        {(\forall nt,nt' : nombreTabla) def?(nt,e.vistasJoin) \land_L def?(nt', obtener(nt,e.vistasJoin)) \implies_L \\
+        \hspace*{4em} (\exists v : vistaJoin) \; (\exists t_a, t_b : tabla) \\
+        \hspace*{6em} v \igobs obtener(nt',obtener(nt,e.vistasJoin)) \land \\
+        \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
+        \\
+        \hspace*{6em} (\forall r : registro) \; r \in v.joins \implies (\\
+        \hspace*{10em} campos(r) \igobs campos(t_a) \cup campos(t_b) \land \\
+        \hspace*{10em} (\forall c : campo) \; c \in campos(r) \implies (\\
+        \hspace*{12em} (c \in campos(t_a) \land_L tipoCampo(c,t_a) \igobs tipo?(obtener(c,r))) \lor \\
+        \hspace*{12em} (c \in campos(t_b) \land_L tipoCampo(c,t_b) \igobs tipo?(obtener(c,r)))))
+    }
+
+    \repfunc{Los diccionarios de índices de los joins tienen todas las entradas}
+        {(\forall nt,nt' : nombreTabla) def?(nt,e.vistasJoin) \land_L def?(nt', obtener(nt,e.vistasJoin)) \implies_L \\
+        \hspace*{4em} (\exists v : vistaJoin) \; (\exists t_a, t_b : tabla) \\
+        \hspace*{6em} v \igobs obtener(nt',obtener(nt,e.vistasJoin)) \land \\
+        \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
+        \\
+        \hspace*{6em} \IFLM v.tipo THEN \\
+        \hspace*{8em} \#v.joins \igobs \#claves(v.joinsNat) \land \\
+        \hspace*{8em} (\forall r : registro) \; r \in v.joins \implies \\
+        \hspace*{10em} def?(valorNat(obtener(v.campo, r)), v.joinsNat) \land_L \\
+        \hspace*{10em} haySiguiente?(obtener(valorNat(obtener(v.campo, r)), v.joinsNat)) \land_L \\
+        \hspace*{10em} siguiente(obtener(valorNat(obtener(v.campo, r)), v.joinsNat)) \igobs r \\
+        \hspace*{6em} ELSE \\
+        \hspace*{8em} \#v.joins \igobs \#claves(v.joinsString) \land \\
+        \hspace*{8em} (\forall r : registro) \; r \in v.joins \implies \\
+        \hspace*{10em} def?(valorString(obtener(v.campo, r)), v.joinsString) \land_L \\
+        \hspace*{10em} haySiguiente?(obtener(valorString(obtener(v.campo, r)), v.joinsString)) \land_L \\
+        \hspace*{10em} siguiente(obtener(valorString(obtener(v.campo, r)), v.joinsString)) \igobs r \\
+        \hspace*{6em} FI
     }
 
     \repfunc{No hay dos inserciones seguidas en un buffer (sin borrar antes)}
@@ -253,7 +292,7 @@
         \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
         \\
         \hspace*{6em} (\forall d : dato) \; (\forall op : operacionJoin) \; (op \in v.buffer \; \land \; op.esInsercion \land \\
-        \hspace*{10em} d \in claves(v.joins) \; \land_L obtener(v.campo, op.reg) \igobs d ) \implies \\
+        \hspace*{10em} datoIndexado?(d,v.joinsNat,v.joinsString) \; \land_L obtener(v.campo, op.reg) \igobs d ) \implies \\
         \hspace*{8em} (\exists op' : operacionJoin) \; (op' \in v.buffer \; \land_L \neg op'.esInsercion \; \land \\
         \hspace*{10em} obtener(v.campo,op'.reg) \igobs d \; \land  estaDespues?(op', op, v.buffer))
     }
@@ -265,8 +304,7 @@
         \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
         \\
         \hspace*{6em} (\forall r : registro) r \in combinarRegistros(v.campo, registros(t_a), registros(t_b)) \implies_L (\\
-        \hspace*{8em} (def?(obtener(v.campo,r), v.joins) \land_L \\
-        \hspace*{10em} r \igobs obtener(obtener(v.campo,r), v.joins) \land \\
+        \hspace*{8em} (r \in v.joins \land \\
         \hspace*{10em} \neg(\exists op' : operacionJoin) \; (op' \in v.buffer \; \land \\
         \hspace*{12em} obtener(v.campo,r) \igobs obtener(v.campo, op'.reg))) \lor \\
         \hspace*{8em} ((\exists op : operacionJoin) \; op \in v.buffer \; \land \; op.esInsercion \; \land_L \\
@@ -281,8 +319,7 @@
         \hspace*{6em} v \igobs obtener(nt',obtener(nt,e.vistasJoin)) \land \\
         \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
         \\
-        \hspace*{6em} (\forall r : registro) \; (def?(obtener(v.campo,r), v.joinsNat) \land_L \\
-        \hspace*{8em} r \igobs obtener(obtener(v.campo,r), v.joinsNat)) \implies_L (\\
+        \hspace*{6em} (\forall r : registro) \; r \in v.joins \implies_L (\\
         \hspace*{10em} r \in combinarRegistros(v.campo, registros(t_a), registros(t_b))\\
         \hspace*{8em}  \lor \\
         \hspace*{8em} ((\exists op : operacionJoin) \; op \in v.buffer \; \land_L \\
@@ -309,10 +346,12 @@
 \subsubsection{Operaciones auxiliares del invariante de representación}
 
 \tadOperacion{estaDespues?}{$\alpha$/a, $\alpha$/b, secu($\alpha$)}{bool}{esta?(a,s) $\land$ esta?(b,s)}
+\tadOperacion{datoIndexado?}{d/dato, dicc(nat\,$\alpha$)/dn, dicc(string\,$\beta$)/ds}{bool}{}
 
 \tadAxiomas[\paratodo{secu($\alpha$)}{s}, \paratodo{$\alpha$}{a,b}]
 
 \tadAxioma{estaDespues?(a,b,s)}{$\neg$(prim(s) $=$ a) $\land_L$ (prim(s) $=$ b $\lor_L$ estaDespues?(a,b,fin(s)))}
+\tadAxioma{datoIndexado?(d,dn,ds)}{\IF Nat?(d) THEN valorNat(d) $\in$ claves(dn) ELSE valorString(d) $\in$ claves(ds) FI}
 
 \subsubsection{Función de abstracción}
 
@@ -350,12 +389,13 @@
 
 \algoritmo{iInsertarEntrada}{
     \param{in/out}{$db$}{$base$},
-    \param{in}{$nt$}{$nombreTabla$}
+    \param{in}{$nt$}{$nombreTabla$},
     \param{in}{$r$}{$registro$}
-    }{base}{\bigo($T * L + in$)}{
+    }{}{\bigo($T * L + in$)}{
     \var $t : tabla$
     \var $it : itConj(tabla)$
     \State $t \gets tabla(db,nt)$                                   \comment \bigo(1)
+    \State $it \gets tablas(db)$                                    \comment \bigo(1)
     \State $agregarRegistro(t,r)$                                   \comment \bigo($L + in$)
     \If{$accesos(*db.tablaMaxima) < accesos(t)$}                    \comment \bigo(1)
         \State $db.tablaMaxima = \&t$                               \comment \bigo(1)
@@ -388,6 +428,88 @@
         \EndIf
         \State $avanzar(it)$                                        \comment \bigo(1)
     \EndWhile
+}
+
+\algoritmo{iBorrar}{
+    \param{in/out}{$db$}{$base$},
+    \param{in}{$nt$}{$nombreTabla$},
+    \param{in}{$c$}{$campo$},
+    \param{in}{$d$}{$dato$}
+    }{}{\bigo($T * L + in$)}{
+    \var $t : tabla$
+    \var $it : itConj(tabla)$
+    \var $rs : conj(registro)$
+    \State $t \gets tabla(db,nt)$                                   \comment \bigo(1)
+    \State $it \gets tablas(db)$                                    \comment \bigo(1)
+    \State $rs \gets borrarRegistro(t,c,d)$                         \comment \bigo($L + in$)
+    \State
+    \If{!esVacio(rs)}
+        \var $r : registro$
+        \State $r \gets siguiente(crearIt(rs))$                     \comment \bigo(1)
+
+        \State
+        \If{$accesos(*db.tablaMaxima) < accesos(t)$}                \comment \bigo(1)
+            \State $db.tablaMaxima = \&t$                           \comment \bigo(1)
+        \EndIf
+
+        \State
+        \While{$haySiguiente(it)$}                                  \comment \bigo(1)
+            \State                 \icomment El loop se repite $T$ veces
+            \var $t' : tabla$
+            \State $t' \gets siguiente(it)$                         \comment \bigo(1)
+            \If{$nombre(t') \;!= nombre(t)$}                        \comment \bigo(1)
+                \If{$definido?(db.vistasJoin, nombre(t))$}          \comment \bigo(1)
+                    \var $joinsT : diccTrie(nombreTabla, vistaJoin)$
+                    \State $joinsT \gets obtener(db.vistasJoin, nombre(t))$                     \comment \bigo(1)
+                    \If{$definido?(joinsT, nombre(t'))$}            \comment \bigo(1)
+                        \var $b : buffer$
+                        \State $b \gets obtener(joinsT, nombre(t')).buffer$                     \comment \bigo(1)
+                        \State $agregarAtras(b, <esInsercion: false, tabla: false, reg: r>)$    \comment \bigo($L$)
+                    \EndIf
+                \EndIf
+                \State
+                \If{$definido?(db.vistasJoin, nombre(t'))$}         \comment \bigo(1)
+                    \var $joinsT' : diccTrie(nombreTabla, vistaJoin)$
+                    \State $joinsT' \gets obtener(db.vistasJoin, nombre(t'))$                   \comment \bigo(1)
+                    \If{$definido?(joinsT', nombre(t))$}            \comment \bigo(1)
+                        \var $b : buffer$
+                        \State $b \gets obtener(joinsT', nombre(t)).buffer$                     \comment \bigo(1)
+                        \State $agregarAtras(b, <esInsercion: false, tabla: true, reg: r>)$     \comment \bigo($L$)
+                    \EndIf
+                \EndIf
+            \EndIf
+            \State $avanzar(it)$                                    \comment \bigo(1)
+        \EndWhile
+    \EndIf
+}
+
+\algoritmo{iGenerarVistaJoin}{
+    \param{in/out}{$db$}{$base$},
+    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_2$}{$nombreTabla$},
+    \param{in}{$c$}{$campo$} \\ \hspace*{9.5em}
+    }{itDiccLog(dato,registro)}{\bigo($in$)}{
+    \var $t_1, t_2 : tabla$
+    \var $it : itConj(tabla)$
+    \var $v : vistaJoin$
+    \State $t_1 \gets tabla(db,nt_1)$                               \comment \bigo(1)
+    \State $t_2 \gets tabla(db,nt_2)$                               \comment \bigo(1)
+    \State $v \gets \; <campo: c, \; buffer: vacia(), \; joins: nuevoDiccLog()>$
+
+    \State
+    \If{$(esIndice(t_1, c) \algAnd esIndice(t_2, c) \algAnd cantidadRegistros(t_1) < cantidadRegistros(t_2)) \algOr $\\
+    \hspace*{8em} $esIndice(t_2, c)$}
+        \State $it \gets registros$
+    \ElsIf{$(esIndice(t_1, c) \algAnd esIndice(t_2, c) \algAnd cantidadRegistros(t_1) > cantidadRegistros(t_2)) \algOr $\\
+    \hspace*{8em} $esIndice(t_1, c)$}
+    \Else
+    \EndIf
+
+    \State
+    \If{$!definido?(db.vistasJoin, nt_1)$}                          \comment \bigo(1)
+        \State $definir(db.vistasJoin, nt_1, nuevoTrie())$
+    \EndIf
+    \State $definir(obtener(db.vistasJoin, nt_1), nt_2, v)$
 }
 
 \subsection{Servicios usados}
