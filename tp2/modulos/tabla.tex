@@ -54,7 +54,7 @@
 {}
 {$t \igobs t_0 \land puedeIndexar(c,t)$}
 {$t \igobs indexar(c,t_0)$}
-{\bigo($n \; log(n)$)}
+{\bigo($n * (L + log(n))$)}
 {}
 {}
 
@@ -179,7 +179,7 @@
     THEN Ag(r,\emptyset) ELSE \emptyset FI$}
 {\bigo(in)}
 {No se debe modificar los resultados}
-{in es $log(n) * L$ si $c$ es índice, $n * L$ sino}
+{in es $log(n) + L$ si $c$ es índice, $n * L$ sino}
 
 \operacion{CantidadRegistros}
 {   \param{in}{$t$}{$tabla$}}
@@ -270,36 +270,35 @@
     \State $res.campos \gets columnas$                              \comment \bigo(1)
     \State $res.claves \gets claves$                                \comment \bigo(1)
     \State $res.accesos \gets 0$                                    \comment \bigo(1)
-}
+}{7 * \bigo(1) = \bigo(1)}
 
 \algoritmo{iAgregarRegistro}{
         \param{in/out}{$t$}{$tabla$},
         \param{in}{$r$}{$registro$}
-        }{}{\bigo($L + in$)}{
+        }{}{\bigo($L + log(n)$) si hay un índice nat, \bigo($L$) sino}{
     \var $it : itConj(registro)$
-    \State $it \gets AgregarRapido(t.registros, r)$                 \comment \bigo($L$)
+    \State $it \gets AgregarRapido(t.registros, r)$                 \comment \bigo($copy(registro)$) = \bigo($L$)
 
     \If{$t.hayIndiceNat$}
         \var $k : nat$
         \State $k \gets getNat(significado(r, t.indiceNat))$        \comment \bigo(1)
-        \State $definirRapido(t.indicesNat, k, it)$                 \comment \bigo($log(n)$)
+        \State $definir(t.indicesNat, k, it)$                       \comment \bigo($log(n) * cmp(nat) + copy(nat)$) = \bigo($log(n)$)
     \EndIf
     \If{$t.hayIndiceString$}
         \var $k : string$
         \State $k \gets getString(significado(r, t.indiceString))$  \comment \bigo(1)
-        \State $definirRapido(t.indicesString, k, it)$
-                                    \comment Como la máxima cantidad de valores del índice string es \bigo($2^L$),
-        \Statex                     \comment insertar un nuevo valor del índice se hace en \bigo($log(2^L)$) $=$ \bigo($L$)
+        \State $definir(t.indicesString, k, it)$                    \comment \bigo($L + copy(string)$) = \bigo($L$)
     \EndIf
     \State
     \State $t.accesos \gets t.accesos + 1$                          \comment \bigo(1)
-}
+}{Si hay índice nat: \bigo($L$) + \bigo(1) + \bigo($log(n)$) + \bigo(1) + \bigo($L$) + \bigo(1) = \bigo($L + log(n)$) \\
+    \hspace*{8.25em} Sino: \bigo($L$) + \bigo(1) + \bigo($L$) + \bigo(1) = \bigo($L$)}
 
 \algoritmo{iBorrarRegistro}{
         \param{in/out}{$t$}{$tabla$},
         \param{in}{$c$}{$campo$},
         \param{in}{$d$}{$dato$}
-        }{$conj(registro)$}{\bigo($L + in$)}{
+        }{$conj(registro)$}{\bigo($L + log(n)$) si c es índice, \bigo($L + n$) sino}{
     \var $esta : bool$
     \var $it : itConj(registro)$
     \State $res \gets vacio()$                                      \comment \bigo(1)
@@ -307,19 +306,19 @@
 
     \State
     \If{$t.hayIndiceNat \algAnd t.indiceNat == c$}                  \comment \bigo(1)
-        \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n)$)
-            \State $it \gets significado(t.indicesNat, getNat(d))$  \comment \bigo($log(n)$)
+        \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+            \State $it \gets obtener(t.indicesNat, getNat(d))$      \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
             \State $esta \gets true$                                \comment \bigo(1)
         \EndIf
     \ElsIf{$t.hayIndiceString \algAnd t.indiceString == c$}         \comment \bigo(1)
-        \If{$definido(t.indicesString,getString(d))$}               \comment \bigo($log(n)$)
-            \State $it \gets significado(t.indicesString, getString(d))$        \comment \bigo($log(n)$)
+        \If{$definido(t.indicesString,getString(d))$}               \comment \bigo($L$)
+            \State $it \gets obtener(t.indicesString, getString(d))$        \comment \bigo($L$)
             \State $esta \gets true$                                \comment \bigo(1)
         \EndIf
     \Else
         \State $it \gets crearIt(t.registros)$                      \comment \bigo(1)
         \While{$haySiguiente(it) \algAnd significado(siguiente(it),c) \;!= d$}   \comment \bigo(1)
-            \Statex             \comment El loop se repite a lo sumo $n$ veces
+            \State              \icomment El loop se repite a lo sumo $n$ veces
             \State avanzar(it)                                      \comment \bigo(1)
         \EndWhile
         \If{haySiguiente(it)}                                       \comment \bigo(1)
@@ -334,21 +333,27 @@
         \State $agregarRapido(res, r)$                              \comment \bigo(1)
         \State $eliminarSiguiente(it)$                              \comment \bigo(1)
         \If{$t.hayIndiceNat$}                                       \comment \bigo(1)
-            \State $borrar(t.indicesNat, significado(r, t.indiceNat))$          \comment \bigo($log(n)$)
+            \State $borrar(t.indicesNat, significado(r, t.indiceNat))$          \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
         \EndIf
         \If{$t.hayIndiceString$}                                    \comment \bigo(1)
-            \State $borrar(t.indicesString, significado(r, t.indiceString))$    \comment \bigo($log(n)$)
+            \State $borrar(t.indicesString, significado(r, t.indiceString))$    \comment \bigo($L$)
         \EndIf
 
         \State
         \State $t.accesos \gets t.accesos + 1$                      \comment \bigo(1)
     \EndIf
+}{Si c es indiceNat: 3 * \bigo(1) + 2 * \bigo($log(n)$) + \bigo(1) + \bigo($L$) + 3 * \bigo(1) + \bigo($log(n)$) + \bigo(1) \\
+    \hspace*{16em} + \bigo($L$) + \bigo(1) = \bigo($L + log(n)$) \\
+    \hspace*{8.25em} Si c es indiceString: 4 * \bigo(1) + 2 * \bigo($L$) + \bigo(1) + \bigo($L$) + 3 * \bigo(1) + \bigo($log(n)$) + \bigo(1) \\
+    \hspace*{16em} + \bigo($L$) + \bigo(1) = \bigo($L + log(n)$) \\
+    \hspace*{8.25em} Si c no es indice: 5 * \bigo(1) + n * (2 * \bigo(1)) + 2 * \bigo(1) + \bigo($L$) + 3 * \bigo(1) + \bigo($log(n)$) + \bigo(1) \\
+    \hspace*{16em} + \bigo($L$) + \bigo(1) = \bigo($L + n$)
 }
 
 \algoritmo{iIndexar}{
         \param{in/out}{$t$}{$tabla$},
         \param{in}{$c$}{$campo$}
-        }{}{\bigo($n \; log(n)$)}{
+        }{}{\bigo($n * (L + log(n))$)}{
         \var it : itConj(registro)
         \State $it \gets crearIt(t.registros)$                      \comment \bigo(1)
 
@@ -357,9 +362,9 @@
             \State $t.indiceNat \gets c$                            \comment \bigo(1)
             \State $t.indicesNat \gets vacio()$                     \comment \bigo(1)
             \While{$haySiguiente(it)$}                              \comment \bigo(1)
-                \Statex             \comment El loop se repite a lo sumo $n$ veces
-                \State $definirRapido(t.indicesNat, significado(siguiente(it),c), copy(it))$
-                                                                    \comment \bigo($log(n)$)
+                \State              \icomment El loop se repite a lo sumo $n$ veces
+                \State $definir(t.indicesNat, significado(siguiente(it),c), copy(it))$
+                \Statex             \comment \bigo($log(n) * cmp(nat) + copy(nat) + copy(it)$) = \bigo($log(n)$)
                 \State $avanzar(it)$                                \comment \bigo(1)
             \EndWhile
         \Else
@@ -367,19 +372,21 @@
             \State $t.indiceString \gets c$                         \comment \bigo(1)
             \State $t.indicesString \gets vacio()$                  \comment \bigo(1)
             \While{$haySiguiente(it)$}                              \comment \bigo(1)
-                \Statex             \comment El loop se repite a lo sumo $n$ veces
-                \State $definirRapido(t.indicesString, significado(siguiente(it),c), copy(it))$
-                                                                    \comment \bigo($log(n)$)
+                \State              \icomment El loop se repite a lo sumo $n$ veces
+                \State $definir(t.indicesString, significado(siguiente(it),c), copy(it))$
+                                    \comment \bigo($L + copy(string) + copy(it)$) = \bigo($L$)
                 \State $avanzar(it)$                                \comment \bigo(1)
             \EndWhile
         \EndIf
+}{Si el campo es nat: 5 * \bigo(1) + n * (\bigo(1) + \bigo($log(n)$) + \bigo(1)) = \bigo($n * log(n)$) \\
+    \hspace*{8.25em} Sino: 5 * \bigo(1) + n * (\bigo(1) + \bigo($L$) + \bigo(1)) = \bigo($n * L$) \\
 }
 
 \algoritmo{iNombre}{
         \param{in}{$t$}{$tabla$}
         }{string}{\bigo(1)}{
         \State $res \gets t.nombre$                                 \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iEsClave}{
         \param{in}{$t$}{$tabla$},
@@ -393,7 +400,7 @@
             \State avanzar(it)                                      \comment \bigo(1)
         \EndWhile
         \State $res \gets haySiguiente(it)$                         \comment \bigo(1)
-}
+}{\bigo(1) + k * (2 * \bigo(1)) + \bigo(1) = \bigo(1)}
 
 \algoritmo{iEsIndice}{
         \param{in}{$t$}{$tabla$},
@@ -404,94 +411,97 @@
         \Else
             \State $res \gets c == t.indiceString$                  \comment \bigo(1)
         \EndIf
-}
+}{3 * \bigo(1) = \bigo(1)}
 
 \algoritmo{iRegistros}{
         \param{in}{$t$}{$tabla$}
         }{itConj(registro)}{\bigo(1)}{
         \State $res \gets crearIt(t.registros)$                     \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iCampos}{
         \param{in}{$t$}{$tabla$}
         }{registro}{\bigo(1)}{
         \State $res \gets t.campos$                                 \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iTipoCampo}{
         \param{in}{$t$}{$tabla$},
         \param{in}{$c$}{$campo$}
         }{registro}{\bigo(1)}{
         \State $res \gets isNat(significado(t.campos,c))$           \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iAccesos}{
         \param{in}{$t$}{$tabla$}
         }{nat}{\bigo(1)}{
         \State $res \gets t.accesos$                                \comment \bigo(1)
-}
+}{}
 
 \algoritmo{maxNat}{
         \param{in}{$t$}{$tabla$}
         }{nat}{\bigo(1)}{
         \State $res \gets maximo(t.indicesNat)_0$                   \comment \bigo(1)
-}
+}{}
 
 \algoritmo{minNat}{
         \param{in}{$t$}{$tabla$}
         }{nat}{\bigo(1)}{
         \State $res \gets minimo(t.indicesNat)_0$                   \comment \bigo(1)
-}
+}{}
 
 \algoritmo{maxString}{
         \param{in}{$t$}{$tabla$}
         }{string}{\bigo(1)}{
         \State \comment \cuidado el trie tiene que proveer $maximo$ y $minimo$
         \State $res \gets maximo(t.indicesString)_0$                \comment \bigo(1)
-}
+}{}
 
 \algoritmo{minString}{
         \param{in}{$t$}{$tabla$}
         }{string}{\bigo(1)}{
         \State $res \gets minimo(t.indicesString)_0$                \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iBuscar}{
         \param{in/out}{$t$}{$tabla$},
         \param{in}{$c$}{$campo$},
         \param{in}{$d$}{$dato$}
-        }{$conj(registro)$}{\bigo($L + in$)}{
+    }{$conj(registro)$}{\bigo($L + log(n)$) si c es índice, \bigo($L * n$) sino}{
     \var $it : itConj(registro)$
     \State $res \gets vacio()$                                      \comment \bigo(1)
 
     \State
     \If{$t.hayIndiceNat \algAnd t.indiceNat == c$}                  \comment \bigo(1)
-        \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n)$)
-            \State $it \gets significado(t.indicesNat, getNat(d))$  \comment \bigo($log(n)$)
-            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($L$)
+        \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+            \State $it \gets obtener(t.indicesNat, getNat(d))$      \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($copy(registro)$) = \bigo($L$)
         \EndIf
     \ElsIf{$t.hayIndiceString \algAnd t.indiceString == c$}         \comment \bigo(1)
-        \If{$definido(t.indicesString,getString(d))$}               \comment \bigo($log(n)$)
-            \State $it \gets significado(t.indicesString, getString(d))$        \comment \bigo($log(n)$)
-            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($L$)
+        \If{$definido(t.indicesString,getString(d))$}               \comment \bigo($L$)
+            \State $it \gets significado(t.indicesString, getString(d))$    \comment \bigo($L$)
+            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($copy(registro)$) = \bigo($L$)
         \EndIf
     \Else
         \State $it \gets crearIt(t.registros)$                      \comment \bigo(1)
         \While{$haySiguiente(it)$}                                  \comment \bigo(1)
             \Statex             \comment El loop se repite $n$ veces
-            \If{$significado(siguiente(it),c) = d$}
-                \State $agregarRapido(res, siguiente(it))$          \comment \bigo($L$)
+            \If{$obtener(siguiente(it),c) == d$}                    \comment \bigo($cmp(dato)$) = \bigo($L$)
+                \State $agregarRapido(res, siguiente(it))$          \comment \bigo($copy(registro)$) = \bigo($L$)
             \EndIf
             \State avanzar(it)                                      \comment \bigo(1)
         \EndWhile
     \EndIf
+}{Si c es indiceNat: 2 * \big(1) + 2 * \bigo($log(n)$) + \bigo($L$) = \bigo($L + log(n)$) \\
+    \hspace*{8.25em} Si c es indiceString: 3 * \bigo(1) + 3 * \bigo($L$) = \bigo($L$) \\
+    \hspace*{8.25em} Si c no es índice: 4 * \bigo(1) + n * (\bigo(1) + 2 * \bigo($L$) + \bigo(1)) = \bigo($L * n$)
 }
 
 \algoritmo{iCantidadRegistros}{
         \param{in}{$t$}{$tabla$}
         }{nat}{\bigo(1)}{
         \State $res \gets cardinal(t.registros)$                    \comment \bigo(1)
-}
+}{}
 
 \subsection{Servicios usados}
 
