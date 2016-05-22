@@ -410,13 +410,100 @@ $}
     $siguientes$: lista(puntero(nodo)),\\
     $dicc$: puntero(avl)}
 
-\subsubsection{Invariante de representación}
+\subsubsection{Invariante de representación del iterador}
 
 \begin{Rep}{$iter$}{$it$}
-    \repfunc{  }
+    \repfunc{ El puntero al diccionario no puede ser null }
     {
-        a.raiz = NULL \implies (a.max = NULL \land a.min = NULL)
+        it.dicc \neq NULL \land_L
     }
+    \repfunc{ Si el diccionario esta vacio no hay un elemento actual }
+    {
+        (*it.dicc).raiz = NULL \implies it.actual = NULL \land_L
+    }
+    \repfunc{ Si actual es null entonces no puede haber siguientes }
+    {
+        it.actual = NULL \implies it.siguientes = <> \land_L
+    }
+    \repfunc{ Si el diccionario no esta vacio y hay un elemento actual
+        el elemento actual debe pertenecer al diccionario }
+    {
+        ((*it.dicc).raiz \neq NULL \land it.actual \neq NULL) \implies \\
+        \hspace*{2em} pertenece(it.actual, (*it.dicc).raiz)
+    }
+    \repfunc{ Todos los elementos siguientes pertenecen al diccionario }
+    {
+        (\forall m : puntero(nodo), m \in it.siguientes) pertenece(m, (*it.dicc).raiz)
+    }
+    \repfunc{ Si hay un actual, sus hijos pertenecen a los elementos siguientes }
+    {
+        it.actual \neq NULL \implies \\
+        \hspace*{2em} (*it.actual).menor \neq NULL \implies (*it.actual).menor \in it.siguientes \\
+        \hspace*{2em} \land (*it.actual).menor \neq NULL \implies (*it.actual).menor \in it.siguientes
+    }
+\end{Rep}
+
+\tadOperacion{pertenece}
+{puntero(nodo)/a, puntero(nodo)/b}
+{bool}
+{$a \neq NULL$}
+
+\tadAxioma{pertenece(a, b)}{$
+    \IFLM b = NULL THEN false ELSE \\
+    \hspace*{2em} b = a \lor_L pertenece(a, (*b).menor) \lor pertenece(a, (*b).mayor \\
+    FI
+$}
+
+\subsubsection{Función de abstracción del iterador}
+
+\begin{ABS}{$it$}{$iter$}{$im$}{$itMod$}
+    \absfunc{}
+    {
+        anteriores(im) \igobs hasta(it.actual, dfs((*it.dicc).raiz))
+    }
+    \absfunc{}
+    {
+        siguientes(im) \igobs desde(it.actual, dfs((*it.dicc).raiz))
+    }
+\end{ABS}
+
+\tadOperacion{hasta}
+{$\gamma$/x, lista($\gamma$)/xs}
+{lista($\gamma$)}
+{}
+
+\tadAxioma{hasta(x, xs)}{$
+    \IFLM vacia?(xs) THEN <> ELSE \\
+    \hspace*{2em} \IFLM prim(xs) = x THEN <> ELSE \\
+    \hspace*{4em}     prim(xs) \bullet hasta(x, fin(xs)) \\
+    \hspace*{2em} FI \\
+    FI
+$}
+
+\tadOperacion{desde}
+{$\gamma$/x, lista($\gamma$)/xs}
+{lista($\gamma$)}
+{}
+
+\tadAxioma{desde(x, xs)}{$
+    \IFLM vacia?(xs) THEN <> ELSE \\
+    \hspace*{2em} \IFLM prim(xs) = x THEN xs ELSE \\
+    \hspace*{4em}     desde(x, fin(xs)) \\
+    \hspace*{2em} FI \\
+    FI
+$}
+
+\tadOperacion{dfs}
+{puntero(nodo)/n}
+{lista(puntero(nodo))}
+{}
+
+\tadAxioma{dfs(n)}{$
+    \IFLM n = NULL THEN <> ELSE \\
+    \hspace*{2em} n \bullet dfs((*n).menor)\ \&\ dfs((*n).mayor) \\
+    FI
+$}
+
 
 \subsection{Algoritmos}
 
