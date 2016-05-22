@@ -114,46 +114,46 @@
 \algoritmo{iDatoNat}{\param{in}{$n$}{$nat$}}{dato}{\bigo(1)}{
     \State $res.esNat \gets true$                                   \comment \bigo(1)
     \State $res.valorNat \gets n$                                   \comment \bigo(1)
-}
+}{\bigo(1) + \bigo(1) = \bigo(1)}
 
-\algoritmo{iDatoString}{\param{in}{$str$}{$string$}}{dato}{\bigo(copy($string$))}{
+\algoritmo{iDatoString}{\param{in}{$str$}{$string$}}{dato}{\bigo($copy(string)$)}{
     \State $res.esNat \gets false$                                  \comment \bigo(1)
-    \State $res.valorString \gets str$                              \comment \bigo(copy($string$))
-}
+    \State $res.valorString \gets str$                              \comment \bigo($copy(string)$)
+}{\bigo(1) + \bigo($copy(string)$) = \bigo($copy(string)$)}
 
 \algoritmo{iIsNat}{\param{in}{$d$}{$dato$}}{bool}{\bigo(1)}{
     \State $res \gets d.esNat$                                      \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iIsString}{\param{in}{$d$}{$dato$}}{bool}{\bigo(1)}{
     \State $res \gets \,!\,d.esNat$                                 \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iGetNat}{\param{in}{$d$}{$dato$}}{nat}{\bigo(1)}{
     \State $res \gets d.valorNat$                                   \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iGetString}{\param{in}{$d$}{$dato$}}{string}{\bigo(1)}{
     \State $res \gets d.valorString$                                \comment \bigo(1)
-}
+}{}
 
 \algoritmo{$\bullet == \bullet$}{\param{in}{$d_1$}{$dato$}, \param{in}{$d_2$}{$dato$}}
         {bool}{\bigo(cmp($string$))}{
     \If{$d_1$.esNat}
         \State $res \gets d_1.valorNat == d_2.valorNat$             \comment \bigo(1)
     \Else
-        \State $res \gets d_1.valorString == d_2.valorString$       \comment \bigo(cmp($string$))
+        \State $res \gets d_1.valorString == d_2.valorString$       \comment \bigo($cmp(string)$)
     \EndIf
-}
+}{\bigo(1) + \bigo($cmp(string)$) = \bigo($cmp(string)$)}
 
 \algoritmo{$\bullet > \bullet$}{\param{in}{$d_1$}{$dato$}, \param{in}{$d_2$}{$dato$}}
-        {bool}{\bigo(cmp($string$))}{
+        {bool}{\bigo($cmp(string)$)}{
     \If{$d_1$.esNat}
         \State $res \gets d_1.valorNat > d_2.valorNat$              \comment \bigo(1)
     \Else
-        \State $res \gets d_1.valorString > d_2.valorString$        \comment \bigo(cmp($string$))
+        \State $res \gets d_1.valorString > d_2.valorString$        \comment \bigo($cmp(string)$)
     \EndIf
-}
+}{\bigo(1) + \bigo($cmp(string)$) = \bigo($cmp(string)$)}
 
 \subsection{Servicios usados}
 

@@ -183,16 +183,20 @@
 
 \providetoggle{algoritmo}
 \captionsetup[algorithm]{labelformat=empty}
-\newcommand\algoritmo[5]{
+\newcommand\algoritmo[6]{
     \begin{algorithm}[H]
         \toggletrue{algoritmo}
 
         \caption{\; #1(#2)
-                   \ifelseblank{#3}\then{}\else{\resultado{#3}}\fi
-                   \hfill #4}
+                   \ifelseblank{#3}\then{}\else{\resultado{#3}}\fi}
         \begin{algorithmic}
             #5
         \end{algorithmic}
+
+        \ifelseblank{#4}\then{}\else{\par \vspace*{0.2em}\hspace*{2em} \small \underline{Complejidad:} #4}\fi
+        \ifelseblank{#6}\then{}\else{\par \vspace*{0.2em}\hspace*{2em} \small \underline{Justificación:} #6}\fi
+
+        \vspace*{0.2em}
 
         \togglefalse{algoritmo}
     \end{algorithm}
