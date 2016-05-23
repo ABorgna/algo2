@@ -55,9 +55,9 @@
 {$db \igobs db_0 \land nt \in tablas(db) \land c \in claves(dameTabla(nt,db)) \land_L \\
     \hspace*{4em} tipo?(d) \igobs tipoCampo(c,dameTabla(nt,db))$}
 {$db \igobs borrar(definir(c,d,vacio),db_0)$}
-{\bigo($T * L + in$) \cuidado piden esta complejidad, pero seria $L * in$ si comparamos las strings}
+{\bigo($T * L + log(n)$) si el campo de borrado es un índice, \bigo($L * (T + n)$) sino}
 {}
-{$in$ es \bigo($log(n)$) si el campo de borrado es un índice, \bigo($n$) sino}
+{}
 
 \operacion{GenerarVistaJoin}
 {   \param{in/out}{$db$}{$base$},
@@ -70,13 +70,13 @@
     \hspace*{4em} tipoCampo(c,dameTabla(nt_1,db)) \igobs tipoCampo(c,dameTabla(nt_2,db)) \land \\
     \hspace*{4em} \neg hayJoin?(nt_1,nt_2,db)$}
 {$db \igobs generarVistaJoin(nt_1,nt_2,c,db_0) \land \neg hayAnterion(res) \land haySiguiente(res)$ \cuidado que onda el iterador?}
-{$in$}
-{}
-{$in$ es \bigo($min(n,m) * (L + log(n + m))$) si el campo es indice de ambas tablas, \\
-    \hspace*{4em} \bigo($n * (L + log(n + m))$) si el campo es sólo índice de $t_1$, \\
-    \hspace*{4em} \bigo($m * (L + log(n + m))$) si el campo es sólo índice de $t_2$ y \\
-    \hspace*{4em} \bigo($n * (m + L + log(n))$) si el campo no es un índice, \\
+{\bigo($min(n,m) * (L + log(n + m))$) si el campo es indice de ambas tablas, \\
+    \hspace*{4em} \bigo($n * (L + log(n + m))$) si el campo es sólo índice de $t_2$, \\
+    \hspace*{4em} \bigo($m * (L + log(n + m))$) si el campo es sólo índice de $t_1$ y \\
+    \hspace*{4em} \bigo($m * (n * L + log(n))$) si el campo no es un índice, \\
     \hspace*{4em} donde $n = |registros(t_1)|$ y $m = |registros(t_2)|$}
+{}
+{}
 
 \operacion{HayTabla}
 {   \param{in}{$db$}{$base$},
@@ -156,10 +156,12 @@
 {$itConj(registro)$}
 {$hayJoin?(nt_1,nt_2,db)$}
 {$\neg hayAnterior(res) \land haySiguiente(res)$ \cuidado el mismo tema, cómo vemos que res es válido?}
-{\bigo($in$)}
+{\bigo(1) si $R = 0$, \\
+    \hspace*{4em} \bigo($R * (L + log(n * m))$) si $R > 0$ y ambas tablas tienen índice en el campo del join y \\
+    \hspace*{4em} \bigo($R * L * (n + m)$) sino \\
+    \hspace*{4em} R es la cantidad de modificaciónes sobre las tablas desde la generación o última visualización del join}
 {No se debe modificar los resultados}
-{$in$ es \bigo($R * (L + log(n * m))$) donde R es la cantidad de modificaciónes desde la generación \\
-    \hspace*{4em} o última visualización del join, u \bigo(1) si $R = 0$}
+{}
 
 \subsection{Representación}
 
@@ -360,7 +362,7 @@
     \State $res.tablasTree \gets nuevoDiccLog()$                    \comment \bigo(1)
     \State $res.vistasJoin \gets nuevoTrie()$                       \comment \bigo(1)
     \State $res.tablaMaxima \gets NULL$                             \comment \bigo(1)
-}
+}{4 * \bigo(1) = \bigo(1)}
 
 \algoritmo{iAgregarTabla}{
     \param{in/out}{$db$}{$base$},
@@ -368,22 +370,22 @@
     }{}{\bigo(1)}{
     \var $it : itConj(tabla)$
     \State $it \gets agregarRapido(db.tablas, t)$                   \comment \bigo(1)
-    \State $definir(res.tablasTree, nombre(t), it)$                 \comment \bigo(1)
+    \State $definir(res.tablasTree, nombre(t), it)$                 \comment \bigo($|nombre(t)|$) = \bigo(1)
     \If{$db.tablaMaxima == NULL$}                                   \comment \bigo(1)
         \State $db.tablaMaxima = \&t$                               \comment \bigo(1)
     \EndIf
-}
+}{4 * \bigo(1) = \bigo(1)}
 
 \algoritmo{iInsertarEntrada}{
     \param{in/out}{$db$}{$base$},
     \param{in}{$nt$}{$nombreTabla$},
     \param{in}{$r$}{$registro$}
-    }{}{\bigo($T * L + in$)}{
+    }{}{\bigo($T * L + log(n)$) si hay un índice nat, \bigo($T * L$) sino}{
     \var $t : tabla$
     \var $it : itConj(tabla)$
     \State $t \gets tabla(db,nt)$                                   \comment \bigo(1)
     \State $it \gets tablas(db)$                                    \comment \bigo(1)
-    \State $agregarRegistro(t,r)$                                   \comment \bigo($L + in$)
+    \State $agregarRegistro(t,r)$                                   \comment \bigo($L + log(n)$) si hay un índice nat, \bigo($L$) sino
     \If{$accesos(*db.tablaMaxima) < accesos(t)$}                    \comment \bigo(1)
         \State $db.tablaMaxima = \&t$                               \comment \bigo(1)
     \EndIf
@@ -392,29 +394,33 @@
         \State                 \icomment El loop se repite $T$ veces
         \var $t' : tabla$
         \State $t' \gets siguiente(it)$                             \comment \bigo(1)
-        \If{$nombre(t') \;!= nombre(t)$}                            \comment \bigo(1)
-            \If{$definido?(db.vistasJoin, nombre(t))$}              \comment \bigo(1)
+        \If{$nombre(t') \;!= nombre(t)$}                            \comment \bigo($|nombre(t)|$) = \bigo(1)
+            \If{$definido?(db.vistasJoin, nombre(t))$}              \comment \bigo($|nombre(t)|$) = \bigo(1)
                 \var $joinsT : diccTrie(nombreTabla, vistaJoin)$
-                \State $joinsT \gets obtener(db.vistasJoin, nombre(t))$                 \comment \bigo(1)
-                \If{$definido?(joinsT, nombre(t'))$}                \comment \bigo(1)
+                \State $joinsT \gets obtener(db.vistasJoin, nombre(t))$                 \comment \bigo($|nombre(t)|$) = \bigo(1)
+                \If{$definido?(joinsT, nombre(t'))$}                \comment \bigo($|nombre(t')|$) = \bigo(1)
                     \var $b : buffer$
-                    \State $b \gets obtener(joinsT, nombre(t')).buffer$                 \comment \bigo(1)
-                    \State $agregarAtras(b, <esInsercion: true, tabla: false, reg: r>)$ \comment \bigo($L$)
+                    \State $b \gets obtener(joinsT, nombre(t')).buffer$                 \comment \bigo($|nombre(t')|$) = \bigo(1)
+                    \State $agregarAtras(b, <esInsercion: true, tabla: false, reg: r>)$ \comment \bigo($copy(registro)$) = \bigo($L$)
                 \EndIf
             \EndIf
             \State
-            \If{$definido?(db.vistasJoin, nombre(t'))$}             \comment \bigo(1)
+            \If{$definido?(db.vistasJoin, nombre(t'))$}             \comment \bigo($|nombre(t')|$) = \bigo(1)
                 \var $joinsT' : diccTrie(nombreTabla, vistaJoin)$
-                \State $joinsT' \gets obtener(db.vistasJoin, nombre(t'))$               \comment \bigo(1)
-                \If{$definido?(joinsT', nombre(t))$}                \comment \bigo(1)
+                \State $joinsT' \gets obtener(db.vistasJoin, nombre(t'))$               \comment \bigo($|nombre(t')|$) = \bigo(1)
+                \If{$definido?(joinsT', nombre(t))$}                \comment \bigo($|nombre(t)|$) = \bigo(1)
                     \var $b : buffer$
-                    \State $b \gets obtener(joinsT', nombre(t)).buffer$                 \comment \bigo(1)
-                    \State $agregarAtras(b, <esInsercion: true, tabla: true, reg: r>)$  \comment \bigo($L$)
+                    \State $b \gets obtener(joinsT', nombre(t)).buffer$                 \comment \bigo($|nombre(t)|$) = \bigo(1)
+                    \State $agregarAtras(b, <esInsercion: true, tabla: true, reg: r>)$  \comment \bigo($copy(registro)$) = \bigo($L$)
                 \EndIf
             \EndIf
         \EndIf
         \State $avanzar(it)$                                        \comment \bigo(1)
     \EndWhile
+}{Si hay un índice nat: 2 * \bigo(1) + \bigo($L + log(n)$) + 2 * \bigo(1) \\
+    \hspace*{16em} + $T$ * (6 * \bigo(1) + \bigo($L$) + 4 * \bigo(1) + \bigo($L$) + \bigo(1)) = \bigo($T * L + log(n)$)
+    \hspace*{8.25em} Sino: 2 * \bigo(1) + \bigo($L$) + 2 * \bigo(1)
+    + $T$ * (6 * \bigo(1) + \bigo($L$) + 4 * \bigo(1) + \bigo($L$) + \bigo(1)) = \bigo($T * L$)
 }
 
 \algoritmo{iBorrar}{
@@ -422,15 +428,15 @@
     \param{in}{$nt$}{$nombreTabla$},
     \param{in}{$c$}{$campo$},
     \param{in}{$d$}{$dato$}
-    }{}{\bigo($T * L + in$)}{
+    }{}{\bigo($T * L + log(n)$) si c es un índice, \bigo($L * (T + n)$) sino}{
     \var $t : tabla$
     \var $it : itConj(tabla)$
     \var $rs : conj(registro)$
     \State $t \gets tabla(db,nt)$                                   \comment \bigo(1)
     \State $it \gets tablas(db)$                                    \comment \bigo(1)
-    \State $rs \gets borrarRegistro(t,c,d)$                         \comment \bigo($L + in$)
+    \State $rs \gets borrarRegistro(t,c,d)$             \comment \bigo($L + log(n)$) si c es índice, \bigo($L * n$) sino
     \State
-    \If{!esVacio(rs)}
+    \If{!esVacio(rs)}                                               \comment \bigo(1)
         \var $r : registro$
         \State $r \gets siguiente(crearIt(rs))$                     \comment \bigo(1)
 
@@ -444,30 +450,34 @@
             \State                 \icomment El loop se repite $T$ veces
             \var $t' : tabla$
             \State $t' \gets siguiente(it)$                         \comment \bigo(1)
-            \If{$nombre(t') \;!= nombre(t)$}                        \comment \bigo(1)
-                \If{$definido?(db.vistasJoin, nombre(t))$}          \comment \bigo(1)
+            \If{$nombre(t') \;!= nombre(t)$}                        \comment \bigo($|nombre(t)|$) = \bigo(1)
+                \If{$definido?(db.vistasJoin, nombre(t))$}          \comment \bigo($|nombre(t)|$) = \bigo(1)
                     \var $joinsT : diccTrie(nombreTabla, vistaJoin)$
-                    \State $joinsT \gets obtener(db.vistasJoin, nombre(t))$                     \comment \bigo(1)
-                    \If{$definido?(joinsT, nombre(t'))$}            \comment \bigo(1)
+                    \State $joinsT \gets obtener(db.vistasJoin, nombre(t))$                     \comment \bigo($|nombre(t)|$) = \bigo(1)
+                    \If{$definido?(joinsT, nombre(t'))$}            \comment \bigo($|nombre(t')|$) = \bigo(1)
                         \var $b : buffer$
-                        \State $b \gets obtener(joinsT, nombre(t')).buffer$                     \comment \bigo(1)
-                        \State $agregarAtras(b, <esInsercion: false, tabla: false, reg: r>)$    \comment \bigo($L$)
+                        \State $b \gets obtener(joinsT, nombre(t')).buffer$                     \comment \bigo($|nombre(t')|$) = \bigo(1)
+                        \State $agregarAtras(b, <esInsercion: false, tabla: false, reg: r>)$    \comment \bigo($copy(registro)$) = \bigo($L$)
                     \EndIf
                 \EndIf
                 \State
-                \If{$definido?(db.vistasJoin, nombre(t'))$}         \comment \bigo(1)
+                \If{$definido?(db.vistasJoin, nombre(t'))$}         \comment \bigo($|nombre(t')|$) = \bigo(1)
                     \var $joinsT' : diccTrie(nombreTabla, vistaJoin)$
-                    \State $joinsT' \gets obtener(db.vistasJoin, nombre(t'))$                   \comment \bigo(1)
-                    \If{$definido?(joinsT', nombre(t))$}            \comment \bigo(1)
+                    \State $joinsT' \gets obtener(db.vistasJoin, nombre(t'))$                   \comment \bigo($|nombre(t')|$) = \bigo(1)
+                    \If{$definido?(joinsT', nombre(t))$}            \comment \bigo($|nombre(t)|$) = \bigo(1)
                         \var $b : buffer$
-                        \State $b \gets obtener(joinsT', nombre(t)).buffer$                     \comment \bigo(1)
-                        \State $agregarAtras(b, <esInsercion: false, tabla: true, reg: r>)$     \comment \bigo($L$)
+                        \State $b \gets obtener(joinsT', nombre(t)).buffer$                     \comment \bigo($|nombre(t)|$) = \bigo(1)
+                        \State $agregarAtras(b, <esInsercion: false, tabla: true, reg: r>)$     \comment \bigo($copy(registro)$) = \bigo($L$)
                     \EndIf
                 \EndIf
             \EndIf
             \State $avanzar(it)$                                    \comment \bigo(1)
         \EndWhile
     \EndIf
+}{Si hay un índice nat: 2 * \bigo(1) + \bigo($L + log(n)$) + 4 * \bigo(1) \\
+    \hspace*{16em} + $T$ * (6 * \bigo(1) + \bigo($L$) + 4 * \bigo(1) + \bigo($L$) + \bigo(1)) = \bigo($T * L + log(n)$)
+    \hspace*{8.25em} Sino: 2 * \bigo(1) + \bigo($L * n$) + 4 * \bigo(1)
+    + $T$ * (6 * \bigo(1) + \bigo($L$) + 4 * \bigo(1) + \bigo($L$) + \bigo(1)) = \bigo($L * (T + n)$)
 }
 
 \algoritmo{iGenerarVistaJoin}{
@@ -475,7 +485,7 @@
     \param{in}{$nt_1$}{$nombreTabla$},
     \param{in}{$nt_2$}{$nombreTabla$},
     \param{in}{$c$}{$campo$} \\ \hspace*{9.5em}
-    }{itDiccLog(dato,registro)}{\bigo($in$)}{
+    }{itDiccLog(dato,registro)}{}{
     \var $firstT_1 : bool$
     \var $t_1, t_2 : tabla$
     \var $pT_a, pT_b : *tabla$
@@ -496,11 +506,14 @@
         \State $pT_a \gets \&t_2$                                   \comment \bigo(1)
         \State $pT_b \gets \&t_1$                                   \comment \bigo(1)
     \EndIf
+    \State \icomment $t_a$ es $t_1$ si ambas tablas tienen índice en c y $t_1$ tiene la menor cantidad de elementos o solo $t_2$ tiene índice en c
+    \Statex \icomment y $t_2$ en otro caso
+    \Statex \icomment $t_b$ es la otra tabla
 
     \State
     \State $it \gets registros(*pT_a)$                              \comment \bigo(1)
     \While{$haySiguiente(it)$}                                      \comment \bigo(1)
-        \State         \icomment El loop se repite $|registros(*pT_a)|$ veces
+        \State         \icomment El loop se repite $|registros(t_a)|$ veces
         \var $d : dato$
         \var $rs : conj(registro)$
         \var $r, r_a, r_b : registro$
@@ -524,47 +537,77 @@
 
             \State
             \If{$v.tipo$}
-                \State $definirRapido(v.joinsNat, valorNat(d), it_{reg})$           \comment \bigo(1)
+                \State $definir(v.joinsNat, valorNat(d), it_{reg})$         \comment \bigo($log(n+m) * cmp(nat) + copy(it)$) = \bigo($log(n+m)$)
             \Else
-                \State $definirRapido(v.joinsString, valorString(d), it_{reg})$     \comment \bigo(1)
+                \State $definir(v.joinsString, valorString(d), it_{reg})$   \comment \bigo($L + copy(it)$) = \bigo($L$)
             \EndIf
         \EndIf
 
         \State $avanzar(it)$                                        \comment \bigo(1)
     \EndWhile
 
-    \State
-    \If{$!definido?(db.vistasJoin, nt_1)$}                          \comment \bigo(1)
-        \State $definir(db.vistasJoin, nt_1, nuevoTrie())$          \comment \bigo(1)
+    \algstore{generarVistaJoin}
+}{}
+% Cortar para hacer salto de página
+\algoritmo{(Continúa) iGenerarVistaJoin}{
+    \param{in/out}{$db$}{$base$},
+    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_2$}{$nombreTabla$},
+    \param{in}{$c$}{$campo$} \\ \hspace*{9.5em}
+    }{itDiccLog(dato,registro)}
+    {\bigo($min(n,m) * (L + log(n + m))$) si el campo es indice de ambas tablas, \\
+        \hspace*{8.25em} \bigo($n * (L + log(n + m))$) si el campo es solo índice de $t_2$, \\
+        \hspace*{8.25em} \bigo($m * (L + log(n + m))$) si el campo es solo índice de $t_1$ y \\
+        \hspace*{8.25em} \bigo($m * (n * L + log(n))$) si el campo no es un índice, \\
+        \hspace*{8.25em} donde $n = |registros(t_1)|$ y $m = |registros(t_2)|$}{
+    \algrestore{generarVistaJoin}
+    \If{$!definido?(db.vistasJoin, nt_1)$}                          \comment \bigo($|nt_1|$) = \bigo(1)
+        \State $definir(db.vistasJoin, nt_1, nuevoTrie())$          \comment \bigo($|nt_1|$) = \bigo(1)
     \EndIf
-    \State $definir(obtener(db.vistasJoin, nt_1), nt_2, v)$         \comment \bigo(1)
+    \State $definir(obtener(db.vistasJoin, nt_1), nt_2, v)$         \comment \bigo($|nt_2|$) = \bigo(1)
+}{Si c es índice en ambas tablas: $|registros(t_a)|$ = min(n,m) y $|registros(t_b)|$ = max(n,m) $\implies$ \\
+    \hspace*{12em} 10 * \bigo(1) + min(n,m) * \\
+    \hspace*{14em} (2 * \bigo(1) + \bigo($L + log(max(n,m))$) + 5 * \bigo(1) + \bigo($log(n + m)$) + \bigo($L$) + \bigo(1)) \\
+    \hspace*{12em} = \bigo($min(n,m) * (L + log(max(n,m)) + log(n + m))$) = \bigo($min(n,m) * (L + log(n + m))$) \\
+
+    \hspace*{8.25em} Si c es solo índice en $t_2$: $|registros(t_a)|$ = n y $|registros(t_b)|$ = m $\implies$ \\
+    \hspace*{12em} 10 * \bigo(1) + n * (2 * \bigo(1) + \bigo($L + log(m)$) + 5 * \bigo(1) + \bigo($log(n + m)$) + \bigo($L$) + \bigo(1)) \\
+    \hspace*{12em} = \bigo($n * (L + log(m) + log(n + m))$) = \bigo($n * (L + log(n + m))$) \\
+
+    \hspace*{8.25em} Si c es solo índice en $t_1$: $|registros(t_a)|$ = m y $|registros(t_b)|$ = n $\implies$ \\
+    \hspace*{12em} 10 * \bigo(1) + m * (2 * \bigo(1) + \bigo($L + log(n)$) + 5 * \bigo(1) + \bigo($log(n + m)$) + \bigo($L$) + \bigo(1)) \\
+    \hspace*{12em} = \bigo($m * (L + log(n) + log(n + m))$) = \bigo($m * (L + log(n + m))$) \\
+
+    \hspace*{8.25em} Si c no es índice: $|registros(t_a)|$ = m y $|registros(t_b)|$ = n $\implies$ \\
+    \hspace*{12em} 10 * \bigo(1) + m * (2 * \bigo(1) + \bigo($L * n$) + 5 * \bigo(1) + \bigo($log(n + m)$) + \bigo($L$) + \bigo(1)) \\
+    \hspace*{12em} = \bigo($m * (L + L * n + log(n + m))$) = \bigo($m * (n * L + log(n + m))$) \\
 }
 
 \algoritmo{iHayTabla}{
     \param{in}{$db$}{$base$},
     \param{in}{$nt$}{$nombreTabla$}
     }{bool}{\bigo(1)}{
-    \State $res \gets definido?(db.tablasTree,nt)$                  \comment \bigo(1)
-}
+    \State $res \gets definido?(db.tablasTree,nt)$                  \comment \bigo($|nt|$) = \bigo(1)
+}{}
 
 \algoritmo{iTabla}{
     \param{in}{$db$}{$base$},
     \param{in}{$nt$}{$nombreTabla$}
     }{tabla}{\bigo(1)}{
-    \State $res \gets obtener(db.tablasTree,nt)$                    \comment \bigo(1)
-}
+    \State $res \gets obtener(db.tablasTree,nt)$                    \comment \bigo($|nt|$) = \bigo(1)
+}{}
 
 \algoritmo{iTablas}{
     \param{in}{$db$}{$base$}
     }{itConj(tabla)}{\bigo(1)}{
     \State $res \gets crearIt(db.tablas)$                           \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iTablaMaxima}{
     \param{in}{$db$}{$base$}
     }{tabla}{\bigo(1)}{
     \State $res \gets *db.tablaMaxima$                              \comment \bigo(1)
-}
+}{}
 
 \algoritmo{iHayJoin}{
     \param{in}{$db$}{$base$},
@@ -572,8 +615,8 @@
     \param{in}{$nt_2$}{$nombreTabla$}
     }{bool}{\bigo(1)}{
     \State $res \gets definido?(db.vistasJoin,nt_1) \algAnd definido?(obtener(db.vistasJoin,nt_1),nt_2)$
-                                                                    \comment \bigo(1)
-}
+    \Statex                                     \comment \bigo($|nt_1|$) + \bigo($|nt_2|$) = \bigo(1)
+}{}
 
 \algoritmo{iCampoJoin}{
     \param{in}{$db$}{$base$},
@@ -581,29 +624,29 @@
     \param{in}{$nt_2$}{$nombreTabla$}
     }{campo}{\bigo(1)}{
     \State $res \gets obtener(obtener(db.vistasJoin,nt_1),nt_2).campo$
-                                                                    \comment \bigo(1)
-}
+                                                \comment \bigo($|nt_1|$) + \bigo($|nt_2|$) = \bigo(1)
+}{}
 
 \algoritmo{iBorrarJoin}{
     \param{in}{$db$}{$base$},
     \param{in}{$nt_1$}{$nombreTabla$},
     \param{in}{$nt_2$}{$nombreTabla$}
     }{}{\bigo(1)}{
-    \State $borrar(obtener(db.vistasJoin,nt_1),nt_2)$               \comment \bigo(1)
-    \If{$!haySiguiente(crearIt(obtener(db.vistasJoin,nt_1)))$}      \comment \bigo(1)
-        \State $borrar(db.vistasJoin,nt_1)$                         \comment \bigo(1)
+    \State $borrar(obtener(db.vistasJoin,nt_1),nt_2)$               \comment \bigo($|nt_1|$) + \bigo($|nt_2|$) = \bigo(1)
+    \If{$!haySiguiente(crearIt(obtener(db.vistasJoin,nt_1)))$}      \comment \bigo($|nt_1|$) = \bigo(1)
+        \State $borrar(db.vistasJoin,nt_1)$                         \comment \bigo($|nt_1|$) = \bigo(1)
     \EndIf
-}
+}{3 * \bigo(1) = \bigo(1)}
 
 \algoritmo{iVistaJoin}{
     \param{in}{$db$}{$base$},
     \param{in}{$nt_1$}{$nombreTabla$},
     \param{in}{$nt_2$}{$nombreTabla$}
-    }{itConj(registro)}{\bigo(in)}{
+    }{itConj(registro)}{}{
     \var $v : vistaJoin$
     \var $it : itLista(operacionJoin)$
     \var $t_1, t_2 : tabla$
-    \State $v \gets obtener(obtener(db.vistasJoin,nt_1),nt_2)$      \comment \bigo(1)
+    \State $v \gets obtener(obtener(db.vistasJoin,nt_1),nt_2)$      \comment \bigo($|nt_1|$) + \bigo($|nt_2|$) = \bigo(1)
     \State $t_1 \gets tabla(db,nt_1)$                               \comment \bigo(1)
     \State $t_2 \gets tabla(db,nt_2)$                               \comment \bigo(1)
 
@@ -635,22 +678,23 @@
                 \EndIf
 
                 \State
-                \State $it_{reg} \gets agregarRapido(v.joins, r)$   \comment \bigo(1)
+                \State $it_{reg} \gets agregarRapido(v.joins, r)$   \comment \bigo($copy(registro)$) = \bigo(1)
                 \If{$v.tipo$}
-                    \State $definirRapido(v.joinsNat, valorNat(d), it_{reg})$           \comment \bigo(1)
+                    \State $definirRapido(v.joinsNat, valorNat(d), it_{reg})$           \comment \bigo($copy(it)$) = \bigo(1)
                 \Else
-                    \State $definirRapido(v.joinsString, valorString(d), it_{reg})$     \comment \bigo(1)
+                    \State $definirRapido(v.joinsString, valorString(d), it_{reg})$     \comment \bigo($copy(it)$) = \bigo(1)
                 \EndIf
             \EndIf
         \Else
             \If{$v.tipo$}                                           \comment \bigo(1)
-                \If{$definido?(v.joinsNat, valorNat(d))$}           \comment \bigo(1)
-                    \State $eliminarSiguiente(obtener(v.joinsNat, valorNat(d)))$        \comment \bigo(1)
-                    \State $borrar(v.joinsNat, valorNat(d))$        \comment \bigo($log(n+m)$)
+                \If{$definido?(v.joinsNat, valorNat(d))$}           \comment \bigo($log(min(n,m)) * cmp(nat)$) = \bigo($log(min(n,m))$)
+                    \State $eliminarSiguiente(obtener(v.joinsNat, valorNat(d)))$
+                    \Statex                                         \comment \bigo($log(min(n,m)) * cmp(nat)$) = \bigo($log(min(n,m))$)
+                    \State $borrar(v.joinsNat, valorNat(d))$        \comment \bigo($log(min(n,m)) * cmp(nat)$) = \bigo($log(min(n,m))$)
                 \EndIf
             \Else
-                \If{$definido?(v.joinsString, valorString(d))$}     \comment \bigo(1)
-                    \State $eliminarSiguiente(obtener(v.joinsString, valorString(d)))$  \comment \bigo(1)
+                \If{$definido?(v.joinsString, valorString(d))$}     \comment \bigo($L$)
+                    \State $eliminarSiguiente(obtener(v.joinsString, valorString(d)))$  \comment \bigo($L$)
                     \State $borrar(v.joinsString, valorString(d))$  \comment \bigo($L$)
                 \EndIf
             \EndIf
@@ -658,10 +702,34 @@
 
         \State $avanzar(it)$                                        \comment \bigo(1)
     \EndWhile
-
-    \State
     \State $res \gets crearIt(v.joins)$                             \comment \bigo(1)
+    \algstore{vistaJoin}
+}{}
+% pagebreak
+\algoritmo{(Continúa) iVistaJoin}{
+    \param{in}{$db$}{$base$},
+    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_2$}{$nombreTabla$}
+    }{itConj(registro)}{
+        \bigo(1) si $R = 0$, \\
+        \hspace*{8.25em} \bigo($R * (L + log(n * m))$) si $R > 0$ y ambas tablas tienen índice en el campo del join y \\
+        \hspace*{8.25em} \bigo($R * L * (n + m)$) sino \\
+        \hspace*{8.25em} R es la cantidad de modificaciónes sobre las tablas desde la generación o última visualización del join}{
+    \algrestore{vistaJoin}
+    \State
+}{Si $R = 0$: 6 * \bigo(1) = \bigo(1) \\
+
+    \hspace*{8.25em} Si $R > 0$ y el campo es índice en ambas tablas: 4 * \bigo(1) + R * (4 * \bigo(1) + \bigo($L + log(m)$) \\
+    \hspace*{12em} + \bigo($L + log(n)$) + 9 * \bigo(1) + 3 * \bigo($log(min(n,m))$) + 3 * \bigo($L$) + \bigo(1)) \\
+    \hspace*{12em} = \bigo($R * (L + log(m) + log(n) + log(min(n,m)))$) = \bigo($R * (L + log(m) + log(n))$) \\
+    \hspace*{12em} = \bigo($R * (L + log(m * n))$) \\
+
+    \hspace*{8.25em} Si $R > 0$ y el campo no es índice en ambas tablas: 4 * \bigo(1) + R * (4 * \bigo(1) + \bigo($L * m$) \\
+    \hspace*{12em} + \bigo($L * n$) + 9 * \bigo(1) + 3 * \bigo($log(min(n,m))$) + 3 * \bigo($L$) + \bigo(1)) \\
+    \hspace*{12em} = \bigo($R * (L * m + L * n + log(min(n,m)) + L)$) = \bigo($R * (L * (n+m) + log(n+m))$) \\
+    \hspace*{12em} = \bigo($R * L * (n + m)$)
 }
+
 
 \subsubsection{Funciones auxiliares de los algoritmos}
 
@@ -683,19 +751,21 @@
     \State $res \gets vacio()$                                      \comment \bigo(1)
 
     \State
-    \State $it \gets crearIt(r_1)$                                  \comment \bigo(1)
+    \State $it \gets crearIt(r_2)$                                  \comment \bigo(1)
     \While{$haySiguiente(it)$}                                      \comment \bigo(1)
-        \State \icomment El loop se ejecuta |campos(r)| veces, acotado por constante
-        \State $definir(res, siguiente(it).clave, siguiente(it).significado)$   \comment \bigo(1)
+        \State \icomment El loop se ejecuta $|campos(r_2)|$ veces, acotado por constante
+        \State $definir(res, siguiente(it).clave, siguiente(it).significado)$
+                                        \comment \bigo($log(|campos(r_2)|)$) = \bigo(1)
     \EndWhile
 
     \State
-    \State $it \gets crearIt(r_2)$                                  \comment \bigo(1)
+    \State $it \gets crearIt(r_1)$                                  \comment \bigo(1)
     \While{$haySiguiente(it)$}                                      \comment \bigo(1)
-        \State \icomment El loop se ejecuta |campos(r)| veces, acotado por constante
-        \State $definir(res, siguiente(it).clave, siguiente(it).significado)$   \comment \bigo(1)
+        \State \icomment El loop se ejecuta $|campos(r_1)|$ veces, acotado por constante
+        \State $definir(res, siguiente(it).clave, siguiente(it).significado)$
+                                        \comment \bigo($log(|campos(r_2)| + |campos(r_1)|)$) = \bigo(1)
     \EndWhile
-}
+}{2 * \bigo(1) + $k_2$ * 2 * \bigo(1) + \bigo(1) + $k_1$ * 2 * \bigo(1) = \bigo(1)}
 
 \subsection{Servicios usados}
 

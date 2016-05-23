@@ -44,9 +44,9 @@
 {$conj(registro)$}
 {$t \igobs t_0 \land c \in claves(t) \land_L tipo?(d) \igobs tipoCampo(c,t)$}
 {$t \igobs borrarRegistro(crit,t_0)$}
-{\bigo($L + in$)}
+{\bigo($L + log(n)$) si el campo de borrado es un índice, \bigo($L * n$) sino}
 {}
-{$in$ es \bigo($log(n)$) si el campo de borrado es un índice, \bigo($n$) sino}
+{}
 
 \operacion{Indexar}
 {   \param{in/out}{$t$}{$tabla$},
