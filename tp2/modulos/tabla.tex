@@ -91,7 +91,7 @@
 {   \param{in}{$t$}{$tabla$}}
 {itConj(registro)}
 {true}
-{\cuidado res es un it...}
+{$alias(esPermutacion?(SecuSuby(res), toList(registros(t)))) \land vacia?(Anteriores(res))$}
 {\bigo(1)}
 {No se debe modificar el conjunto retornado}
 {}
@@ -453,7 +453,6 @@
 \algoritmo{maxString}{
         \param{in}{$t$}{$tabla$}
         }{string}{\bigo(1)}{
-        \State \comment \cuidado el trie tiene que proveer $maximo$ y $minimo$
         \State $res \gets maximo(t.indicesString)_0$                \comment \bigo(1)
 }{}
 

@@ -64,12 +64,13 @@
     \param{in}{$nt_1$}{$nombreTabla$}, \\ \hspace*{9.6em}
     \param{in}{$nt_2$}{$nombreTabla$},
     \param{in}{$c$}{$campo$}}
-{itDiccLog(dato,registro)}
+{itConj(registro)}
 {$db \igobs db_0 \land nt_2 \in tablas(db) \land nt_1 \in tablas(db) \land nt_1 \neq nt_2 \land_L \\
     \hspace*{4em} c \in claves(dameTabla(nt_1,db)) \land c \in claves(dameTabla(nt_2,db)) \land_L \\
     \hspace*{4em} tipoCampo(c,dameTabla(nt_1,db)) \igobs tipoCampo(c,dameTabla(nt_2,db)) \land \\
     \hspace*{4em} \neg hayJoin?(nt_1,nt_2,db)$}
-{$db \igobs generarVistaJoin(nt_1,nt_2,c,db_0) \land \neg hayAnterion(res) \land haySiguiente(res)$ \cuidado que onda el iterador?}
+{$db \igobs generarVistaJoin(nt_1,nt_2,c,db_0) \land_L \\
+    \hspace*{4em} alias(esPermutacion?(SecuSuby(res), vistaJoin(nt_1, nt_2, db))) \land vacia?(Anteriores(res))$}
 {\bigo($min(n,m) * (L + log(n + m))$) si el campo es indice de ambas tablas, \\
     \hspace*{4em} \bigo($n * (L + log(n + m))$) si el campo es sólo índice de $t_2$, \\
     \hspace*{4em} \bigo($m * (L + log(n + m))$) si el campo es sólo índice de $t_1$ y \\
@@ -102,7 +103,7 @@
 {   \param{in}{$db$}{$base$}}
 {$itConj(tabla)$}
 {true}
-{$haySiguient(res) \land \neg hayAnterior(res)$ \cuidado cómo decimos que recorre todas las tablas?}
+{$alias(esPermutacion?(SecuSuby(res), getTablasConj(tablas(db), db))) \land vacia?(Anteriores(res))$}
 {\bigo(1)}
 {No se debe modificar las tablas}
 {El iterador devuelto tiene $siguiente()$ en \bigo(1)}
@@ -155,13 +156,21 @@
     \param{in}{$nt_2$}{$nombreTabla$}}
 {$itConj(registro)$}
 {$hayJoin?(nt_1,nt_2,db)$}
-{$\neg hayAnterior(res) \land haySiguiente(res)$ \cuidado el mismo tema, cómo vemos que res es válido?}
+{$alias(esPermutacion?(SecuSuby(res), vistaJoin(nt_1, nt_2, db))) \land vacia?(Anteriores(res))$}
 {\bigo(1) si $R = 0$, \\
     \hspace*{4em} \bigo($R * (L + log(n * m))$) si $R > 0$ y ambas tablas tienen índice en el campo del join y \\
     \hspace*{4em} \bigo($R * L * (n + m)$) sino \\
     \hspace*{4em} R es la cantidad de modificaciónes sobre las tablas desde la generación o última visualización del join}
 {No se debe modificar los resultados}
 {}
+
+\subsubsection{Operaciones auxiliares de la interfaz}
+
+\tadOperacion{getTablasConj}{conj(string)/nts, base/db}{conj(tabla)}{$nts \subseteq tablas(db)$}
+
+\tadAxiomas[$\forall db : base, \forall nts : conj(string), \forall as : conj(\alpha)$]
+
+\tadAxioma{getTablasConj(nts,db)}{\IF $\emptyset?$(nts) THEN $\emptyset$ ELSE Ag(dameTabla(dameUno(nts),db), getTablasConj(sinUno(nts),db)) FI}
 
 \subsection{Representación}
 
@@ -485,11 +494,11 @@
     \param{in}{$nt_1$}{$nombreTabla$},
     \param{in}{$nt_2$}{$nombreTabla$},
     \param{in}{$c$}{$campo$} \\ \hspace*{9.5em}
-    }{itDiccLog(dato,registro)}{}{
+    }{itConj(registro)}{}{
     \var $firstT_1 : bool$
     \var $t_1, t_2 : tabla$
     \var $pT_a, pT_b : *tabla$
-    \var $it : itConj(tabla)$
+    \var $it : itConj(registro)$
     \var $v : vistaJoin$
     \State $t_1 \gets tabla(db,nt_1)$                               \comment \bigo(1)
     \State $t_2 \gets tabla(db,nt_2)$                               \comment \bigo(1)
@@ -554,7 +563,7 @@
     \param{in}{$nt_1$}{$nombreTabla$},
     \param{in}{$nt_2$}{$nombreTabla$},
     \param{in}{$c$}{$campo$} \\ \hspace*{9.5em}
-    }{itDiccLog(dato,registro)}
+    }{itConj(registro)}
     {\bigo($min(n,m) * (L + log(n + m))$) si el campo es indice de ambas tablas, \\
         \hspace*{8.25em} \bigo($n * (L + log(n + m))$) si el campo es solo índice de $t_2$, \\
         \hspace*{8.25em} \bigo($m * (L + log(n + m))$) si el campo es solo índice de $t_1$ y \\
@@ -565,6 +574,8 @@
         \State $definir(db.vistasJoin, nt_1, nuevoTrie())$          \comment \bigo($|nt_1|$) = \bigo(1)
     \EndIf
     \State $definir(obtener(db.vistasJoin, nt_1), nt_2, v)$         \comment \bigo($|nt_2|$) = \bigo(1)
+
+    \State $res \gets crearIt(v.joins)$                             \comment \bigo(1)
 }{Si c es índice en ambas tablas: $|registros(t_a)|$ = min(n,m) y $|registros(t_b)|$ = max(n,m) $\implies$ \\
     \hspace*{12em} 10 * \bigo(1) + min(n,m) * \\
     \hspace*{14em} (2 * \bigo(1) + \bigo($L + log(max(n,m))$) + 5 * \bigo(1) + \bigo($log(n + m)$) + \bigo($L$) + \bigo(1)) \\
