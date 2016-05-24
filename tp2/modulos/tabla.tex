@@ -21,7 +21,7 @@
     \param{in}{$columnas$}{$registro$}} % parametros
 {tabla} % tipo res
 {$\neg\emptyset?(claves) \land claves \subseteq campos(columnas)$} % pre
-{$res \igobs nuevaTabla()$} % post
+{$res \igobs nuevaTabla(nombre, claves, columnas)$} % post
 {\bigo(1)} % complejidad
 {Los parámetros pasados no deben ser modificados luego} % aliasing
 {} % descripcion
