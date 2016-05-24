@@ -91,7 +91,7 @@
 {   \param{in}{$t$}{$tabla$}}
 {itConj(registro)}
 {true}
-{\cuidado res es un it...}
+{$alias(esPermutacion?(SecuSuby(res), toList(registros(t)))) \land vacia?(Anteriores(res))$}
 {\bigo(1)}
 {No se debe modificar el conjunto retornado}
 {}
@@ -192,7 +192,11 @@
 
 \subsection{Representación}
 
--- todo: explicacion --
+La estructura mantine un conjunto de registros y, si se encuentra indexada, un árbol con el índice string basado en un trie y otro con el índice nat basado en un avl.
+
+Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la cantidad de accesos que tuvo.
+
+\vspace*{2em}
 
 \serepresenta{tabla}{vec}
 \donde{vec}{tupla($registros$: regs, $hayIndiceNat$: bool, $indiceNat$: campo, $indicesNat$: treeNat, \\
@@ -453,7 +457,6 @@
 \algoritmo{maxString}{
         \param{in}{$t$}{$tabla$}
         }{string}{\bigo(1)}{
-        \State \comment \cuidado el trie tiene que proveer $maximo$ y $minimo$
         \State $res \gets maximo(t.indicesString)_0$                \comment \bigo(1)
 }{}
 
@@ -504,4 +507,9 @@
 }{}
 
 \subsection{Servicios usados}
+
+\usaServicio{Dato}
+\usaServicio{DiccLog}
+\usaServicio{DiccTrie}
+\usaServicio{Conjunto Lineal ($\alpha$)}
 
