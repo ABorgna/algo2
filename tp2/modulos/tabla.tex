@@ -192,7 +192,11 @@
 
 \subsection{Representación}
 
--- todo: explicacion --
+La estructura mantine un conjunto de registros y, si se encuentra indexada, un árbol con el índice string basado en un trie y otro con el índice nat basado en un avl.
+
+Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la cantidad de accesos que tuvo.
+
+\vspace*{2em}
 
 \serepresenta{tabla}{vec}
 \donde{vec}{tupla($registros$: regs, $hayIndiceNat$: bool, $indiceNat$: campo, $indicesNat$: treeNat, \\

@@ -174,7 +174,13 @@
 
 \subsection{Representación}
 
--- todo: explicacion --
+La estructura mantine un conjunto de tablas y un índice sobre sus nombres basado en un trie.
+
+Cada join se mantiene cacheado con un conjunto de los registros resultantes y un índices sobre el campo del join usando un avl o un trie según su tipo. También se mantiene una cola de modificaciónes sobre una lista enlazada que se procesa al pedir el resultado del join.
+
+Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
+
+\vspace*{2em}
 
 \serepresenta{db}{vec}
 \donde{vec}{tupla($tablas$: tablas, $tablasTree$: tablasTree, $vistasJoin$: vistas, $tablaMaxima$: maxima)}
