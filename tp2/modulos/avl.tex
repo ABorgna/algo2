@@ -98,7 +98,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 
 \operacion{Maximo}
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
-{itDiccLog($\kappa, \alpha$)}
+{tupla($\kappa, \alpha$)}
 {$\neg (d \igobs vacio)$}
 {$siguiente(res) \igobs tupla(maximo(d), obtener(maximo(d)))$}
 {\bigo(1)}
@@ -108,7 +108,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 
 \operacion{Minimo}
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
-{itDiccLog($\kappa, \alpha$)}
+{tupla($\kappa, \alpha$)}
 {$\neg (d \igobs vacio)$}
 {$siguiente(res) \igobs tupla(minimo(d), obtener(minimo(d)))$}
 {\bigo(1)}
@@ -157,7 +157,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {}
 {Avanza a la siguiente posición del iterador}
 
-\operacion{EliminarSiguiente}
+\operacion{Eliminar}
 {   \param{in/out}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {}
 {$it \igobs it_0 \land hayMas?(it)$}
