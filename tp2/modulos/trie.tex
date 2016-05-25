@@ -63,16 +63,66 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 {}
 {Borra el significado asociado a la clave $c$}
 
+\operacion{Maximo}
+{   \param{in}{$d$}{diccLog($\alpha$)}}
+{tupla(clave: string, significado: $\alpha$)}
+{$\neg (d \igobs vacio)$}
+{$siguiente(res) \igobs tupla(maximo(d), obtener(maximo(d)))$}
+{\bigo(1)}
+{}
+{Obtiene una tupla de la clave y el significado del elemento con la clave 
+    mas grande en el diccionario}
 
+\operacion{Minimo}
+{   \param{in}{$d$}{diccLog($\alpha$)}}
+{tupla(clave: string, significado: $\alpha$)}
+{$\neg (d \igobs vacio)$}
+{$siguiente(res) \igobs tupla(minimo(d), obtener(minimo(d)))$}
+{\bigo(1)}
+{}
+{Obtiene una tupla de la clave y el significado del elemento con la clave 
+    mas pequeña en el diccionario}
+
+\tadOperacion{minimo}
+{diccLog($\alpha$)/d}
+{$\kappa$}
+{$\neg vacia?(claves(d))$}
+\tadAxioma{minimo(d)}{$
+    \IFLM len(claves(d)) = 1 THEN prim(claves(d)) ELSE  \\
+    \hspace*{2em}    \IFLM prim(claves(d)) > minimo(borrar(prim(claves(d)), d)) THEN \\
+    \hspace*{4em}        minimo(borrar(prim(claves(d)), d)) \\
+    \hspace*{2em}    ELSE \\
+    \hspace*{4em}        prim(claves(d)) \\
+    \hspace*{2em}    FI \\
+    FI
+$}
+\tadOperacion{maximo}
+{diccLog($\kappa\ \alpha$)/d}
+{$\kappa$}
+{$\neg vacia?(claves(d))$}
+\tadAxioma{maximo(d)}{$
+    \IFLM len(claves(d)) = 1 THEN prim(claves(d)) ELSE  \\
+    \hspace*{2em}    \IFLM prim(claves(d)) > maximo(borrar(prim(claves(d)), d)) THEN \\
+    \hspace*{4em}        prim(claves(d)) \\
+    \hspace*{2em}    ELSE \\
+    \hspace*{4em}        maximo(borrar(prim(claves(d)), d)) \\
+    \hspace*{2em}    FI \\
+    FI
+$}
 
 \subsection{Representación}
 \serepresenta{diccTrie($\alpha$)}{trie}
 \donde{trie}{tupla(\\
     $raiz$: puntero(nodo),\\
-    $claves$: lista(string) )}
+    $minimo$: clavevalor,
+    $maximo$: clavevalor }
 \donde{nodo}{tupla(\\
     $valor$: puntero($\alpha$),\\
     $hijos$: arreglo\_estático[256] (puntero(nodo)) )}
+\donde{clave}{tupla(\\
+    $clave$: string,\\
+    $valor$: $\alpha$ }
+    
 
 
 \subsubsection{Invariante de representación}
@@ -117,7 +167,7 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 \algoritmo{iDefinir}
 {   \param{in/out}{$d$}{diccTrie($\alpha$)},
     \param{in}{$c$}{string},
-    \param{in}{$v$}{$\alpha$}}{}
+    \param{in}{$v$}{$\alpha$}}{}{}
 {
 	\var $i : int)$
 	\State $ i \gets 0$  												\comment \bigo(1) 
@@ -125,7 +175,7 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 	\State $ p \gets e.raiz$											\comment \bigo(1) 
 	\var $n : nodo$ 
 	\State $agregaratras(p.claves, \alpha)$								\comment \bigo(1)
-	\while{$i<(longitud(c))$}
+	\While{$i<(longitud(c))$}
      	\Statex             \comment El loop se repite longitud de la clave veces
      	 \If{$p.hijos[ord(s[i]] == NULL$}                     			\comment \bigo(1)
             \State $n \gets crearNodo()$      \comment \bigo(1)
@@ -148,7 +198,7 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
     \var $i : int$
     \State $i \gets 0)$                									\comment \bigo(1)
 
-    \while{$i<256$}
+    \While{$i<256$}
      	\Statex             \comment El loop se repite 256 veces
      	\State $d[i] \gets NULL)$										\comment \bigo(1)
      	\State $i++$   													\comment \bigo(1) 
