@@ -348,13 +348,6 @@ $}
 
 
 
-
-
-
-
-
-
-
 \subsubsection{Función de abstracción}
 
 \begin{ABS}{$a$}{$avl$}{$d$}{$dicc$}
@@ -630,7 +623,137 @@ $}
 }
 {   6*\bigo(1) + \bigo($copy(\kappa)$) = \bigo($copy(\kappa)$) }
 
-    
+\algoritmo{iauxDefinirNodo}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in/out}{$n$}{puntero(nodo)},
+    \param{in}{$c$}{$\kappa$},
+    \param{in}{$v$}{$\alpha$}}
+{}
+{\bigo($copy(\kappa)+log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
+{   \If{$(*n).clave = c$}                                               \comment \bigo($equal(\kappa, \kappa)$))
+        \State $(*n).valor \gets v$                                     \comment \bigo(1)
+    \Else
+        \If{$c > (*n).clave$}                                           \comment \bigo($greater(\kappa, \kappa)$)
+            \If{$(*n).mayor = NULL$}                                    \comment \bigo(1)
+                \State $(*n).mayor \gets auxNuevoNodo(c, v, n)$         \comment \bigo($copy(\kappa)$)
+                \State $auxPropagarInsercion(d, (*n).mayor)$            \comment \bigo(\cuidado)
+            \Else
+                \State $auxDefinirNodo(d, (*n).mayor, c, v)$            \comment \bigo($copy(\kappa)+(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+            \EndIf
+        \Else   
+            \If{$(*n).menor = NULL$}                                    
+                \State $(*n).menor \gets auxNuevoNodo(c, v, n)$         \comment \bigo($copy(\kappa)$)
+                \State $auxPropagarInsercion(d, (*n).menor)$            \comment \bigo(\cuidado)
+            \Else                                                                                                                                                
+                \State $auxDefinirNodo(d, (*n).menor, c, v)$            \comment \bigo($copy(\kappa)+(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+            \EndIf
+        \EndIf
+    \EndIf
+}
+{   . }
+
+
+\algoritmo{iauxPropagarInsercion}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in/out}{$n$}{puntero(nodo)}}
+{}
+{\bigo($log(N)$)}
+{   \If{$ (*n).fdb > 1 \algOr (*n).fdb < -1 $}
+        \State $auxBalancear(d, n)$
+    \Else
+        \If{$ (*n).padre \neq NULL $}
+            \If{$ n = (*(*n).padre).menor $}
+                \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb + 1$
+            \Else
+                \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb - 1$
+            \EndIf
+
+            \If{$ (*(*n).padre).fdb \neq 0 $}
+                \State $auxPropagarBalance(d, (*n).padre)$
+            \EndIf
+        \EndIf
+    \EndIf
+}
+{   . }
+
+
+\algoritmo{iauxBalancear}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in/out}{$n$}{puntero(nodo)}}
+{}
+{\bigo($log(N)$)}
+{   \If{$ (*n).fdb < 0 $}
+        \If{$ (*(*n).mayor).fdb > 0 $}
+            \State $auxRotarDerecha(d, (*n).mayor)$
+        \EndIf
+        \State $auxRotarIzquierda(d, n)$
+    \Else
+        \If{$ (*(*n).menor).fdb > 0 $}
+            \State $auxRotarIzquierda(a, (*n).menor)$
+        \EndIf
+        \State $auxRotarDerecha(d, n)$
+    \EndIf
+}
+{   . }
+
+
+\algoritmo{iauxRotarIzquierda}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in/out}{$rr$}{puntero(nodo)}}
+{}
+{\bigo($log(N)$)}
+{   \var $nr : puntero(nodo)$
+    \State $nr \gets (*rr).mayor$
+    \State $(*rr).mayor \gets (*nr).menor$
+    \If{$ (*nr).menor \neq NULL $}
+        \State $(*(*nr).menor).padre \gets rr$
+    \EndIf
+    \State $(*nr).padre \gets (*rr).padre$
+    \If{$ (*rr).padre = NULL $}
+        \State $d.raiz \gets nr$
+    \Else
+        \If{$ (*(*rr).padre).menor = rr $}
+            \State $(*(*rr).padre).menor \gets nr$
+        \Else
+            \State $(*(*rr).padre).mayor \gets nr$
+        \EndIf
+    \EndIf
+    \State $(*nr).menor \gets rr$
+    \State $(*rr).parent \gets nr$
+    \State $(*rr).fdb \gets (*rr).fdb + 1 - min((*nr).fdb, 0)$
+    \State $(*nr).fdb \gets (*nr).fdb + 1 + min((*rr).fdb, 0)$
+}
+{   . }
+
+\algoritmo{iauxRotarDerecha}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in/out}{$rr$}{puntero(nodo)}}
+{}
+{\bigo($log(N)$)}
+{   \var $nr : puntero(nodo)$
+    \State $nr \gets (*rr).menor$
+    \State $(*rr).menor \gets (*nr).mayor$
+    \If{$ (*nr).mayor \neq NULL $}
+        \State $(*(*nr).mayor).padre \gets rr$
+    \EndIf
+    \State $(*nr).padre \gets (*rr).padre$
+    \If{$ (*rr).padre = NULL $}
+        \State $d.raiz \gets nr$
+    \Else
+        \If{$ (*(*rr).padre).menor = rr $}
+            \State $(*(*rr).padre).menor \gets nr$
+        \Else
+            \State $(*(*rr).padre).mayor \gets nr$
+        \EndIf
+    \EndIf
+    \State $(*nr).mayor \gets rr$
+    \State $(*rr).parent \gets nr$
+    \State $(*rr).fdb \gets (*rr).fdb - 1 + min((*nr).fdb, 0)$
+    \State $(*nr).fdb \gets (*nr).fdb - 1 - min((*rr).fdb, 0)$
+}
+{   . }
+
+
 \subsection{Servicios usados}
 
 
