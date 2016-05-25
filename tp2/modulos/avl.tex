@@ -98,7 +98,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 
 \operacion{Maximo}
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
-{tupla($\kappa, \alpha$)}
+{tupla(clave: $\kappa$, significado: $\alpha$)}
 {$\neg (d \igobs vacio)$}
 {$siguiente(res) \igobs tupla(maximo(d), obtener(maximo(d)))$}
 {\bigo(1)}
@@ -108,7 +108,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 
 \operacion{Minimo}
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
-{tupla($\kappa, \alpha$)}
+{tupla(clave: $\kappa$, significado: $\alpha$)}
 {$\neg (d \igobs vacio)$}
 {$siguiente(res) \igobs tupla(minimo(d), obtener(minimo(d)))$}
 {\bigo(1)}
@@ -507,6 +507,139 @@ $}
 
 \subsection{Algoritmos}
 
+\algoritmo{iNuevoDiccLog}
+{}
+{diccLog}
+{\bigo(1)}
+{   \State $res.raiz \gets NULL$                \comment \bigo(1)
+    \State $res.min \gets NULL$                 \comment \bigo(1)
+    \State $res.max \gets NULL$                 \comment \bigo(1)
+}{3 * \bigo(1) = \bigo(1)}
+
+
+\algoritmo{iMaximo}
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)}
+}
+{tupla(clave: $\kappa$, significado: $\alpha$)}
+{\bigo(1)}
+{   \State $res \gets <clave: d.max.clave,\ significado: d.max.valor>$    \comment \bigo(1)
+}{El acceso a las variables y la creacion de una tupla es \bigo(1)}
+
+
+\algoritmo{iMinimo}
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)}
+}
+{tupla(clave: $\kappa$, significado: $\alpha$)}
+{\bigo(1)}
+{   \State $res \gets <clave: d.min.clave,\ significado: d.min.valor>$    \comment \bigo(1)
+}{El acceso a las variables y la creacion de una tupla es \bigo(1)}
+
+
+\algoritmo{iDefinido?}
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in}{$c$}{$\kappa$}}
+{bool}
+{\bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
+{   \State $res \gets iauxDefinidoNodo(d.raiz, c)$          \comment \bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+}{Ver $iauxDefinidoNodo$.}
+
+\algoritmo{iauxDefinidoNodo}
+{   \param{in}{$n$}{puntero(nodo)},
+    \param{in}{$c$}{$\kappa$}}
+{bool}
+{\bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
+{   \If{$n = NULL$}                                                     \comment \bigo(1)
+        \State $res \gets false$                                        \comment \bigo(1)
+    \Else                                                               \comment \bigo(1)
+        \If{$c = (*n).clave$}                                           \comment \bigo($equal(\kappa, \kappa)$)
+            \State $res \gets true$                                     \comment \bigo(1)
+        \Else
+            \If{$c > (*n).clave$}                                       \comment \bigo($greater(\kappa, \kappa)$)
+                \State $res \gets auxDefinidoNodo((*n).mayor, c)$      \comment \bigo($(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+            \Else
+                \State $res \gets auxDefinidoNodo((*n).menor, c)$      \comment \bigo($(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+            \EndIf
+        \EndIf
+    \EndIf
+}{  Donde $N$ es la cantidad de elementos que hay insertados debajo de este nodo. 
+    En cada llamada a $auxDefinidoNodo$ se reduce la cantidad de elementos aproximadamente a la mitad 
+    haciendo una busqueda binaria y se compara la clave por igualdad y por orden. 
+    Luego de log(N) llamadas se llega a las hojas del arbol terminando la busqueda. }
+
+
+\algoritmo{iObtener}
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in}{$c$}{$\kappa$}}
+{$\alpha$}
+{\bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
+{   \State $res \gets (*auxObtenerNodo(d.raiz, c)).valor$               \comment \bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+}
+{   Por complejidad ver $iauxObtenerNodo$. Como es condición necesaria para Obtener 
+    que la clave este definida se puede asumir que $auxObtenerNodo$ devuelve un puntero no nulo. }
+
+\algoritmo{iauxObtenerNodo}
+{   \param{in}{$n$}{puntero(nodo))},
+    \param{in}{$c$}{$\kappa$}}
+{$\alpha$}
+{\bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
+{   \If{$n = NULL$}                                                     \comment \bigo(1)
+        \State $res \gets NULL$                                         \comment \bigo(1)
+    \Else                                                               \comment \bigo(1)
+        \If{$c = (*n).clave$}                                           \comment \bigo($equal(\kappa, \kappa)$)
+            \State $res \gets n$                                        \comment \bigo(1)
+        \Else
+            \If{$c > (*n).clave$}                                       \comment \bigo($greater(\kappa, \kappa)$)
+                \State $res \gets auxObtenerNodo((*n).mayor, c)$        \comment \bigo($(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+            \Else
+                \State $res \gets auxObtenerNodo((*n).menor, c)$        \comment \bigo($(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+            \EndIf
+        \EndIf
+    \EndIf
+}
+{   Al igual que con $iauxDefinidoNodo$, $N$ es la cantidad de elementos debajo de este nodo.
+    En cada llamada a $auxObtenerNodo$ se reduce la cantidad de elementos aproximadamente a la mitad y se
+    compara la clave por igualdad y por orden. }
+
+
+\algoritmo{iDefinir}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in}{$c$}{$\kappa$},
+    \param{in}{$v$}{$\alpha$}}
+{}
+{\bigo($copy(\kappa)+log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
+{   \If{$d.raiz = NULL$}                                                \comment \bigo(1)
+        \State $d.raiz \gets auxNuevoNodo(c, v)$                        \comment \bigo($copy(\kappa)$)
+    \Else
+        \State $auxDefinirNodo(d.raiz, c, v)$                           \comment \bigo($copy(\kappa)+log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$) 
+    \EndIf
+}
+{   Donde $N$ es la cantidad de elementos del arbol. La complejidad de
+    definir una clave nueva es la de buscar si existe la misma ($log(N)$ comparaciones)
+    y luego copiar la clave. El peor caso es en el que la clave no existe y hay que 
+    bajar hasta las hojas del arbol para insertar un nuevo nodo.
+    Incluso si el arbol esta vacio entonces $log(N) = 0$ por lo que sigue siendo
+    $copy(\kappa)+log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$. }
+
+
+
+\algoritmo{iauxNuevoNodo}
+{   \param{in}{$c$}{$\kappa$},
+    \param{in}{$v$}{$\alpha$},
+    \param{in}{$p$}{puntero(nodo)}}
+{puntero(nodo)}
+{\bigo($copy(\kappa)$)}
+{   \var $n : nodo$
+    \State $n.clave \gets copy(c)$              \comment \bigo($copy(\kappa)$)
+    \State $n.valor \gets v$                    \comment \bigo(1)
+    \State $n.menor \gets NULL$                 \comment \bigo(1)
+    \State $n.mayor \gets NULL$                 \comment \bigo(1)
+    \State $n.padre \gets p$                    \comment \bigo(1)
+    \State $n.fdb \gets 0$                      \comment \bigo(1)
+    \State $res \gets \&n$                      \comment \bigo(1)
+}
+{   6*\bigo(1) + \bigo($copy(\kappa)$) = \bigo($copy(\kappa)$) }
+
+    
 \subsection{Servicios usados}
 
 
