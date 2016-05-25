@@ -643,8 +643,7 @@ $}
         \Else   
             \If{$(*n).menor = NULL$}                                    
                 \State $(*n).menor \gets auxNuevoNodo(c, v, n)$         \comment \bigo($copy(\kappa)$)
-                \State $auxPropagarInsercion(d, (*n).menor)$            \comment \bigo(\cuidado)
-            \Else                                                                                                                                                
+                \State $auxPropagarInsercion(d, (*n).menor)$            \comment \bigo(\cuidado) \cuidado justificar            \Else                                                                                                                                                
                 \State $auxDefinirNodo(d, (*n).menor, c, v)$            \comment \bigo($copy(\kappa)+(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
             \EndIf
         \EndIf
@@ -674,14 +673,14 @@ $}
         \EndIf
     \EndIf
 }
-{   . }
+{   \cuidado justificar. }
 
 
 \algoritmo{iauxBalancear}
 {   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in/out}{$n$}{puntero(nodo)}}
 {}
-{\bigo($log(N)$)}
+{\bigo(1) \cuidado}
 {   \If{$ (*n).fdb < 0 $}
         \If{$ (*(*n).mayor).fdb > 0 $}
             \State $auxRotarDerecha(d, (*n).mayor)$
@@ -694,14 +693,14 @@ $}
         \State $auxRotarDerecha(d, n)$
     \EndIf
 }
-{   . }
+{   \cuidado justificar. }
 
 
 \algoritmo{iauxRotarIzquierda}
 {   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in/out}{$rr$}{puntero(nodo)}}
 {}
-{\bigo($log(N)$)}
+{\bigo(1) \cuidado}
 {   \var $nr : puntero(nodo)$
     \State $nr \gets (*rr).mayor$
     \State $(*rr).mayor \gets (*nr).menor$
@@ -729,7 +728,7 @@ $}
 {   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in/out}{$rr$}{puntero(nodo)}}
 {}
-{\bigo($log(N)$)}
+{\bigo(1) \cuidado}
 {   \var $nr : puntero(nodo)$
     \State $nr \gets (*rr).menor$
     \State $(*rr).menor \gets (*nr).mayor$
@@ -752,6 +751,82 @@ $}
     \State $(*nr).fdb \gets (*nr).fdb - 1 - min((*rr).fdb, 0)$
 }
 {   . }
+
+\algoritmo{iBorrar}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in}{$c$}{$\kappa$}}
+{}
+{\bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
+{   \State $auxBorrarNodo(d, d.raiz, c)$   
+}
+{   \cuidado justificar. }
+
+
+\algoritmo{iauxBorrarNodo}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in}{$n$}{puntero(nodo)},
+    \param{in}{$c$}{$\kappa$}}
+{}
+{\bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
+{   \If{$ c = (*n).clave $}
+        \If{$ (*n).menor \neq NULL \algAnd (*n).mayor \neq NULL $}
+            \var $n2 : puntero(nodo)$
+            \State $n2 \gets auxMinimo((*n).mayor)$
+            \State $(*n).clave \gets (*n2).clave$
+            \State $(*n).valor \gets (*n2).valor$
+            \State $auxRecortar(d, n2)$
+        \Else
+            \State $auxRecortar(d, n)$
+        \EndIf
+    \Else
+        \If{$ c > (*n).clave $}
+            \State $auxBorrarNodo(d, (*n).mayor, c)$
+        \Else
+            \State $auxBorrarNodo(d, (*n).menor, c)$
+        \EndIf
+    \EndIf
+}
+{   \cuidado justificar. }
+
+\algoritmo{iauxMinimo}
+{   \param{in}{$n$}{puntero(nodo)}}
+{puntero(nodo)}
+{\bigo($log(N)$)}
+{   \If{$ (*n).menor = NULL$}
+        \State $res \gets n$
+    \Else
+        \State $res \gets auxMinimo((*n).menor)$
+    \EndIf
+}
+{   \cuidado justificar. Aclarar que no puede recibir un puntero NULL. }
+
+\algoritmo{iauxRecortar}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in}{$n$}{puntero(nodo)}}
+{}
+{\bigo($log(N)$)}
+{   \var $ho : puntero(nodo)$
+    \If{$ (*n).menor \neq NULL $}
+        \State $ho \gets (*n).menor$
+        \State $(*ho).padre \gets (*n).padre$
+    \EndIf
+    \If{$ (*n).mayor \neq NULL $}
+        \State $ho \gets (*n).mayor$
+        \State $(*ho).padre \gets (*n).padre$
+    \EndIf
+    \If{$ (*n).padre = NULL $}
+        \State $d.raiz \gets ho$
+    \Else
+        \State $auxPropagarBorrado(d, n)$
+        \If{$ (*(*n).padre).menor = n $}
+            \State $(*(*n).padre).menor \gets ho$
+        \Else
+            \State $(*(*n).padre).mayor \gets ho$
+        \EndIf
+    \EndIf
+}
+{   \cuidado justificar. Aclarar que no puede pasar en el caso de que tenga dos hijos. }
+
 
 
 \subsection{Servicios usados}
