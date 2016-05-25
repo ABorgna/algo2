@@ -94,8 +94,6 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {Borra el significado asociado a la clave $c$}
 
 
-\cuidado Definir funcion auxiliar maximo y minimo sobre claves del diccionario
-
 \operacion{Maximo}
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
 {tupla(clave: $\kappa$, significado: $\alpha$)}
@@ -103,7 +101,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {$siguiente(res) \igobs tupla(maximo(d), obtener(maximo(d)))$}
 {\bigo(1)}
 {}
-{Obtiene un iterador a la clave y el significado del elemento con la clave 
+{Obtiene una tupla de la clave y el significado del elemento con la clave 
     mas grande en el diccionario}
 
 \operacion{Minimo}
@@ -113,10 +111,35 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {$siguiente(res) \igobs tupla(minimo(d), obtener(minimo(d)))$}
 {\bigo(1)}
 {}
-{Obtiene un iterador a la clave y el significado del elemento con la clave 
+{Obtiene una tupla de la clave y el significado del elemento con la clave 
     mas pequeña en el diccionario}
 
-
+\tadOperacion{minimo}
+{diccLog($\kappa\ \alpha$)/d}
+{$\kappa$}
+{$\neg vacia?(claves(d))$}
+\tadAxioma{minimo(d)}{$
+    \IFLM len(claves(d)) = 1 THEN prim(claves(d)) ELSE  \\
+    \hspace*{2em}    \IFLM prim(claves(d)) > minimo(borrar(prim(claves(d)), d)) THEN \\
+    \hspace*{4em}        minimo(borrar(prim(claves(d)), d)) \\
+    \hspace*{2em}    ELSE \\
+    \hspace*{4em}        prim(claves(d)) \\
+    \hspace*{2em}    FI \\
+    FI
+$}
+\tadOperacion{maximo}
+{diccLog($\kappa\ \alpha$)/d}
+{$\kappa$}
+{$\neg vacia?(claves(d))$}
+\tadAxioma{maximo(d)}{$
+    \IFLM len(claves(d)) = 1 THEN prim(claves(d)) ELSE  \\
+    \hspace*{2em}    \IFLM prim(claves(d)) > maximo(borrar(prim(claves(d)), d)) THEN \\
+    \hspace*{4em}        prim(claves(d)) \\
+    \hspace*{2em}    ELSE \\
+    \hspace*{4em}        maximo(borrar(prim(claves(d)), d)) \\
+    \hspace*{2em}    FI \\
+    FI
+$}
 
 \subsubsection{Operaciones del iterador}
 
@@ -126,7 +149,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {true}
 {$res \igobs crearItMod(<>, listaDeTupas(d))$ $\land$ alias($SecuSuby(res) = listaDeTuplas(d)$)}
 {\bigo(1)}
-{\cuidado Hacer funcion auxiliar listaDeTuplas(dicc)}
+{}
 {}
 
 \operacion{HayMas?}
@@ -142,10 +165,10 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {   \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {tupla(clave: $\kappa$, significado: $\alpha$)}
 {$hayMas?(it)$}
-{alias($res \igobs actual(it)$)}
+{$res \igobs actual(it) \land$ alias($res.significado \igobs d.obtener(res.clave)$)}
 {\bigo(1)}
-{$res$.significado es una referencia al significado de diccionario.
-    \cuidado ver como decir bien esto}
+{$res$.significado es una referencia al significado en el
+    diccionario $d$ sobre el que se itera.}
 {}
 
 \operacion{Avanzar}
@@ -162,12 +185,21 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {}
 {$it \igobs it_0 \land hayMas?(it)$}
 {$it \igobs eliminar(it_0)$}
-{\bigo($log(n)$), donde $n = $ cantidad de elementos en el 
-    diccionario sobre el que se itera \cuidado}
+{\bigo($log(n)$), donde $n$ es la cantidad de elementos en el 
+    diccionario sobre el que se itera}
 {}
 {Elimina del diccionario la clave del siguiente elemento}
 
 
+\tadOperacion{listaDeTuplas}
+{diccLog($\kappa\ \alpha$)/d}
+{secuencia(tupla($\kappa\ \alpha$))}
+{}
+\tadAxioma{listaDeTuplas(d)}{$
+    \IFLM len(claves(d)) = 0 THEN <> ELSE  \\
+    \hspace*{2em} <prim(claves(d)), obtener(prim(claves(d)))> \bullet\ listaDeTuplas(borrar(prim(claves(d)), d)) \\
+    FI
+$}
 
 
 \subsection{Representación del diccionario}
@@ -452,8 +484,8 @@ $}
 \end{ABS}
 
 \tadOperacion{hasta}
-{$\gamma$/x, lista($\gamma$)/xs}
-{lista($\gamma$)}
+{$\gamma$/x, secuencia($\gamma$)/xs}
+{secuencia($\gamma$)}
 {}
 
 \tadAxioma{hasta(x, xs)}{$
@@ -465,8 +497,8 @@ $}
 $}
 
 \tadOperacion{desde}
-{$\gamma$/x, lista($\gamma$)/xs}
-{lista($\gamma$)}
+{$\gamma$/x, secuencia($\gamma$)/xs}
+{secuencia($\gamma$)}
 {}
 
 \tadAxioma{desde(x, xs)}{$
@@ -479,7 +511,7 @@ $}
 
 \tadOperacion{dfs}
 {puntero(nodo)/n}
-{lista(puntero(nodo))}
+{secuencia(puntero(nodo))}
 {}
 
 \tadAxioma{dfs(n)}{$
@@ -636,20 +668,27 @@ $}
         \If{$c > (*n).clave$}                                           \comment \bigo($greater(\kappa, \kappa)$)
             \If{$(*n).mayor = NULL$}                                    \comment \bigo(1)
                 \State $(*n).mayor \gets auxNuevoNodo(c, v, n)$         \comment \bigo($copy(\kappa)$)
-                \State $auxPropagarInsercion(d, (*n).mayor)$            \comment \bigo(\cuidado)
+                \State $auxPropagarInsercion(d, (*n).mayor)$            \comment \bigo($log(N)$)
             \Else
                 \State $auxDefinirNodo(d, (*n).mayor, c, v)$            \comment \bigo($copy(\kappa)+(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
             \EndIf
         \Else   
             \If{$(*n).menor = NULL$}                                    
                 \State $(*n).menor \gets auxNuevoNodo(c, v, n)$         \comment \bigo($copy(\kappa)$)
-                \State $auxPropagarInsercion(d, (*n).menor)$            \comment \bigo(\cuidado) \cuidado justificar            \Else                                                                                                                                                
+                \State $auxPropagarInsercion(d, (*n).menor)$            \comment \bigo($log(N)$)
+            \Else 
                 \State $auxDefinirNodo(d, (*n).menor, c, v)$            \comment \bigo($copy(\kappa)+(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
             \EndIf
         \EndIf
     \EndIf
 }
-{   . }
+{   $log(N)$ veces \bigo($equal(\kappa, \kappa)$) $+$ \bigo($greater(\kappa, \kappa)$) $+$ \bigo(1)
+    para realizar la busqueda de donde insertar la nueva clave y \bigo($copy(\kappa)$) $+$ \bigo($log(N)$)
+    para crear el nodo y rebalancear el arbol. \\
+    \hspace*{8em} \bigo($copy(\kappa)+log(N)$) $+$ \bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$) \\
+    \hspace*{8em} \bigo($copy(\kappa)+log(N) + log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$) \\
+    \hspace*{8em} \bigo($copy(\kappa)+log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+}
 
 
 \algoritmo{iauxPropagarInsercion}
@@ -657,109 +696,120 @@ $}
     \param{in/out}{$n$}{puntero(nodo)}}
 {}
 {\bigo($log(N)$)}
-{   \If{$ (*n).fdb > 1 \algOr (*n).fdb < -1 $}
-        \State $auxBalancear(d, n)$
+{   \If{$ (*n).fdb > 1 \algOr (*n).fdb < -1 $}                          \comment \bigo(1)
+        \State $auxBalancear(d, n)$                                     \comment \bigo(1)
     \Else
-        \If{$ (*n).padre \neq NULL $}
-            \If{$ n = (*(*n).padre).menor $}
-                \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb + 1$
+        \If{$ (*n).padre \neq NULL $}                                   \comment \bigo(1)
+            \If{$ n = (*(*n).padre).menor $}                            \comment \bigo(1)
+                \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb + 1$  \comment \bigo(1)
             \Else
-                \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb - 1$
+                \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb - 1$  \comment \bigo(1)
             \EndIf
 
-            \If{$ (*(*n).padre).fdb \neq 0 $}
-                \State $auxPropagarBalance(d, (*n).padre)$
+            \If{$ (*(*n).padre).fdb \neq 0 $}                           \comment \bigo(1)
+                \State $auxPropagarBalance(d, (*n).padre)$              \comment \bigo($log(N)$)
             \EndIf
         \EndIf
     \EndIf
 }
-{   \cuidado justificar. }
+{   Por cada llamada recursiva sube un nivel en el arbol. Como la cantidad de niveles es
+    $log(N)$, donde $N$ es la cantidad de elementos del arbol, en el peor de los casos
+    hará $log(N)$ llamadas. \\
+    \hspace*{8em} \bigo($log(N)$) $+$ \bigo(1)$*5 =$ \bigo($log(N)$)}
 
 
 \algoritmo{iauxBalancear}
 {   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in/out}{$n$}{puntero(nodo)}}
 {}
-{\bigo(1) \cuidado}
-{   \If{$ (*n).fdb < 0 $}
-        \If{$ (*(*n).mayor).fdb > 0 $}
-            \State $auxRotarDerecha(d, (*n).mayor)$
+{\bigo(1)}
+{   \If{$ (*n).fdb < 0 $}                               \comment \bigo(1)
+        \If{$ (*(*n).mayor).fdb > 0 $}                  \comment \bigo(1)
+            \State $auxRotarDerecha(d, (*n).mayor)$     \comment \bigo(1)
         \EndIf
-        \State $auxRotarIzquierda(d, n)$
+        \State $auxRotarIzquierda(d, n)$                \comment \bigo(1)
     \Else
-        \If{$ (*(*n).menor).fdb > 0 $}
-            \State $auxRotarIzquierda(a, (*n).menor)$
+        \If{$ (*(*n).menor).fdb > 0 $}                  \comment \bigo(1)
+            \State $auxRotarIzquierda(a, (*n).menor)$   \comment \bigo(1)
         \EndIf
-        \State $auxRotarDerecha(d, n)$
+        \State $auxRotarDerecha(d, n)$                  \comment \bigo(1)
     \EndIf
 }
-{   \cuidado justificar. }
+{   Las rotaciones se realizan en \bigo(1) y a lo sumo debe realizar 2
+    rotaciones para balancear el nodo. \\
+    \hspace*{8em} \bigo(1) $=$ \bigo(1)$*4$}
 
 
 \algoritmo{iauxRotarIzquierda}
 {   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in/out}{$rr$}{puntero(nodo)}}
 {}
-{\bigo(1) \cuidado}
+{\bigo(1)}
 {   \var $nr : puntero(nodo)$
-    \State $nr \gets (*rr).mayor$
-    \State $(*rr).mayor \gets (*nr).menor$
-    \If{$ (*nr).menor \neq NULL $}
-        \State $(*(*nr).menor).padre \gets rr$
+    \State $nr \gets (*rr).mayor$                               \comment \bigo(1)
+    \State $(*rr).mayor \gets (*nr).menor$                      \comment \bigo(1)
+    \If{$ (*nr).menor \neq NULL $}                              \comment \bigo(1)
+        \State $(*(*nr).menor).padre \gets rr$                  \comment \bigo(1)
     \EndIf
-    \State $(*nr).padre \gets (*rr).padre$
-    \If{$ (*rr).padre = NULL $}
-        \State $d.raiz \gets nr$
+    \State $(*nr).padre \gets (*rr).padre$                      \comment \bigo(1)
+    \If{$ (*rr).padre = NULL $}                                 \comment \bigo(1)
+        \State $d.raiz \gets nr$                                \comment \bigo(1)
     \Else
-        \If{$ (*(*rr).padre).menor = rr $}
-            \State $(*(*rr).padre).menor \gets nr$
+        \If{$ (*(*rr).padre).menor = rr $}                      \comment \bigo(1)
+            \State $(*(*rr).padre).menor \gets nr$              \comment \bigo(1)
         \Else
-            \State $(*(*rr).padre).mayor \gets nr$
+            \State $(*(*rr).padre).mayor \gets nr$              \comment \bigo(1)
         \EndIf
     \EndIf
-    \State $(*nr).menor \gets rr$
-    \State $(*rr).parent \gets nr$
-    \State $(*rr).fdb \gets (*rr).fdb + 1 - min((*nr).fdb, 0)$
-    \State $(*nr).fdb \gets (*nr).fdb + 1 + min((*rr).fdb, 0)$
+    \State $(*nr).menor \gets rr$                               \comment \bigo(1)
+    \State $(*rr).parent \gets nr$                              \comment \bigo(1)
+    \State $(*rr).fdb \gets (*rr).fdb + 1 - min((*nr).fdb, 0)$  \comment \bigo(1)
+    \State $(*nr).fdb \gets (*nr).fdb + 1 + min((*rr).fdb, 0)$  \comment \bigo(1)
 }
-{   . }
+{   Se realiza una cantidad de operaciones constante en el peor caso sobre punteros de nodos y
+    naturales. \\
+    \hspace*{8em} $14*$\bigo($1$) $=$ \bigo($1$). }
 
 \algoritmo{iauxRotarDerecha}
 {   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in/out}{$rr$}{puntero(nodo)}}
 {}
-{\bigo(1) \cuidado}
-{   \var $nr : puntero(nodo)$
-    \State $nr \gets (*rr).menor$
-    \State $(*rr).menor \gets (*nr).mayor$
-    \If{$ (*nr).mayor \neq NULL $}
-        \State $(*(*nr).mayor).padre \gets rr$
+{\bigo(1)}
+{   \var $nr : puntero(nodo)$                                   
+    \State $nr \gets (*rr).menor$                               \comment \bigo(1)
+    \State $(*rr).menor \gets (*nr).mayor$                      \comment \bigo(1)
+    \If{$ (*nr).mayor \neq NULL $}                              \comment \bigo(1)
+        \State $(*(*nr).mayor).padre \gets rr$                  \comment \bigo(1)
     \EndIf
-    \State $(*nr).padre \gets (*rr).padre$
-    \If{$ (*rr).padre = NULL $}
-        \State $d.raiz \gets nr$
+    \State $(*nr).padre \gets (*rr).padre$                      \comment \bigo(1)
+    \If{$ (*rr).padre = NULL $}                                 \comment \bigo(1)
+        \State $d.raiz \gets nr$                                \comment \bigo(1)
     \Else
-        \If{$ (*(*rr).padre).menor = rr $}
-            \State $(*(*rr).padre).menor \gets nr$
+        \If{$ (*(*rr).padre).menor = rr $}                      \comment \bigo(1)
+            \State $(*(*rr).padre).menor \gets nr$              \comment \bigo(1)
         \Else
-            \State $(*(*rr).padre).mayor \gets nr$
+            \State $(*(*rr).padre).mayor \gets nr$              \comment \bigo(1)
         \EndIf
     \EndIf
-    \State $(*nr).mayor \gets rr$
-    \State $(*rr).parent \gets nr$
-    \State $(*rr).fdb \gets (*rr).fdb - 1 + min((*nr).fdb, 0)$
-    \State $(*nr).fdb \gets (*nr).fdb - 1 - min((*rr).fdb, 0)$
+    \State $(*nr).mayor \gets rr$                               \comment \bigo(1)
+    \State $(*rr).parent \gets nr$                              \comment \bigo(1)
+    \State $(*rr).fdb \gets (*rr).fdb - 1 + min((*nr).fdb, 0)$  \comment \bigo(1)
+    \State $(*nr).fdb \gets (*nr).fdb - 1 - min((*rr).fdb, 0)$  \comment \bigo(1)
 }
-{   . }
+{   Se realiza una cantidad de operaciones constante sobre punteros de nodos y
+    naturales. \\
+    \hspace*{8em} $14*$\bigo($1$) $=$ \bigo($1$). }
 
 \algoritmo{iBorrar}
 {   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
     \param{in}{$c$}{$\kappa$}}
 {}
 {\bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
-{   \State $auxBorrarNodo(d, d.raiz, c)$   
+{   \State $auxBorrarNodo(d, d.raiz, c)$                        \comment \bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
 }
-{   \cuidado justificar. }
+{   Asumiendo que la clave $c$ esta definida puedo llamar a $auxBorrarNodo$. 
+    La complejidad es la misma que la del auxiliar. 
+}
 
 
 \algoritmo{iauxBorrarNodo}
@@ -768,37 +818,52 @@ $}
     \param{in}{$c$}{$\kappa$}}
 {}
 {\bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)}
-{   \If{$ c = (*n).clave $}
-        \If{$ (*n).menor \neq NULL \algAnd (*n).mayor \neq NULL $}
-            \var $n2 : puntero(nodo)$
-            \State $n2 \gets auxMinimo((*n).mayor)$
-            \State $(*n).clave \gets (*n2).clave$
-            \State $(*n).valor \gets (*n2).valor$
-            \State $auxRecortar(d, n2)$
+{   \If{$ c = (*n).clave $}                                             \comment \bigo($equal(\kappa, \kappa)$)
+        \If{$ (*n).menor \neq NULL \algAnd (*n).mayor \neq NULL $}      \comment \bigo(1)
+            \var $n2 : puntero(nodo)$ 
+            \State $n2 \gets auxMinimo((*n).mayor)$                     \comment \bigo(1)
+            \State $(*n).clave \gets (*n2).clave$                       \comment \bigo(1)
+            \State $(*n).valor \gets (*n2).valor$                       \comment \bigo(1)
+            \State $auxRecortar(d, n2)$                                 \comment \bigo($log(N)$)
         \Else
-            \State $auxRecortar(d, n)$
+            \State $auxRecortar(d, n)$                                  \comment \bigo($log(N)$)
         \EndIf
     \Else
-        \If{$ c > (*n).clave $}
-            \State $auxBorrarNodo(d, (*n).mayor, c)$
+        \If{$ c > (*n).clave $}                                         \comment \bigo($greater(\kappa, \kappa)$)
+            \State $auxBorrarNodo(d, (*n).mayor, c)$                    \comment \bigo($(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
         \Else
-            \State $auxBorrarNodo(d, (*n).menor, c)$
+            \State $auxBorrarNodo(d, (*n).menor, c)$                    \comment \bigo($(log(N)-1)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
         \EndIf
     \EndIf
 }
-{   \cuidado justificar. }
+{   Debido a que se asume que la clave esta en el diccionario no hace falta 
+    chequear si $n = NULL$. En cada llamado recursivo a la funcion se desciende
+    un nivel en el arbol, realizando comparaciones sobre la clave $c$. Al encontrar el
+    nodo, se encarga de borrarlo en \bigo($log(N)$). Como la cantidad de niveles del 
+    arbol es $log(N)$, donde $N$ es la cantidad de elementos del mismo, realiza a lo 
+    sumo $log(N)$ comparaciones. \\   
+    \hspace*{8em} \bigo($log(N)$) $+$ \bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$) \\
+    \hspace*{8em} \bigo($log(N) + log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$) \\
+    \hspace*{8em} \bigo($log(N)(greater(\kappa, \kappa)+equal(\kappa, \kappa))$)
+}
 
 \algoritmo{iauxMinimo}
 {   \param{in}{$n$}{puntero(nodo)}}
 {puntero(nodo)}
 {\bigo($log(N)$)}
-{   \If{$ (*n).menor = NULL$}
-        \State $res \gets n$
+{   \If{$ (*n).menor = NULL$}                           \comment \bigo(1)
+        \State $res \gets n$                            \comment \bigo(1)
     \Else
-        \State $res \gets auxMinimo((*n).menor)$
+        \State $res \gets auxMinimo((*n).menor)$        \comment \bigo($log(N)-1$)
     \EndIf
 }
-{   \cuidado justificar. Aclarar que no puede recibir un puntero NULL. }
+{   En cada llamada baja un nivel del arbol buscando el elemento minimo. Como la 
+    cantidad de niveles del arbol es $log(N)$ donde $N$ es la cantidad de elementos, 
+    en el peor caso debe descender por todo el arbol. \\
+    \hspace*{8em} \bigo(1) + \bigo($log(N)$) $=$ \bigo($log(N)$) 
+}
+% \cuidado Aclarar que no puede recibir un puntero NULL
+
 
 \algoritmo{iauxRecortar}
 {   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
@@ -806,26 +871,28 @@ $}
 {}
 {\bigo($log(N)$)}
 {   \var $ho : puntero(nodo)$
-    \If{$ (*n).menor \neq NULL $}
-        \State $ho \gets (*n).menor$
-        \State $(*ho).padre \gets (*n).padre$
+    \If{$ (*n).menor \neq NULL $}                       \comment \bigo(1)
+        \State $ho \gets (*n).menor$                    \comment \bigo(1)
+        \State $(*ho).padre \gets (*n).padre$           \comment \bigo(1)
     \EndIf
-    \If{$ (*n).mayor \neq NULL $}
-        \State $ho \gets (*n).mayor$
-        \State $(*ho).padre \gets (*n).padre$
+    \If{$ (*n).mayor \neq NULL $}                       \comment \bigo(1)
+        \State $ho \gets (*n).mayor$                    \comment \bigo(1)
+        \State $(*ho).padre \gets (*n).padre$           \comment \bigo(1)
     \EndIf
-    \If{$ (*n).padre = NULL $}
-        \State $d.raiz \gets ho$
+    \If{$ (*n).padre = NULL $}                          \comment \bigo(1)
+        \State $d.raiz \gets ho$                        \comment \bigo(1)
     \Else
-        \State $auxPropagarBorrado(d, n)$
-        \If{$ (*(*n).padre).menor = n $}
-            \State $(*(*n).padre).menor \gets ho$
+        \State $auxPropagarBorrado(d, n)$               \comment \bigo($log(N)$)
+        \If{$ (*(*n).padre).menor = n $}                \comment \bigo(1)
+            \State $(*(*n).padre).menor \gets ho$       \comment \bigo(1)
         \Else
-            \State $(*(*n).padre).mayor \gets ho$
+            \State $(*(*n).padre).mayor \gets ho$       \comment \bigo(1)
         \EndIf
     \EndIf
 }
-{   \cuidado justificar. Aclarar que no puede pasar en el caso de que tenga dos hijos. }
+{   Como no puede ocurrir el caso de que el nodo tenga dos hijos, a lo sumo
+    solo se entra en uno de los primeros ifs. \\
+    \hspace*{8em.} \bigo(1)$*8 +$ \bigo($log(N)$) $=$ \bigo($log(N)$) }
 
 
 \algoritmo{iauxPropagarBorrado}
@@ -833,19 +900,22 @@ $}
     \param{in}{$n$}{puntero(nodo)}}
 {}
 {\bigo($log(N)$)}
-{   \If{$ (*n).fdb > 1 \algOr (*n).fdb < -1 $}
-        \State $auxBalancear(n)$
+{   \If{$ (*n).fdb > 1 \algOr (*n).fdb < -1 $}                          \comment \bigo(1)
+        \State $auxBalancear(n)$                                        \comment \bigo(1)
     \EndIf
-    \If{$ (*n).padre \neq NULL $}
-        \If{$ (*(*n).padre).menor = n $}
-            \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb - 1$
+    \If{$ (*n).padre \neq NULL $}                                       \comment \bigo(1)
+        \If{$ (*(*n).padre).menor = n $}                                \comment \bigo(1)
+            \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb - 1$      \comment \bigo(1)
         \Else
-            \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb + 1$
+            \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb + 1$      \comment \bigo(1)
         \EndIf
-        \State $auxPropagarBorrado(d, (*n).padre)$
+        \State $auxPropagarBorrado(d, (*n).padre)$                      \comment \bigo($log(N)$)
     \EndIf
 }
-{   \cuidado justificar. }
+{   Por cada llamada recursiva sube un nivel en el arbol. Como la cantidad de niveles es
+    $log(N)$, donde $N$ es la cantidad de elementos del arbol, en el peor de los casos
+    hará $log(N)$ llamadas. \\
+    \hspace*{8em} \bigo($log(N)$) $+$ \bigo(1)$*5 =$ \bigo($log(N)$) }
 
 
 \subsection{Servicios usados}
