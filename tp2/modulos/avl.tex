@@ -147,9 +147,11 @@ $}
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
 {itDiccLog($\kappa, \alpha$)}
 {true}
-{$res \igobs crearItMod(<>, listaDeTupas(d))$ $\land$ alias($SecuSuby(res) = listaDeTuplas(d)$)}
+{$res \igobs crearItMod(<>, listaDeTupas(d))$ $\land$ alias($esPermutacion(SecuSuby(res), listaDeTuplas(d))$)}
 {\bigo(1)}
-{}
+{El iterador se invalida luego de cualquier operacion que modifique el arbol. No se puede
+    asegurar con un dfs que el orden de los elementos en el arbol sea el mismo luego de un 
+    balanceo.}
 {}
 
 \operacion{HayMas?}
@@ -180,15 +182,15 @@ $}
 {}
 {Avanza a la siguiente posición del iterador}
 
-\operacion{Eliminar}
-{   \param{in/out}{$it$}{itDiccLog($\kappa, \alpha$)}}
-{}
-{$it \igobs it_0 \land hayMas?(it)$}
-{$it \igobs eliminar(it_0)$}
-{\bigo($log(n)$), donde $n$ es la cantidad de elementos en el 
-    diccionario sobre el que se itera}
-{}
-{Elimina del diccionario la clave del siguiente elemento}
+%\operacion{Eliminar}
+%{   \param{in/out}{$it$}{itDiccLog($\kappa, \alpha$)}}
+%{}
+%{$it \igobs it_0 \land hayMas?(it)$}
+%{$it \igobs eliminar(it_0)$}
+%{\bigo($log(n)$), donde $n$ es la cantidad de elementos en el 
+%    diccionario sobre el que se itera}
+%{}
+%{Elimina del diccionario la clave del siguiente elemento}
 
 
 \tadOperacion{listaDeTuplas}
@@ -918,6 +920,65 @@ $}
     \hspace*{8em} \bigo($log(N)$) $+$ \bigo(1)$*5 =$ \bigo($log(N)$) }
 
 
+\subsubsection{Algoritmos del iterador}
+
+\algoritmo{iCrearIt}
+{   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
+{}
+{\bigo(1)}
+{   \State $res.dicc \gets d$                                           \comment \bigo(1)
+    \State $res.actual \gets d.raiz$                                    \comment \bigo(1)
+    \State $res.siguientes \gets Vacia()$                               \comment \bigo(1)
+    \If{$ *res.actual).menor \neq NULL $}                               \comment \bigo(1)
+        \State $AgregarAdelante(res.siguientes, (*res.actual).menor)$   \comment \bigo(1)
+    \EndIf
+    \If{$ *res.actual).mayor \neq NULL $}                               \comment \bigo(1)
+        \State $AgregarAdelante(res.siguientes, (*res.actual).mayor)$   \comment \bigo(1)
+    \EndIf 
+}
+{   $7*$\bigo() $=$ \bigo(1) 
+}
+
+\algoritmo{iHayMas?}
+{   \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
+{bool}
+{\bigo(1)}
+{   \State $res \gets it.actual \neq NULL$      \comment \bigo(1)
+}
+{}
+
+\algoritmo{iActual}
+{   \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
+{tupla($clave: \kappa, significado: \alpha$)}
+{\bigo(1)}
+{   \State $res \gets <clave: (*it.actual).clave,\ significado: (*it.actual).valor>$      \comment \bigo(1)
+}
+{}
+
+\algoritmo{iAvanzar}
+{   \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
+{}
+{\bigo(1)}
+{   \If{$ EsVacia?(res.siguientes) $}                                           \comment \bigo(1)
+        \State $res.actual \gets NULL$                                          \comment \bigo(1)
+    \Else
+        \State $res.actual \gets Primero(res.siguientes)$                       \comment \bigo(1)
+        \State $res.siguientes \gets Fin(res.siguientes)$                       \comment \bigo(1)
+        \If{$ *res.actual).menor \neq NULL $}                                   \comment \bigo(1)
+            \State $AgregarAdelante(res.siguientes, (*res.actual).menor)$       \comment \bigo(1)
+        \EndIf
+        \If{$ *res.actual).mayor \neq NULL $}                                   \comment \bigo(1)
+            \State $AgregarAdelante(res.siguientes, (*res.actual).mayor)$       \comment \bigo(1)
+        \EndIf 
+    \EndIf
+}
+{   $7*$\bigo(1) $=$ \bigo(1)}
+
+
+ 
+    
 \subsection{Servicios usados}
 
-
+Se utilizan las funciones exportadas por el modulo Lista Enlazada($\alpha$).
+Se cuenta con que la complejidad de las operaciones Vacia, Primero, Fin y AgregarAdelante
+sea \bigo(1).
