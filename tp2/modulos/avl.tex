@@ -235,66 +235,20 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 
 \end{Rep}
 
-\subsubsection{Operaciones auxiliares del invariante de representación}
-
 \tadOperacion{fdbsEnRango}
 {puntero(nodo)/n}
 {bool}
 {}
-
-\tadOperacion{fdbsCoinciden}
-{puntero(nodo)/n}
-{bool}
-{}
-
-\tadOperacion{atura}
-{puntero(nodo)/n}
-{nat}
-{}
-
-\tadOperacion{menoresSonMenores}
-{puntero(nodo)/n}
-{bool}
-{}
-
-\tadOperacion{minimo}
-{puntero(nodo)/n}
-{nodo}
-{$n \neq NULL$}
-
-\tadOperacion{mayoresSonMayores}
-{puntero(nodo)/n}
-{bool}
-{}
-
-\tadOperacion{maximo}
-{puntero(nodo)/n}
-{nodo}
-{$n \neq NULL$}
-
-\tadOperacion{padresCorrectos}
-{puntero(nodo)/n}
-{bool}
-{$n \neq NULL$}
-
-\tadOperacion{verificarHijos}
-{puntero(nodo)/r, puntero(nodo)/n}
-{bool}
-{}
-
-\tadOperacion{hijosDistintos}
-{nodo/a, nodo/b}
-{bool}
-{}
-
-\tadAxiomas[$\forall$ puntero(nodo) $n$]
-
 \tadAxioma{fdbsEnRango(n)}{$
     \IFLM n = NULL THEN true ELSE \\
     \hspace*{2em} -1 \leq (*n).fdb \leq 1 \land fdbsEnRango((*n).menor) \land fdbsEnRango((*n).mayor) \\
     FI
 $}
 
+\tadOperacion{fdbsCoinciden}
+{puntero(nodo)/n}
+{bool}
+{}
 \tadAxioma{fdbsCoinciden(n)}{$
     \IFLM n = NULL THEN true ELSE \\
     \hspace*{2em} (*n).fdb = altura((*n).menor) - altura((*n).mayor) \\
@@ -302,12 +256,20 @@ $}
     FI
 $}
 
+\tadOperacion{atura}
+{puntero(nodo)/n}
+{nat}
+{}
 \tadAxioma{altura(n)}{$
     \IFLM n = NULL THEN 0 ELSE \\
     \hspace*{2em} 1 + max(altura((*n).menor), altura((*n).mayor)) \\
     FI
 $}
 
+\tadOperacion{menoresSonMenores}
+{puntero(nodo)/n}
+{bool}
+{}
 \tadAxioma{menoresSonMenores(n)}{$
     \IFLM n = NULL \lor (*n).menor = NULL THEN true ELSE \\
     \hspace*{2em} maximo((*n).menor).clave < (*n).clave \\
@@ -315,12 +277,20 @@ $}
     FI
 $}
 
-\tadAxioma{maximo(n)}{$
-    \IFLM (*n).mayor = NULL THEN (*n) ELSE \\
-    \hspace*{2em} maximo((*n).mayor) \\
+\tadOperacion{minimo}
+{puntero(nodo)/n}
+{nodo}
+{$n \neq NULL$}
+\tadAxioma{minimo(n)}{$
+    \IFLM (*n).menor = NULL THEN (*n) ELSE \\
+    \hspace*{2em} minimo((*n).menor) \\
     FI
 $}
 
+\tadOperacion{mayoresSonMayores}
+{puntero(nodo)/n}
+{bool}
+{}
 \tadAxioma{mayoresSonMayores(n)}{$
     \IFLM n = NULL \lor (*n).mayor = NULL THEN true ELSE \\
     \hspace*{2em} minimo((*n).mayor).clave < (*n).clave \\
@@ -328,18 +298,30 @@ $}
     FI
 $}
 
-\tadAxioma{minimo(n)}{$
-    \IFLM (*n).menor = NULL THEN (*n) ELSE \\
-    \hspace*{2em} minimo((*n).menor) \\
+\tadOperacion{maximo}
+{puntero(nodo)/n}
+{nodo}
+{$n \neq NULL$}
+\tadAxioma{maximo(n)}{$
+    \IFLM (*n).mayor = NULL THEN (*n) ELSE \\
+    \hspace*{2em} maximo((*n).mayor) \\
     FI
 $}
 
+\tadOperacion{padresCorrectos}
+{puntero(nodo)/n}
+{bool}
+{$n \neq NULL$}
 \tadAxioma{padresCorrectos(n)}{$
     ((*n).menor \neq NULL \implies ( (*n).menor.padre = n \land padresCorrectos((*n).menor) ) \\
     \land 
     ((*n).mayor \neq NULL \implies ( (*n).mayor.padre = n \land padresCorrectos((*n).mayor) )
 $}
 
+\tadOperacion{verificarHijos}
+{puntero(nodo)/r, puntero(nodo)/n}
+{bool}
+{}
 \tadAxioma{verificarHijos(r, n)}{$
     \IFLM r = NULL \lor n = NULL THEN true ELSE \\
     \hspace*{2em} (r \neq n \implies hijosDistintos(*r, *n)) \\
@@ -350,6 +332,10 @@ $}
     FI
 $}
 
+\tadOperacion{hijosDistintos}
+{nodo/a, nodo/b}
+{bool}
+{}
 \tadAxioma{hijosDistintos(a, b)}{$
     a.menor \neq NULL \implies \\ 
     ( a.menor \neq a.mayor \land a.menor \neq b.menor \land a.menor \neq b.mayor ) \\
@@ -358,6 +344,16 @@ $}
     b.menor \neq NULL \implies \\
     ( b.menor \neq b.mayor )
 $}
+
+
+
+
+
+
+
+
+
+
 
 \subsubsection{Función de abstracción}
 
@@ -372,26 +368,20 @@ $}
     }
 \end{ABS}
 
-\subsubsection{Operaciones auxiliares de la función de abstracciónn}
-
 \tadOperacion{existe}
 {$\kappa$/c, puntero(nodo)/n}
 {bool}
 {}
-
-\tadOperacion{obtener}
-{$\kappa$/c, puntero(nodo)/n}
-{$\alpha$}
-{existe(c, n)}
-
-\tadAxiomas[$\forall$ puntero(nodo) $n$, $\kappa\ c$]
-
 \tadAxioma{existe(c, n)}{$
     \IFLM n = NULL THEN false ELSE \\
     \hspace*{2em} (*n).clave = c \lor_L existe(c, (*n).menor) \lor existe(c, (*n).mayor) \\
     FI
 $}
 
+\tadOperacion{obtener}
+{$\kappa$/c, puntero(nodo)/n}
+{$\alpha$}
+{existe(c, n)}
 \tadAxioma{obtener(c, n)}{$
     \IFLM (*n).clave = c THEN (*n).valor ELSE \\
     \hspace*{2em} \IFLM existe(c, (*n).menor) THEN \\
@@ -401,6 +391,7 @@ $}
     \hspace*{2em} FI \\
     FI
 $}
+
 
 \subsection{Representación del iterador}
 
