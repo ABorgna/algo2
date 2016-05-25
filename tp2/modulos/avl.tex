@@ -828,6 +828,25 @@ $}
 {   \cuidado justificar. Aclarar que no puede pasar en el caso de que tenga dos hijos. }
 
 
+\algoritmo{iauxPropagarBorrado}
+{   \param{in/out}{$d$}{diccLog($\kappa, \alpha$)},
+    \param{in}{$n$}{puntero(nodo)}}
+{}
+{\bigo($log(N)$)}
+{   \If{$ (*n).fdb > 1 \algOr (*n).fdb < -1 $}
+        \State $auxBalancear(n)$
+    \EndIf
+    \If{$ (*n).padre \neq NULL $}
+        \If{$ (*(*n).padre).menor = n $}
+            \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb - 1$
+        \Else
+            \State $(*(*n).padre).fdb \gets (*(*n).padre).fdb + 1$
+        \EndIf
+        \State $auxPropagarBorrado(d, (*n).padre)$
+    \EndIf
+}
+{   \cuidado justificar. }
+
 
 \subsection{Servicios usados}
 
