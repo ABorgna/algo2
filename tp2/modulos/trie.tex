@@ -11,14 +11,151 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 \iusa{}
 \iseexplica{Diccionario($string, \alpha$)}
 \igenero{diccTrie($\alpha$)}
+\ioperaciones
+
+\operacion{NuevoDiccTrie}
+{}
+{diccTrie($\alpha$)}
+{true}
+{$res \igobs vacio$}
+{\bigo(1)}
+{}
+{Crea un diccionario vacio}
+
+\operacion{Definir}
+{   \param{in/out}{$d$}{diccTrie($\alpha$)},
+    \param{in}{$c$}{string},
+    \param{in}{$v$}{$\alpha$}}
+{}
+{$d \igobs d_0 \land \neq def?(c, d)$}
+{$d \igobs definir(c, v, d_0)$}
+{\bigo($L$)}
+{Modifica el diccionario agregando o reemplazando el significado de una clave 
+    con un nuevo valor}
+
+\operacion{Definido?}
+{   \param{in}{$d$}{diccTrie($\alpha$)},
+    \param{in}{$c$}{string}}
+{bool}
+{true}
+{$res \igobs def?(c, d)$}
+{\bigo($L$)}
+{}
+{Devuelve true si una clave se encuentra definida en el diccionario}
+
+\operacion{Obtener}
+{   \param{in}{$d$}{diccTrie($\alpha$)},
+    \param{in}{$c$}{string}}
+{$\alpha$}
+{$def?(c, d)$}
+{$res$ \igobs $obtener(c, d)$}
+{\bigo($L$)}
+{}
+{Devuelve el significado definido para la clave $c$}
+
+\operacion{Borrar}
+{   \param{in/out}{$d$}{diccTrie($\alpha$)},
+    \param{in}{$c$}{string}}
+{}
+{$d \igobs d_0 \land def?(c, d)$}
+{$d \igobs borrar(c, d_0)$}
+{\bigo($L$)}
+{}
+{Borra el significado asociado a la clave $c$}
+
+
 
 \subsection{Representación}
+\serepresenta{diccTrie($\alpha$)}{trie}
+\donde{trie}{tupla(\\
+    $raiz$: puntero(nodo),\\
+    $claves$: lista(string) )}
+\donde{nodo}{tupla(\\
+    $valor$: puntero($\alpha$),\\
+    $hijos$: arreglo\_estático[256] (puntero(nodo)) )}
+
 
 \subsubsection{Invariante de representación}
+\begin{Rep}{$trie$}{$e$}
+ 	\repfunc{ Raiz no es NULL $\land_L$}
+    {
+        e.raiz!=null 
+    }
+    \repfunc{ Hay un único camino entre cada nodo y la raiz (no hay ciclos) $\land$ }
+    {
+    	noHayCiclos(e)
+    }
+   
+    \repfunc{ Todos los nodos hojas (los que tienen todas las posiciones del arreglo hijos en NULL) deben tener un valor distinto de NULL $\land$}
+    {
+    	todasLasHojasTienenValor(e)     
+    }
+    \repfunc{ Si el nodo raiz tiene hijos entonces hay claves $\land$}
+    {
+    	tienehijos(e)\Rightarrow |e.claves|>0     
+    }
+    \repfunc{ una palabra se encuentra en la lista de claves si y solo si al recorrer el arbol con esas letras se llega a una posicion con valor distinto de null}
+    {
+        (\forall c: string) (c\in caminoANodos(e)) \Leftrightarrow  ((\exists i:nat)(i\in \lbrace[0..e.claves\rbrace)\Rightarrow (e.claves[i]=c))
+    }
+   
+
+\end{Rep}
 
 \subsubsection{Función de abstracción}
 
+
 \subsection{Algoritmos}
+\algoritmo{iNuevoDiccTrie}{
+        }{diccTrie($\alpha$)}{\bigo(1)}{
+    \var $n : nodo)$    
+    \State $ n \gets crearNodo()$                   		  			\comment \bigo(1)    
+    \State $res.raiz \gets *n$                     						\comment \bigo(1)    
+     \State $res.claves \gets VAC\acute{I}A()$                     		\comment \bigo(1)                            
+}{3 * \bigo(1) = \bigo(1)}
+
+\algoritmo{iDefinir}
+{   \param{in/out}{$d$}{diccTrie($\alpha$)},
+    \param{in}{$c$}{string},
+    \param{in}{$v$}{$\alpha$}}{}
+{
+	\var $i : int)$
+	\State $ i \gets 0$  												\comment \bigo(1) 
+	\var $p : puntero(nodo)$ 
+	\State $ p \gets e.raiz$											\comment \bigo(1) 
+	\var $n : nodo$ 
+	\State $agregaratras(p.claves, \alpha)$								\comment \bigo(1)
+	\while{$i<(longitud(c))$}
+     	\Statex             \comment El loop se repite longitud de la clave veces
+     	 \If{$p.hijos[ord(s[i]] == NULL$}                     			\comment \bigo(1)
+            \State $n \gets crearNodo()$      \comment \bigo(1)
+            \State $p.hijos[ord(s[i]) \gets *n$              			\comment \bigo(1)
+        \EndIf
+     	\State $p \gets p.hijos[ord(s[i]))$								\comment \bigo(1)
+     	\State $i++$   													\comment \bigo(1) 
+    \EndWhile		
+	\State $p.valor \gets )$										\comment \bigo(1)
+    \State $i++$   														\comment \bigo(1)  
+
+}	{\bigo($L$)}
+
+\subsubsection{Funciones auxiliares de los algoritmos}
+
+\algoritmo{iCrearNodo}{
+}{nodo}{\bigo(1)}
+  {
+    \var $d : arreglo_est\acute{a}tico[256] (puntero(nodo))$
+    \var $i : int$
+    \State $i \gets 0)$                									\comment \bigo(1)
+
+    \while{$i<256$}
+     	\Statex             \comment El loop se repite 256 veces
+     	\State $d[i] \gets NULL)$										\comment \bigo(1)
+     	\State $i++$   													\comment \bigo(1) 
+    \EndWhile						
+    \State $res.hijos \gets d)$											\comment \bigo(1) 
+    \State $res.valor \gets NULL)$   									\comment \bigo(1) 
+}{   \bigo(1) + 256 * (2 * \bigo(1)) + 2 * \bigo(1) = \bigo(1) }
 
 \subsection{Servicios usados}
 
