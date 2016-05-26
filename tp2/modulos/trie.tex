@@ -83,32 +83,6 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 {Obtiene una tupla de la clave y el significado del elemento con la clave 
     mas pequeña en el diccionario}
 
-\tadOperacion{minimo}
-{diccLog($\alpha$)/d}
-{$\kappa$}
-{$\neg vacia?(claves(d))$}
-\tadAxioma{minimo(d)}{$
-    \IFLM len(claves(d)) = 1 THEN prim(claves(d)) ELSE  \\
-    \hspace*{2em}    \IFLM prim(claves(d)) > minimo(borrar(prim(claves(d)), d)) THEN \\
-    \hspace*{4em}        minimo(borrar(prim(claves(d)), d)) \\
-    \hspace*{2em}    ELSE \\
-    \hspace*{4em}        prim(claves(d)) \\
-    \hspace*{2em}    FI \\
-    FI
-$}
-\tadOperacion{maximo}
-{diccLog($\kappa\ \alpha$)/d}
-{$\kappa$}
-{$\neg vacia?(claves(d))$}
-\tadAxioma{maximo(d)}{$
-    \IFLM len(claves(d)) = 1 THEN prim(claves(d)) ELSE  \\
-    \hspace*{2em}    \IFLM prim(claves(d)) > maximo(borrar(prim(claves(d)), d)) THEN \\
-    \hspace*{4em}        prim(claves(d)) \\
-    \hspace*{2em}    ELSE \\
-    \hspace*{4em}        maximo(borrar(prim(claves(d)), d)) \\
-    \hspace*{2em}    FI \\
-    FI
-$}
 
 \subsection{Representación}
 \serepresenta{diccTrie($\alpha$)}{trie}
@@ -168,7 +142,7 @@ $}
 }{6 * \bigo(1) = \bigo(1)}
 
 \algoritmo{iDefinir}
-{   \param{in/out}{$d$}{diccTrie($\alpha$)},
+{   \param{in/out}{$e$}{diccTrie($\alpha$)},
     \param{in}{$c$}{string},
     \param{in}{$v$}{$\alpha$}}
 {}{}
@@ -188,19 +162,46 @@ $}
      	\State $i++$   													\comment \bigo(1) 
     \EndWhile		
 	\State $*p.valor \gets v)$										\comment \bigo(1)
-    \If{$c<trie.minimo.clave$}                     					\comment \bigo(1)
+    \If{$c<trie.minimo.clave\vert\vert trie.maximo.clave==NULL $}                     					\comment \bigo(1)
            \State $trie.minimo.clave \gets c$     				 	\comment \bigo(1)
              \State $trie.minimo.valor \gets v$     				 \comment \bigo(1)
        \EndIf	
-     \If{$c>trie.maximo.clave$}                     					\comment \bigo(1)
+     \If{$c>trie.maximo.clave \vert\vert trie.maximo.clave==NULL $}                     					\comment \bigo(1)
            \State $trie.maximo.clave \gets c$     				 	\comment \bigo(1)
            \State $trie.maximo.valor \gets v$     				 	\comment \bigo(1)
       \EndIf														 
 
 }	{  2* \bigo(1) + L * (5 * \bigo(1)) + 7 * \bigo(1) = \bigo(L) }
 
+\algoritmo{iDefinido?}
+{   \param{in/out}{$e$}{diccTrie($\alpha$)},
+    \param{in}{$c$}{string}}
+    {bool}
+    {\bigo(L)}
+{
+	\var $i : nat$
+	\State $ i \gets 0$  												\comment \bigo(1) 
+	\var $p : puntero(nodo)$ 
+	\State $ p \gets e.raiz$											\comment \bigo(1)  
+	\State $ res \gets NULL$											\comment \bigo(1)  
+	\While{$i<(longitud(c)) \&\& res==NULL$}
+	\Statex             \comment El loop se repite longitud de la clave veces o menos en caso de que res se vuelva false
+		 \If{$p.hijos[ord(s[i]] != NULL$}                     			\comment \bigo(1)
+		 	\State $p \gets p.hijos[ord(s[i]))$							\comment \bigo(1)
+		 \Else
+            \State $res \gets false$  									\comment \bigo(1)
+     	 \EndIf	
+     	\State $i++$   													\comment \bigo(1) 
+    \EndWhile		
+	\If{$res == NULL$}                     							\comment \bigo(1)
+		 \State $res \gets true$									\comment \bigo(1)	
+	\EndIf												 
+
+}	{  3* \bigo(1) + L * (4 * \bigo(1)) + 2 * \bigo(1) = \bigo(L) }
+
+
 \algoritmo{iObtener}
-{   \param{in/out}{$d$}{diccTrie($\alpha$)},
+{   \param{in/out}{$e$}{diccTrie($\alpha$)},
     \param{in}{$c$}{string}}
     {$\alpha$}
     {\bigo(L)}
@@ -214,9 +215,77 @@ $}
      	\State $p \gets p.hijos[ord(s[i]))$								\comment \bigo(1)
      	\State $i++$   													\comment \bigo(1) 
     \EndWhile		
-	\State $res \gets *p.valor)$										\comment \bigo(1)												 
+	\State $res \gets (*p).valor)$										\comment \bigo(1)												 
 
 }	{  2* \bigo(1) + L * (2 * \bigo(1)) + \bigo(1) = \bigo(L) }
+
+\algoritmo{iBorrar}
+{   \param{in/out}{$e$}{diccTrie($\alpha$)},
+    \param{in}{$c$}{string}}
+    {}
+    {\bigo(L)}
+{
+	\var $i : nat$
+	\State $ i \gets 0$  												\comment \bigo(1) 
+	\var $p : puntero(nodo)$ 
+	\State $ p \gets e.raiz$											\comment \bigo(1)  
+	\var $pi: pila(tupla(punte: puntero(nodo), siguiente: nat))$ 
+	\While{$i<(longitud(c)-1)$}
+     	\Statex             \comment El loop se repite longitud de la clave veces
+     	\State $p \gets p.hijos[ord(s[i]))$								\comment \bigo(1)
+     	\State $apilar(pi, (p,s[i+1])) $								\comment \bigo(copy(tupla(punte: puntero(nodo), siguiente: nat))) 
+     	\State $i++$   													\comment \bigo(1) 
+    \EndWhile	
+    \State $p \gets p.hijos[ord(s[i]))$								\comment \bigo(1)
+     \State $apilar(pi, (p,NULL)) $							\comment \bigo(copy(tupla(punte: puntero(nodo), siguiente: nat)))	
+   \While{$(\neq TieneHijos(*(tope(pi).punte))) \& \& ((*(tope(pi).punte)).clave==NULL)$}
+     	\Statex             \comment El loop se repite longitud de la clave veces como mucho
+ 
+     	\State $p \gets desapilar(pi)$								\comment \bigo(1)
+     	  \State $(*(tope(pi).punte)).hijos[*(tope(pi).siguiente)] == NULL$							\comment \bigo(1)	
+    \EndWhile	
+    \If{$\neq tieneHijos(e.raiz)$}                     			\comment \bigo(1)
+		 	\State $e.maximo \gets NULL$							\comment \bigo(1)
+	\State $e.minimo \gets NULL$							\comment \bigo(1)
+	\Else
+         \State $ p \gets e.raiz$	\comment \bigo(1)
+         \var $s : string$ 
+         \While{$(*p).valor==NULL $}
+     		\Statex             \comment El loop se repite L veces como mucho
+     		\State $s \gets s+chr(MenorHijo(*p))$								\comment \bigo(1)	
+     		\State $p \gets MenorHijo(*p)$								\comment \bigo(1)	
+     				
+    	\EndWhile		
+    	\State $e.minimo.clave \gets s$								\comment \bigo(1)	
+    	\State $e.minimo.valor \gets (*p).valor$								\comment \bigo(1)	
+    	\While{$iTieneHijos(*p)$}
+     		\Statex             \comment El loop se repite L veces como mucho
+     		\State $s \gets s+chr(MayorHijo(*p))$								\comment \bigo(1)	
+     		\State $p \gets MayorHijo(*p)$								\comment \bigo(1)	
+     				
+    	\EndWhile		
+    	\State $e.maximo.clave \gets s$								\comment \bigo(1)	
+    	\State $e.maximo.valor \gets (*p).valor$								\comment \bigo(1)	
+    	
+     \EndIf	 	
+												 
+
+}	{  2* \bigo(1) + L * (2 * \bigo(1) + \bigo(copy(tupla(punte: puntero(nodo), siguiente: nat)))) + \bigo(1) +\bigo(copy(tupla(punte: puntero(nodo), siguiente: nat))))+ L * 2 * \bigo(1)+ 5 * \bigo(1)== \bigo(L) en caso de que el arbol este cavio, el el otro caso es 
+2* \bigo(1) + L * (2 * \bigo(1) + \bigo(copy(tupla(punte: puntero(nodo), siguiente: nat)))) + \bigo(1) +\bigo(copy(tupla(punte: puntero(nodo), siguiente: nat))))+ L * 2 * \bigo(1)+\bigo(1)+2* L * 2 * \bigo(1) +2 * 2 *big O(1) == \bigo(L)}
+
+\algoritmo{iMaximo}{
+\param{in/out}{$e$}{diccTrie($\alpha$)
+        }{tupla(clave: string, significado: $\alpha$)}{\bigo(1)}{  
+    \State $ res \gets e.maximo$                   		  			\comment \bigo(1)                             
+}{ \bigo(1) = \bigo(1)}
+
+\algoritmo{iMinimo}{
+\param{in/out}{$e$}{diccTrie($\alpha$)
+        }{tupla(clave: string, significado: $\alpha$)}{\bigo(1)}{  
+    \State $ res \gets e.minimo$                   		  			\comment \bigo(1)                             
+}{ \bigo(1) = \bigo(1)}
+
+
 
 
 
@@ -237,6 +306,52 @@ $}
     \State $res.hijos \gets d)$											\comment \bigo(1) 
     \State $res.valor \gets NULL)$   									\comment \bigo(1) 
 }{   \bigo(1) + 256 * (2 * \bigo(1)) + 2 * \bigo(1) = \bigo(1) }
+
+\algoritmo{iTieneHijos}{
+\param{in}{$n$}{nodo}
+}{bool}{\bigo(1)}
+  {
+    \var $i : nat$
+    \State $i \gets 0)$                									\comment \bigo(1)
+    \State $res \gets false$										\comment \bigo(1)
+    \While{$i<256$}
+     	\Statex             \comment El loop se repite 256 veces
+ 		\If{$n.hijos[i] != NULL$}                     			\comment \bigo(1)
+		 	\State $res \gets true$										\comment \bigo(1)
+     	 \EndIf	 													 
+    \EndWhile						
+}{  2* \bigo(1) + 256 * (2 * \bigo(1))  = \bigo(1) }
+
+\algoritmo{iMenorHijo}{
+\param{in}{$n$}{nodo}
+}{bool}{\bigo(1)}
+  {
+    \var $i : nat$
+    \State $i \gets 0)$                									\comment \bigo(1)
+    \State $res \gets 256$												\comment \bigo(1)
+    \While{$i<256$}
+     	\Statex             \comment El loop se repite 256 veces
+ 		\If{$n.hijos[i] != NULL \&\& i<res$}                     			\comment \bigo(1)
+		 	\State $res \gets i$										\comment \bigo(1)
+     	 \EndIf	 													 
+    \EndWhile						
+}{  2* \bigo(1) + 256 * (2 * \bigo(1))  = \bigo(1) }
+
+\algoritmo{iMayorHijo}{
+\param{in}{$n$}{nodo}
+}{bool}{\bigo(1)}
+  {
+    \var $i : nat$
+    \State $i \gets 0)$                									\comment \bigo(1)
+    \State $res \gets 0$												\comment \bigo(1)
+    \While{$i<256$}
+     	\Statex             \comment El loop se repite 256 veces
+ 		\If{$n.hijos[i] != NULL \&\& i>res$}                     			\comment \bigo(1)
+		 	\State $res \gets i$										\comment \bigo(1)
+     	 \EndIf	 													
+    \EndWhile						
+}{  2* \bigo(1) + 256 * (2 * \bigo(1))  = \bigo(1) }
+
 
 \subsection{Servicios usados}
 
