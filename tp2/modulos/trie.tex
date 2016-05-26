@@ -95,39 +95,66 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
     $hijos$: arreglo\_estático[256] (puntero(nodo)) )}
 \donde{clavevalor}{tupla(\\
     $clave$: string,\\
-    $valor$: $\alpha$ }
+    $valor$: $\alpha$ )}
     
 
 
 \subsubsection{Invariante de representación}
-\begin{Rep}{$trie$}{$e$}
- 	\repfunc{ Raiz no es NULL $\land_L$}
-    {
-        e.raiz!=null 
+\begin{Rep}{estrDic}{e}
+  \repfunc{Raíz es distinto de NULL}
+    {raiz != NULL}
+  \repfunc{Existe un \'unico camino entre cada nodo y el nodo ra\'iz (no hay ciclos)}
+    {noHayCiclos(e)}
+  \repfunc{Todos los nodos hojas, es decir, todos los que tienen su arreglo hijos con todas sus posiciones en NULL, tienen que tener un valor distinto de NULL.}
+    {todasLasHojasTienenValor(e)}
+  \repfunc{En claves est\'a el camino que se recorre desde la ra\'z hasta cada nodo hoja}
+    {hayHojas(e) \Rightarrow \vert e.claves \vert > 0 \\
+        \land  (\forall c : string)(c \in caminosANodos(e)) \Rightarrow  ((\exists i: nat)( i \in \{0.. \vert e.claves \vert  \}) \Rightarrow (e.claves[i] = c))
     }
-    \repfunc{ Hay un único camino entre cada nodo y la raiz (no hay ciclos) $\land$ }
-    {
-    	noHayCiclos(e)
-    }
-   
-    \repfunc{ Todos los nodos hojas (los que tienen todas las posiciones del arreglo hijos en NULL) deben tener un valor distinto de NULL $\land$}
-    {
-    	todasLasHojasTienenValor(e)     
-    }
-    \repfunc{ Si el nodo raiz tiene hijos entonces hay claves $\land$}
-    {
-    	tienehijos(e)\Rightarrow |e.claves|>0     
-    }
-    \repfunc{ una palabra se encuentra en la lista de claves si y solo si al recorrer el arbol con esas letras se llega a una posicion con valor distinto de null}
-    {
-        (\forall c: string) (c\in caminoANodos(e)) \Leftrightarrow  ((\exists i:nat)(i\in \lbrace[0..e.claves\rbrace)\Rightarrow (e.claves[i]=c))
-    }
-   
+  \repfunc{Los nodos minimo y maximo son los correspondientes}
+    {}
 
 \end{Rep}
 
+\subsubsection{Operaciones auxiliares del invariante de Representaci\'on}
+
+  \tadOperacion{noHayCiclos}{puntero(nodo)}{bool}{}
+  \tadAxioma{noHayCiclos($n,p$)}{($\exists$ n:nat)(($\forall$ c: string)($\vert$s$\vert$ = n $\Rightarrow$ leer($p,s$) = NULL))}
+  \tadOperacion{leer}{puntero(nodo), string}{bool}{}
+  \tadAxioma{leer($p,s$)}{\IF vacia?($s$) THEN p $\rightarrow$ valor ELSE {\IF p $\rightarrow$ hijos[prim(s)] = NULL THEN NULL ELSE leer(p $\rightarrow$ hijos[prim(s)], fin(s)) FI} FI}
+  \tadOperacion{todosNull}{arreglo(puntero(nodo))}{bool}{}
+  \tadAxioma{todosNull($a$)}{auxTodosNull($a, 0$)}
+  \tadOperacion{auxTodosNull}{arreglo(puntero(nodo)), nat}{bool}{}
+  \tadAxioma{auxTodosNull($a, i$)}{\IF i < $\vert$a$\vert$ THEN a[i] == NULL $\land$ auxTodosNull($a, i+1$) ELSE a[i].valor == NULL FI}
+  \tadOperacion{esHoja}{puntero(nodo)}{bool}{}
+  \tadAxioma{esHoja($p$)}{\IF p == NULL THEN false ELSE todosNull(p.hijos) FI}
+  \tadOperacion{todasLasHojas}{puntero(nodo), nat}{conj(nodo)}{}
+  \tadAxioma{todasLasHojas($p, n$)}{\IF p == NULL THEN false ELSE {\IF esHoja($p$) THEN Ag(*p, vacio) ELSE auxTodasLasHojas((*p).hijos, 256) FI} FI}
+
+  \tadOperacion{auxTodasLasHojas}{arreglo(puntero(nodo)), nat}{conj(nodo)}{}
+  \tadAxioma{auxTodasLasHojas($a, n$)}{hojasDeHijos($a,n,0$)}
+
+  \tadOperacion{hojasDeHijos}{arreglo(puntero(nodo)), nat, nat}{conj(nodo)}{}
+  \tadAxioma{hojasDeHijos($a, n, i$)}{\IF i = n THEN $\emptyset$ ELSE todasLasHojas(a[i]) $\cup$ hojasDeHijos($a, n, (i+1)$) FI}
+
+  \tadOperacion{todasLasHojasTienenValor}{puntero(nodo)}{bool}{}
+  \tadAxioma{todasLasHojasTienenValor($p$)}{auxTodasLasHojasTienenValor(todasLasHojas($p, 256$))}
+
+  \tadOperacion{auxTodasLasHojasTienenValor}{arreglo(puntero(nodo))}{bool}{}
+  \tadAxioma{auxTodasLasHojasTienenValor($a$)}{\IF |a| = 0 THEN true ELSE dameUno(a).valor != NULL $\land$ auxTodasLasHojasTienenValor(sinUno(a)) FI}
+
+\tadOperacion{hayHojas}{puntero(nodo)}{bool}{}
+Dada una estructura, indica si en la misma existe alg\'un nodo cuyo arreglo hijos tenga todas las posiciones NULL.
+\tadOperacion{caminosANodos}{puntero(nodo)}{conj(string)}{}
+Dada una estructura, devuelve un conjunto con el \'unico camino existente entre la raiz y cada hoja. El camino se obtiene de agregar la posici\'on del arreglo hijos por la cual hay que bajar en cada nivel de la estructura hasta llegar a la hoja, conviritendo en cada paso esa posici\'on en un \textsc{char} y junt\'andolos en un \textsc{string}.
+
 \subsubsection{Función de abstracción}
 
+\begin{ABS}{e}{estrDicc}{d}{dicc(string,$\alpha$)}
+
+  \absfunc{}{(\forall c:string)(definido?(c,d)) = (\exists n: nodo)(n \in todasLasHojas(e)) n.valor != NULL}
+  \absfunc{}{(\exists i:nat)(i \in \{0..\vert e.claves \vert  \})  \Rightarrow  e.claves[i] = c \yluego significado(c,d) = leer(e.clave).valor}
+\end{ABS}
 
 \subsection{Algoritmos}
 \algoritmo{iNuevoDiccTrie}{
