@@ -274,13 +274,13 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 2* \bigo(1) + L * (2 * \bigo(1) + \bigo(copy(tupla(punte: puntero(nodo), siguiente: nat)))) + \bigo(1) +\bigo(copy(tupla(punte: puntero(nodo), siguiente: nat))))+ L * 2 * \bigo(1)+\bigo(1)+2* L * 2 * \bigo(1) +2 * 2 *big O(1) == \bigo(L)}
 
 \algoritmo{iMaximo}{
-\param{in/out}{$e$}{diccTrie($\alpha$)
+\param{in/out}{$e$}{diccTrie($\alpha$)}
         }{tupla(clave: string, significado: $\alpha$)}{\bigo(1)}{  
     \State $ res \gets e.maximo$                   		  			\comment \bigo(1)                             
 }{ \bigo(1) = \bigo(1)}
 
 \algoritmo{iMinimo}{
-\param{in/out}{$e$}{diccTrie($\alpha$)
+\param{in/out}{$e$}{diccTrie($\alpha$)}
         }{tupla(clave: string, significado: $\alpha$)}{\bigo(1)}{  
     \State $ res \gets e.minimo$                   		  			\comment \bigo(1)                             
 }{ \bigo(1) = \bigo(1)}
@@ -355,4 +355,6 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 
 \subsection{Servicios usados}
 
+\usaServicio{pila ($\alpha$)}
+\usaServicio{arreglo$\_$estatico ($\alpha$)}
 
