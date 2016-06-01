@@ -13,9 +13,87 @@ def insertion_sort(a):
 def selection_sort(a):
     return a
 
+def swap(a, i1, i2):
+    a[i1], a[i2] = a[i2], a[i1]
+
+def max3(a, b, c):
+    if a > b:
+        if b > c:
+            return b
+        if a > c:
+            return c
+        return a
+    else:
+        if c > b:
+            return b
+        if c > a:
+            return c
+        return a
+
+
 @presentar
 def quicksort(a):
+    if len(a) <= 1:
+        return a
+    if len(a) == 2:
+        if a[0] > a[1]:
+            swap(a, 0, 1)
+        return a
+
+    debug = False
+
+    i2 = int(len(a)/2)
+    m1, m2, m3 = a[0], a[i2], a[-1]
+    p = max3(m1, m2, m3)
+    pi = 0
+    if p == m2:
+        pi = i2
+    elif p == m3:
+        pi = len(a)-1
+    
+    swap(a, pi, 0)
+
+    left = False
+    li = 1
+    l = a[li]
+    ri = len(a)-1
+    r = a[ri]
+    for iteracion in range(len(a)-2):
+        if debug: print "debug:", a, left, li, ri
+        if left:
+            if l < p:
+                li += 1
+                l = a[li]
+            else:
+                swap(a, li, ri)
+                l = r
+                ri -= 1
+                r = a[ri]
+                left = False
+        else:
+            if r > p:
+                ri -= 1
+                r = a[ri]
+            else:
+                swap(a, li, ri)
+                r = l
+                li += 1
+                l = a[li]
+                left = True
+    if debug: print "debug:", a
+
+    if l > p:
+        swap(a, 0, li-1)
+        li -= 1
+    else:
+        swap(a, 0, li)
+    if debug: print "debug:", a
+
+    a[:li] = quicksort(a[:li])
+    a[li+1:] = quicksort(a[li+1:])
+    if debug: print "debug:", a, "r" 
     return a
+        
 
 @presentar
 def heapsort(a):
