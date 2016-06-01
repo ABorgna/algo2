@@ -97,54 +97,61 @@ def heapElems(a, i, length, eRoot=None, eLeft=None, eRight=None):
 
 @presentar
 def mergesort(a):
-    length = len(a)
+    l = 0
+    r = len(a)
+
+    mergesort_aux(a, l, r)
+
+    return a
+
+def mergesort_aux(a, l=None, r=None):
+    length = r-l
     middle = (int) (length / 2)
 
     if length <= 1:
-        return a
+        return
 
     # Divide
-    l = mergesort(a[:middle])
-    r = mergesort(a[middle:])
+    mergesort_aux(a, l, l+middle)
+    mergesort_aux(a, l+middle, r)
 
     # Conquer (merge)
-    i = 0
-    left_i = 0
-    right_i = 0
+    al = a[l:l+middle]
 
-    left_e = l[0] if middle else None
-    right_e = r[0] if (length - middle) else None
+    i = l
+    li = 0
+    ri = l+middle
 
-    while i < length and left_i < middle and right_i < (length - middle):
+    left_e = al[li] if middle > 0 else None
+    right_e = a[ri] if (length - middle) > 0 else None
+    while li < middle and ri < r:
         if right_e < left_e:
             a[i] = right_e
 
-            right_i += 1
-            right_e = r[right_i] if right_i < (length - middle) else None
+            ri += 1
+            right_e = a[ri] if ri < r else None
 
         else:
             a[i] = left_e
 
-            left_i += 1
-            left_e = l[left_i] if left_i < middle else None
+            li += 1
+            left_e = al[li] if li < len(al) else None
 
         i += 1
 
-    while left_i < middle:
+    while li < middle:
         a[i] = left_e
 
-        left_i += 1
-        left_e = l[left_i] if left_i < middle else None
+        li += 1
+        left_e = al[li] if li < len(al) else None
 
         i += 1
 
-    while right_i < (length - middle):
+    while ri < r:
         a[i] = right_e
 
-        right_i += 1
-        right_e = r[right_i] if right_i < (length - middle) else None
+        ri += 1
+        right_e = a[ri] if ri < r else None
 
         i += 1
-
-    return a
 
