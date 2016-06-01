@@ -30,6 +30,7 @@ def max3(a, b, c):
             return c
         return a
 
+
 @presentar
 def quicksort(a):
     if len(a) <= 1:
@@ -63,6 +64,36 @@ def quicksort(a):
             if l < p:
                 li += 1
                 l = a[li]
+            else:
+                swap(a, li, ri)
+                l = r
+                ri -= 1
+                r = a[ri]
+                left = False
+        else:
+            if r > p:
+                ri -= 1
+                r = a[ri]
+            else:
+                swap(a, li, ri)
+                r = l
+                li += 1
+                l = a[li]
+                left = True
+    if debug: print "debug:", a
+
+    if l > p:
+        swap(a, 0, li-1)
+        li -= 1
+    else:
+        swap(a, 0, li)
+    if debug: print "debug:", a
+
+    a[:li] = quicksort(a[:li])
+    a[li+1:] = quicksort(a[li+1:])
+    if debug: print "debug:", a, "r" 
+    return a
+        
 
 @presentar
 def heapsort(a):
