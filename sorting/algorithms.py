@@ -13,9 +13,56 @@ def insertion_sort(a):
 def selection_sort(a):
     return a
 
+def swap(a, i1, i2):
+    a[i1], a[i2] = a[i2], a[i1]
+
+def max3(a, b, c):
+    if a > b:
+        if b > c:
+            return b
+        if a > c:
+            return c
+        return a
+    else:
+        if c > b:
+            return b
+        if c > a:
+            return c
+        return a
+
 @presentar
 def quicksort(a):
-    return a
+    if len(a) <= 1:
+        return a
+    if len(a) == 2:
+        if a[0] > a[1]:
+            swap(a, 0, 1)
+        return a
+
+    debug = False
+
+    i2 = int(len(a)/2)
+    m1, m2, m3 = a[0], a[i2], a[-1]
+    p = max3(m1, m2, m3)
+    pi = 0
+    if p == m2:
+        pi = i2
+    elif p == m3:
+        pi = len(a)-1
+    
+    swap(a, pi, 0)
+
+    left = False
+    li = 1
+    l = a[li]
+    ri = len(a)-1
+    r = a[ri]
+    for iteracion in range(len(a)-2):
+        if debug: print "debug:", a, left, li, ri
+        if left:
+            if l < p:
+                li += 1
+                l = a[li]
 
 @presentar
 def heapsort(a):
