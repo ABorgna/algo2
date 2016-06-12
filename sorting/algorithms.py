@@ -1,10 +1,7 @@
 from list_algorithms import presentar
 import random
 
-grupo= 'elegir nombre copado'
-
-# ATENCION: dejar solamente las implementaciones de los algoritmos a entregar
-
+grupo= 'os.urandom(8)'
 
 def insertion_sort(a):
     return a
