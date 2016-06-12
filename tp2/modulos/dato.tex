@@ -11,7 +11,7 @@
 \operacion{datoNat}
 {\param{in}{$n$}{$nat$}} % parametros
 {dato} % tipo res
-{true} % pre
+{Nat?(n)} % pre
 {res \igobs datoNat(n)} % post
 {\bigo(1)} % complejidad
 {} % aliasing
@@ -20,7 +20,7 @@
 \operacion{datoString}
 {\param{in}{$str$}{$string$}}
 {dato}
-{true}
+{String?(n)}
 {res \igobs datoString(str)}
 {\bigo(copy($string$))}
 {true}
