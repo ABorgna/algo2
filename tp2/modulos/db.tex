@@ -186,7 +186,7 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
 \donde{vec}{tupla($tablas$: tablas, $tablasTree$: tablasTree, $vistasJoin$: vistas, $tablaMaxima$: maxima)}
 \donde{tablas}{conj($tabla$)}
 \donde{tablasTree}{diccTrie($nombreTabla$, itConj($tabla$))}
-\donde{maxima}{puntero($tabla$)}
+\donde{maxima}{itConj($tabla$)}
 \donde{vistas}{diccTrie($nombreTabla$, diccTrie($nombreTabla$, $vistaJoin$))}
 \donde{vistaJoin}{tupla($campo$: campo, $tipo$: bool, $buffer$: buffer, \\
     $joins$: joins, $joinsNat$: jNat, $joinsString$: jString)}
@@ -343,7 +343,13 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
         \hspace*{10em} obtener(v.campo,op.reg) \igobs obtener(v.campo,op'.reg) \; \land \\
         \hspace*{10em} estaDespues?(op', op, v.buffer))}
 
-    \repfunc{Si hay tablas e.tablaMaxima apunta a una de las tablas con mas cantidadDeAccesos, sino es nulo}{}
+    \repfunc{Si hay tablas, e.tablaMaxima apunta a una de las tablas con mas cantidadDeAccesos}
+        {\neg\emptyset?(e.tablas) \implies \\
+        \hspace*{4em} haySiguiente?(e.tablaMaxima) \land_L \\
+        \hspace*{4em} siguiente(e.tablaMaxima) \in e.tablas \land \\
+        \hspace*{4em} (\forall t : tabla) \; t \in e.tablas \implies \\
+        \hspace*{8em} cantidadDeAccesos(t) \leq cantidadDeAccesos(siguiente(e.tablaMaxima)) \\
+        }
 
 \end{Rep}
 
@@ -376,7 +382,6 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
     \State $res.tablas \gets vacio()$                               \comment \bigo(1)
     \State $res.tablasTree \gets nuevoDiccLog()$                    \comment \bigo(1)
     \State $res.vistasJoin \gets nuevoTrie()$                       \comment \bigo(1)
-    \State $res.tablaMaxima \gets NULL$                             \comment \bigo(1)
 }{4 * \bigo(1) = \bigo(1)}
 
 \algoritmo{iAgregarTabla}{
@@ -385,9 +390,9 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
     }{}{\bigo(1)}{
     \var $it : itConj(tabla)$
     \State $it \gets agregarRapido(db.tablas, t)$                   \comment \bigo(1)
-    \State $definir(res.tablasTree, nombre(t), it)$                 \comment \bigo($|nombre(t)|$) = \bigo(1)
-    \If{$db.tablaMaxima == NULL$}                                   \comment \bigo(1)
-        \State $db.tablaMaxima = \&t$                               \comment \bigo(1)
+    \State $definir(db.tablasTree, nombre(t), it)$                  \comment \bigo($|nombre(t)|$) = \bigo(1)
+    \If{$cardinal(db.tablas) == 1$}                                 \comment \bigo(1)
+        \State $db.tablaMaxima = it$                                \comment \bigo(1)
     \EndIf
 }{4 * \bigo(1) = \bigo(1)}
 
@@ -401,8 +406,8 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
     \State $t \gets tabla(db,nt)$                                   \comment \bigo(1)
     \State $it \gets tablas(db)$                                    \comment \bigo(1)
     \State $agregarRegistro(t,r)$                                   \comment \bigo($L + log(n)$) si hay un índice nat, \bigo($L$) sino
-    \If{$accesos(*db.tablaMaxima) < accesos(t)$}                    \comment \bigo(1)
-        \State $db.tablaMaxima = \&t$                               \comment \bigo(1)
+    \If{$accesos(siguiente(db.tablaMaxima)) < accesos(t)$}          \comment \bigo(1)
+        \State $db.tablaMaxima = obtener(db.tablasTree,nt)$         \comment \bigo(1)
     \EndIf
     \State
     \While{$haySiguiente(it)$}                                      \comment \bigo(1)
@@ -456,8 +461,8 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
         \State $r \gets siguiente(crearIt(rs))$                     \comment \bigo(1)
 
         \State
-        \If{$accesos(*db.tablaMaxima) < accesos(t)$}                \comment \bigo(1)
-            \State $db.tablaMaxima = \&t$                           \comment \bigo(1)
+        \If{$accesos(siguiente(db.tablaMaxima)) < accesos(t)$}      \comment \bigo(1)
+            \State $db.tablaMaxima = obtener(db.tablasTree,nt)$     \comment \bigo(1)
         \EndIf
 
         \State
@@ -623,7 +628,7 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
 \algoritmo{iTablaMaxima}{
     \param{in}{$db$}{$base$}
     }{tabla}{\bigo(1)}{
-    \State $res \gets *db.tablaMaxima$                              \comment \bigo(1)
+    \State $res \gets siguiente(db.tablaMaxima)$                    \comment \bigo(1)
 }{}
 
 \algoritmo{iHayJoin}{
