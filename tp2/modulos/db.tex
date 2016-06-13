@@ -194,7 +194,7 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
 \donde{joinsNat}{diccLog($nat, itConj(registro)$)}
 \donde{joinsString}{diccTrie($itConj(registro)$)}
 \donde{buffer}{lista($operacionJoin$)}
-\donde{operacionJoin}{tupla($esInsercion$: bool, $tabla$: bool, $reg$: $registro$)}
+\donde{operacionJoin}{tupla($esInsercion$: bool, $enTablaB$: bool, $reg$: $registro$)}
 
 \donde{nombreTabla}{string}
 \donde{campo}{string}
@@ -232,7 +232,7 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
         \hspace*{6em} t_a \igobs obtener(nt, e.tablasTree) \land t_b \igobs obtener(nt', e.tablasTree) \land \\
         \\
         \hspace*{6em} (\forall op : operacionJoin) \; op \in v.buffer \implies \\
-        \hspace*{8em} \IFLM \neg op.tabla THEN \\
+        \hspace*{8em} \IFLM \neg op.enTablaB THEN \\
         \hspace*{10em} campos(op.reg) \igobs campos(t_a) \land_L mismosTipos(op.reg, t_a) \\
         \hspace*{8em} ELSE \\
         \hspace*{10em} campos(op.reg) \igobs campos(t_b) \land_L mismosTipos(op.reg, t_b) \\
@@ -679,7 +679,7 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
         \If{$op.esInsercion$}
             \var $rs : conj(registro)$
             \var $r, r_b : registro$
-            \If{$!op.tabla$}                                        \comment \bigo(1)
+            \If{$!op.enTablaB$}                                     \comment \bigo(1)
                 \State $rs \gets buscar(t_2, v.campo, d)$           \comment \bigo($L + log(m)$) si es índice, \bigo($L * m$) sino
             \Else
                 \State $rs \gets buscar(t_1, v.campo, d)$           \comment \bigo($L + log(n)$) si es índice, \bigo($L * n$) sino
@@ -688,7 +688,7 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
                 \State $r_b \gets siguiente(crearIt(rs))$           \comment \bigo(1)
 
                 \State
-                \If{$!op.tabla$}                                    \comment \bigo(1)
+                \If{$!op.enTablaB$}                                 \comment \bigo(1)
                     \State $r \gets combinarRegistros(op.reg, r_b)$ \comment \bigo(1)
                 \Else
                     \State $r \gets combinarRegistros(r_b, op.reg)$ \comment \bigo(1)
