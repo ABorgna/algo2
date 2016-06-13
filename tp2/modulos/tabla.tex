@@ -333,8 +333,11 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
     \State
     \If{$esta$}
         \var $r : registro$
+        \State \icomment Agregamos una copia del registro borrado a res
         \State $r \gets copiar(siguiente(it))$                      \comment \bigo($L$)
         \State $agregarRapido(res, r)$                              \comment \bigo(1)
+
+        \State
         \State $eliminarSiguiente(it)$                              \comment \bigo(1)
         \If{$t.hayIndiceNat$}                                       \comment \bigo(1)
             \State $borrar(t.indicesNat, significado(r, t.indiceNat))$          \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
