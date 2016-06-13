@@ -177,9 +177,11 @@
 {$c \in campos(t) \land_L tipo?(d) \igobs tipoCampo(c,t)$}
 {$res \igobs \IFLM (\exists r : registro) \; r \in registros(t) \land_L obtener(c,r) \igobs d
     THEN Ag(r,\emptyset) ELSE \emptyset FI$}
-{\bigo(in)}
+{\bigo($L + log(n)$) si el campo es clave e índice nat, \\
+    \hspace*{4em} \bigo($L$) si el campo es clave e índice string, \\
+    \hspace*{4em} \bigo($L * n$) si el campo no es clave e índice}
 {No se debe modificar los resultados}
-{in es $log(n) + L$ si $c$ es índice, $n * L$ sino}
+{}
 
 \operacion{CantidadRegistros}
 {   \param{in}{$t$}{$tabla$}}
@@ -204,8 +206,8 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
     $nombre$: nombreTabla, $campos$: registro, $claves$: conj($campo$), $accesos$: nat)}
 
 \donde{regs}{conj($registro$)}
-\donde{treeNat}{diccLog($nat$, itConj($registro$))}
-\donde{treeString}{diccTrie(itConj($registro$))}
+\donde{treeNat}{diccLog($nat$, conj(itConj($registro$)))}
+\donde{treeString}{diccTrie(conj(itConj($registro$)))}
 
 \donde{campo}{string}
 \donde{nombreTabla}{string}
@@ -221,25 +223,34 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
         {(\forall r : registro) (r \in e.registros \implies claves(r) = claves(e.campos) \land_L \\
         \hspace*{2em} (\forall c : campo) (c \in claves(r) \implies_L \; tipo?(obtener(c,r)) = tipo?(obtener(c,e.campos))))}
 
+    \repfunc{Los campos clave no tienen repetidos}
+        {(\forall c : campo)(\forall r_1, r_2 : registro) \\
+            \hspace*{2em} c \in e.claves \land r_1 \in e.registros \land r_1 \in e.registros \land_L
+            obtener(c,r_1) \igobs obtener(c,r_2) \implies r_1 \igobs r_2 }
+
     \repfunc{Si no hay indice de tipo nat, indicesNat está vacio}
         {\neg e.hayIndiceNat \implies \emptyset?(e.indicesNat)}
 
     \repfunc{Si hay indice de tipo nat, indiceNat es un campo válido e indicesNat tiene los registros referenciados por el índice}
         {e.hayIndiceNat \implies indiceNat \in claves(e.campos) \land_L Nat?(obtener(indiceNat,e.campos)) \land_L \\
-        \hspace*{2em} \#e.registros = \#claves(e.indicesNat) \land \\
         \hspace*{2em} (\forall r : registro) (r \in e.registros \implies def?(obtener(indiceNat,r), e.indicesNat) \land_L \\
-        \hspace*{12em} haySiguiente?(obtener(obtener(indiceNat,r), e.indicesNat)) \land_L \\
-        \hspace*{12em} Siguiente(obtener(obtener(indiceNat,r), e.indicesNat)) \igobs r)}
+        \hspace*{8em} (\exists it : itConj(registro)) \; it \in obtener(obtener(indiceNat,r), e.indicesNat) \land \\
+        \hspace*{12em} haySiguiente?(it) \land_L siguiente(it) \igobs r) \land \\
+        \hspace*{2em} (\forall n : nat) (\forall it : itConj(registro)) ( \\
+        \hspace*{8em} def?(e.indicesNat,n) \land_L it \in obtener(e.indicesNat,n) \implies \\
+        \hspace*{12em} haySiguiente?(it) \land_L siguiente(it) \in e.registros )}
 
     \repfunc{Si no hay indice de tipo string, indicesString está vacio}
         {\neg e.hayIndiceString \implies \emptyset?(e.indicesString)}
 
     \repfunc{Si hay indice de tipo string, indiceString es un campo válido e indicesString tiene los registros referenciados por el índice}
         {e.hayIndiceString \implies indiceString \in claves(e.campos) \land_L String?(obtener(indiceString,e.campos)) \land_L \\
-        \hspace*{2em} \#e.registros = \#claves(e.indicesString) \land \\
         \hspace*{2em} (\forall r : registro) (r \in e.registros \implies def?(obtener(indiceString,r), e.indicesString) \land_L \\
-        \hspace*{12em} haySiguiente?(obtener(obtener(indiceString,r), e.indicesString)) \land_L \\
-        \hspace*{12em} Siguiente(obtener(obtener(indiceString,r), e.indicesString)) \igobs r)}
+        \hspace*{8em} (\exists it : itConj(registro)) \; it \in obtener(obtener(indiceString,r), e.indicesString) \land \\
+        \hspace*{12em} haySiguiente?(it) \land_L siguiente(it) \igobs r) \land \\
+        \hspace*{2em} (\forall s : string) (\forall it : itConj(registro)) ( \\
+        \hspace*{8em} def?(e.indicesString,s) \land_L it \in obtener(e.indicesString,s) \implies \\
+        \hspace*{12em} haySiguiente?(it) \land_L siguiente(it) \in e.registros )}
 
     \repfunc{Hay por lo menos tantos accesos como registros insertados}
         {e.accesos \ge \#e.registros}
@@ -281,17 +292,23 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
         \param{in}{$r$}{$registro$}
         }{}{\bigo($L + log(n)$) si hay un índice nat, \bigo($L$) sino}{
     \var $it : itConj(registro)$
-    \State $it \gets AgregarRapido(t.registros, r)$                 \comment \bigo($copy(registro)$) = \bigo($L$)
+    \State $it \gets agregarRapido(t.registros, r)$                 \comment \bigo($copy(registro)$) = \bigo($L$)
 
     \If{$t.hayIndiceNat$}
         \var $k : nat$
         \State $k \gets getNat(significado(r, t.indiceNat))$        \comment \bigo(1)
-        \State $definir(t.indicesNat, k, it)$                       \comment \bigo($log(n) * cmp(nat) + copy(nat)$) = \bigo($log(n)$)
+        \If{$!definido?(t.indicesNat, k)$}                          \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+            \State $definir(t.indicesNat, k, vacio())$              \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+        \EndIf
+        \State $agregarRapido(significado(t.indicesNat, k, it))$    \comment \bigo($log(n) * cmp(nat) + copy(nat)$) = \bigo($log(n)$)
     \EndIf
     \If{$t.hayIndiceString$}
         \var $k : string$
         \State $k \gets getString(significado(r, t.indiceString))$  \comment \bigo(1)
-        \State $definir(t.indicesString, k, it)$                    \comment \bigo($L + copy(string)$) = \bigo($L$)
+        \If{$!definido?(t.indicesString, k)$}                       \comment \bigo($L$)
+            \State $definir(t.indicesString, k, vacio())$           \comment \bigo($L$)
+        \EndIf
+        \State $agregarRapido(significado(t.indicesString, k, it))$ \comment \bigo($L + copy(string)$) = \bigo($L$)
     \EndIf
     \State
     \State $t.accesos \gets t.accesos + 1$                          \comment \bigo(1)
@@ -304,19 +321,28 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
         \param{in}{$d$}{$dato$}
         }{$conj(registro)$}{\bigo($L + log(n)$) si c es índice, \bigo($L + n$) sino}{
     \var $esta : bool$
+    \var $its : conj(itConj(registro))$
     \var $it : itConj(registro)$
     \State $res \gets vacio()$                                      \comment \bigo(1)
     \State $esta \gets false$                                       \comment \bigo(1)
 
     \State
+    \State \icomment Por requerimientos de la especificación, $c$ siempre es clave
+    \State \icomment Por lo tanto, se borra a lo sumo un registro
+
+    \State
     \If{$t.hayIndiceNat \algAnd t.indiceNat == c$}                  \comment \bigo(1)
         \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
-            \State $it \gets obtener(t.indicesNat, getNat(d))$      \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+            \State \icomment Como $c$ es clave, hay un único iterador en el conjunto
+            \State $its \gets obtener(t.indicesNat, getNat(d))$     \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+            \State $it \gets siguiente(crearIt(its))$               \comment \bigo(1)
             \State $esta \gets true$                                \comment \bigo(1)
         \EndIf
     \ElsIf{$t.hayIndiceString \algAnd t.indiceString == c$}         \comment \bigo(1)
         \If{$definido(t.indicesString,getString(d))$}               \comment \bigo($L$)
-            \State $it \gets obtener(t.indicesString, getString(d))$        \comment \bigo($L$)
+            \State \icomment Como $c$ es clave, hay un único iterador en el conjunto
+            \State $its \gets obtener(t.indicesString, getString(d))$       \comment \bigo($L$)
+            \State $it \gets siguiente(crearIt(its))$               \comment \bigo(1)
             \State $esta \gets true$                                \comment \bigo(1)
         \EndIf
     \Else
@@ -370,8 +396,14 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
             \State $t.indicesNat \gets vacio()$                     \comment \bigo(1)
             \While{$haySiguiente(it)$}                              \comment \bigo(1)
                 \State              \icomment El loop se repite a lo sumo $n$ veces
-                \State $definir(t.indicesNat, significado(siguiente(it),c), copy(it))$
-                \Statex             \comment \bigo($log(n) * cmp(nat) + copy(nat) + copy(it)$) = \bigo($log(n)$)
+
+                \var $k : nat$
+                \State $k \gets getNat(significado(siguiente(it),c))$       \comment \bigo(1)
+                \If{$!definido?(t.indicesNat, k)$}                          \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+                    \State $definir(t.indicesNat, k, vacio())$              \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+                \EndIf
+                \State $agregarRapido(significado(t.indicesNat, k, copy(it)))$  \comment \bigo($log(n) * cmp(nat) + copy(nat)$) = \bigo($log(n)$)
+
                 \State $avanzar(it)$                                \comment \bigo(1)
             \EndWhile
         \Else
@@ -380,8 +412,14 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
             \State $t.indicesString \gets vacio()$                  \comment \bigo(1)
             \While{$haySiguiente(it)$}                              \comment \bigo(1)
                 \State              \icomment El loop se repite a lo sumo $n$ veces
-                \State $definir(t.indicesString, significado(siguiente(it),c), copy(it))$
-                                    \comment \bigo($L + copy(string) + copy(it)$) = \bigo($L$)
+
+                \var $k : string$
+                \State $k \gets getString(significado(siguiente(it),c))$    \comment \bigo(1)
+                \If{$!definido?(t.indicesString, k)$}                       \comment \bigo($L$)
+                    \State $definir(t.indicesString, k, vacio())$           \comment \bigo($L$)
+                \EndIf
+                \State $agregarRapido(significado(t.indicesString, k, copy(it)))$ \comment \bigo($L + copy(string)$) = \bigo($L$)
+
                 \State $avanzar(it)$                                \comment \bigo(1)
             \EndWhile
         \EndIf
@@ -399,15 +437,8 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
         \param{in}{$t$}{$tabla$},
         \param{in}{$c$}{$campo$}
         }{bool}{\bigo(1)}{
-        \var $it : itConj(campo)$
-        \State $it \gets crearIt(t.claves)$                         \comment \bigo(1)
-
-        \While{$haySiguiente(it) \algAnd siguiente(it) \;!= c$}     \comment \bigo(1)
-            \Statex     \comment El loop se repite a lo sumo $|campos|$ veces, acotado por constante
-            \State avanzar(it)                                      \comment \bigo(1)
-        \EndWhile
-        \State $res \gets haySiguiente(it)$                         \comment \bigo(1)
-}{\bigo(1) + k * (2 * \bigo(1)) + \bigo(1) = \bigo(1)}
+        \State $res \gets pertenece?(t.claves, c)$                  \comment \bigo(1)
+}{}
 
 \algoritmo{iEsIndice}{
         \param{in}{$t$}{$tabla$},
@@ -474,19 +505,32 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
         \param{in}{$c$}{$campo$},
         \param{in}{$d$}{$dato$}
     }{$conj(registro)$}{\bigo($L + log(n)$) si c es índice, \bigo($L * n$) sino}{
+    \var $its : conj(itConj(registro))$
     \var $it : itConj(registro)$
     \State $res \gets vacio()$                                      \comment \bigo(1)
 
     \State
     \If{$t.hayIndiceNat \algAnd t.indiceNat == c$}                  \comment \bigo(1)
         \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
-            \State $it \gets obtener(t.indicesNat, getNat(d))$      \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
-            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($copy(registro)$) = \bigo($L$)
+            \State $its \gets obtener(t.indicesNat, getNat(d))$     \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+            \While{$haySiguiente(its)$}
+                \State \icomment Solo se repite una vez si c es clave, ya que no puede haber otro con el mismo valor
+                \State \icomment Se repite a lo sumo $n$ veces si c no es clave
+                \State $it \gets siguiente(its)$                    \comment \bigo(1)
+                \State $agregarRapido(res, siguiente(it))$          \comment \bigo($copy(registro)$) = \bigo($L$)
+                \State $avanzar(its)$
+            \EndWhile
         \EndIf
     \ElsIf{$t.hayIndiceString \algAnd t.indiceString == c$}         \comment \bigo(1)
         \If{$definido(t.indicesString,getString(d))$}               \comment \bigo($L$)
-            \State $it \gets significado(t.indicesString, getString(d))$    \comment \bigo($L$)
-            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($copy(registro)$) = \bigo($L$)
+            \State $its \gets obtener(t.indicesString, getString(d))$       \comment \bigo($L$)
+            \While{$haySiguiente(its)$}
+                \State \icomment Solo se repite una vez si c es clave, ya que no puede haber otro con el mismo valor
+                \State \icomment Se repite a lo sumo $n$ veces si c no es clave
+                \State $it \gets siguiente(its)$                    \comment \bigo(1)
+                \State $agregarRapido(res, siguiente(it))$          \comment \bigo($copy(registro)$) = \bigo($L$)
+                \State $avanzar(its)$
+            \EndWhile
         \EndIf
     \Else
         \State $it \gets crearIt(t.registros)$                      \comment \bigo(1)
@@ -498,9 +542,9 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
             \State avanzar(it)                                      \comment \bigo(1)
         \EndWhile
     \EndIf
-}{Si c es indiceNat: 2 * \big(1) + 2 * \bigo($log(n)$) + \bigo($L$) = \bigo($L + log(n)$) \\
-    \hspace*{8.25em} Si c es indiceString: 3 * \bigo(1) + 3 * \bigo($L$) = \bigo($L$) \\
-    \hspace*{8.25em} Si c no es índice: 4 * \bigo(1) + n * (\bigo(1) + 2 * \bigo($L$) + \bigo(1)) = \bigo($L * n$)
+}{Si c es clave y c es indiceNat: 2 * \big(1) + 2 * \bigo($log(n)$) + \bigo($L$) = \bigo($L + log(n)$) \\
+    \hspace*{8.25em} Si c es clave y c es indiceString: 3 * \bigo(1) + 3 * \bigo($L$) = \bigo($L$) \\
+    \hspace*{8.25em} Si no: 4 * \bigo(1) + n * (\bigo(1) + 2 * \bigo($L$) + \bigo(1)) = \bigo($L * n$)
 }
 
 \algoritmo{iCantidadRegistros}{
