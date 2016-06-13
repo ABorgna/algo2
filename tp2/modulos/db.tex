@@ -146,7 +146,7 @@
 {}
 {$db \igobs db_0 \land hayJoin?(nt_1,nt_2,db)$}
 {$db \igobs borrar(nt_1,nt_2,db_0)$}
-{\bigo($n + m$)}
+{\bigo(1)}
 {}
 {}
 
@@ -776,6 +776,7 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
     \EndWhile
 
     \State
+    \State \icomment Siguiendo la especificación, los valores de $r_1$ pisan los repetidos de $r_2$
     \State $it \gets crearIt(r_1)$                                  \comment \bigo(1)
     \While{$haySiguiente(it)$}                                      \comment \bigo(1)
         \State \icomment El loop se ejecuta $|campos(r_1)|$ veces, acotado por constante
