@@ -148,7 +148,7 @@ $}
 {itDiccLog($\kappa, \alpha$)}
 {true}
 {$res \igobs crearItMod(<>, listaDeTupas(d))$ $\land$ alias($esPermutacion(SecuSuby(res), listaDeTuplas(d))$)}
-{\bigo(1)}
+{\bigo($copy(\alpha)$)}
 {El iterador se invalida luego de cualquier operacion que modifique el arbol. No se puede
     asegurar con un dfs que el orden de los elementos en el arbol sea el mismo luego de un 
     balanceo.}
@@ -178,7 +178,7 @@ $}
 {}
 {$it \igobs it_0 \land hayMas?(it)$}
 {$it \igobs avanzar(it_0)$}
-{\bigo(1)}
+{\bigo($copy(\alpha)$)}
 {}
 {Avanza a la siguiente posición del iterador}
 
@@ -923,19 +923,18 @@ $}
 \algoritmo{iCrearIt}
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
 {}
-{\bigo(1)}
+{\bigo($copy(\alpha)$)}
 {   \State $res.dicc \gets d$                                           \comment \bigo(1)
     \State $res.actual \gets d.raiz$                                    \comment \bigo(1)
     \State $res.siguientes \gets Vacia()$                               \comment \bigo(1)
     \If{$ *res.actual).menor \neq NULL $}                               \comment \bigo(1)
-        \State $AgregarAdelante(res.siguientes, (*res.actual).menor)$   \comment \bigo(1)
+        \State $AgregarAdelante(res.siguientes, (*res.actual).menor)$   \comment \bigo($copy(\alpha)$)
     \EndIf
     \If{$ *res.actual).mayor \neq NULL $}                               \comment \bigo(1)
-        \State $AgregarAdelante(res.siguientes, (*res.actual).mayor)$   \comment \bigo(1)
+        \State $AgregarAdelante(res.siguientes, (*res.actual).mayor)$   \comment \bigo($copy(\alpha)$)
     \EndIf 
 }
-{   $7*$\bigo() $=$ \bigo(1) 
-}
+{   $5*$\bigo(1) + $2 * copy(\alpha)$ $=$ \bigo($copy(\alpha)$)}
 
 \algoritmo{iHayMas?}
 {   \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
@@ -956,25 +955,23 @@ $}
 \algoritmo{iAvanzar}
 {   \param{in}{$it$}{itDiccLog($\kappa, \alpha$)}}
 {}
-{\bigo(1)}
+{\bigo($copy(\alpha)$)}
 {   \If{$ EsVacia?(res.siguientes) $}                                           \comment \bigo(1)
         \State $res.actual \gets NULL$                                          \comment \bigo(1)
     \Else
         \State $res.actual \gets Primero(res.siguientes)$                       \comment \bigo(1)
         \State $res.siguientes \gets Fin(res.siguientes)$                       \comment \bigo(1)
         \If{$ *res.actual).menor \neq NULL $}                                   \comment \bigo(1)
-            \State $AgregarAdelante(res.siguientes, (*res.actual).menor)$       \comment \bigo(1)
+            \State $AgregarAdelante(res.siguientes, (*res.actual).menor)$       \comment \bigo($copy(\alpha)$)
         \EndIf
         \If{$ *res.actual).mayor \neq NULL $}                                   \comment \bigo(1)
-            \State $AgregarAdelante(res.siguientes, (*res.actual).mayor)$       \comment \bigo(1)
-        \EndIf 
+            \State $AgregarAdelante(res.siguientes, (*res.actual).mayor)$       \comment \bigo($copy(\alpha)$)
+        \EndIf
     \EndIf
 }
-{   $7*$\bigo(1) $=$ \bigo(1)}
+{   $6*$\bigo(1) + $2 * copy(\alpha)$ $=$ \bigo($copy(\alpha)$)}
 
 
- 
-    
 \subsection{Servicios usados}
 
 Se utilizan las funciones exportadas por el modulo Lista Enlazada($\alpha$).
