@@ -821,7 +821,7 @@ $}
 {   \If{$ c = (*n).clave $}                                             \comment \bigo($equal(\kappa, \kappa)$)
         \If{$ (*n).menor \neq NULL \algAnd (*n).mayor \neq NULL $}      \comment \bigo(1)
             \var $n2 : puntero(nodo)$ 
-            \State $n2 \gets auxMinimo((*n).mayor)$                     \comment \bigo(1)
+            \State $n2 \gets auxMinimo((*n).mayor)$                     \comment \bigo($log(n)$)
             \State $(*n).clave \gets (*n2).clave$                       \comment \bigo(1)
             \State $(*n).valor \gets (*n2).valor$                       \comment \bigo(1)
             \State $auxRecortar(d, n2)$                                 \comment \bigo($log(N)$)
