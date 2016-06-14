@@ -98,7 +98,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
 {tupla(clave: $\kappa$, significado: $\alpha$)}
 {$\neg (d \igobs vacio)$}
-{$siguiente(res) \igobs tupla(maximo(d), obtener(maximo(d)))$}
+{$res \igobs tupla(maximo(d), obtener(maximo(d)))$}
 {\bigo(1)}
 {}
 {Obtiene una tupla de la clave y el significado del elemento con la clave 
@@ -108,7 +108,7 @@ El módulo diccLog provee un diccionario con acceso, inserción y borrado en \bi
 {   \param{in}{$d$}{diccLog($\kappa, \alpha$)}}
 {tupla(clave: $\kappa$, significado: $\alpha$)}
 {$\neg (d \igobs vacio)$}
-{$siguiente(res) \igobs tupla(minimo(d), obtener(minimo(d)))$}
+{$res \igobs tupla(minimo(d), obtener(minimo(d)))$}
 {\bigo(1)}
 {}
 {Obtiene una tupla de la clave y el significado del elemento con la clave 
