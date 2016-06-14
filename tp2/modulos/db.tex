@@ -164,6 +164,22 @@
 {No se debe modificar los resultados}
 {}
 
+\operacion{Buscar}
+{   \param{in/out}{$db$}{$base$},
+    \param{in}{$nt$}{$nombreTabla$},
+    \param{in}{$r$}{$registro$}}
+{conj(registro)}
+{$nt \in tablas(db) \land_L (\exists t : tabla) \; (t \igobs dameTabla(nt,db) \land \\
+    \hspace*{4em} claves(r) \subseteq campos(t) \land_L
+        (\forall c : campo) c \in claves(r) \implies_L tipo?(obtener(c,r)) \igobs tipoCampo(c,t))$}
+{$res \igobs buscar(r,nt,db)$}
+{\bigo($L$) si hay un campo clave e índice string como criterio, \\
+    \hspace*{4em} \bigo($L + log(n)$) si hay un campo clave e índice nat, \\
+    \hspace*{4em} \bigo($L * n$) si no, \\
+    \hspace*{4em} donde $n = |registros(dameTabla(nt,db)|)$}
+{No se debe modificar los resultados}
+{}
+
 \subsubsection{Operaciones auxiliares de la interfaz}
 
 \tadOperacion{getTablasConj}{conj(string)/nts, base/db}{conj(tabla)}{$nts \subseteq tablas(db)$}
@@ -751,6 +767,20 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
     \hspace*{12em} = \bigo($R * (L * m + L * n + log(min(n,m)) + L)$) = \bigo($R * (L * (n+m) + log(n+m))$) \\
     \hspace*{12em} = \bigo($R * L * (n + m)$)
 }
+
+\algoritmo{iBuscar}{
+    \param{in}{$db$}{$base$},
+    \param{in}{$nt$}{$nombreTabla$},
+    \param{in}{$r$}{$registro$}
+}{conj(registro)}
+{\bigo($in$), donde $in$ = \\
+    \hspace*{4em} \bigo($L$) si hay un campo clave e índice string como criterio, \\
+    \hspace*{4em} \bigo($L + log(n)$) si hay un campo clave e índice nat, \\
+    \hspace*{4em} \bigo($L * n$) si no, \\
+    \hspace*{4em} donde $n = |registros(dameTabla(nt,db)|)$}{
+
+    \State $res \gets buscar(tabla(db,nt),r)$   \comment \bigo($in$)
+}{}
 
 
 \subsubsection{Funciones auxiliares de los algoritmos}

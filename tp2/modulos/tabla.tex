@@ -171,15 +171,13 @@
 
 \operacion{Buscar}
 {   \param{in}{$t$}{$tabla$},
-    \param{in}{$c$}{$campo$},
-    \param{in}{$d$}{$dato$}}
+    \param{in}{$r$}{$registro$}}
 {conj(registro)}
-{$c \in campos(t) \land_L tipo?(d) \igobs tipoCampo(c,t)$}
-{$res \igobs \IFLM (\exists r : registro) \; r \in registros(t) \land_L obtener(c,r) \igobs d
-    THEN Ag(r,\emptyset) ELSE \emptyset FI$}
-{\bigo($L + log(n)$) si el campo es clave e índice nat, \\
-    \hspace*{4em} \bigo($L$) si el campo es clave e índice string, \\
-    \hspace*{4em} \bigo($L * n$) si el campo no es clave e índice}
+{$claves(r) \subseteq campos(t) \land_L (\forall c : campo) c \in claves(r) \implies_L tipo?(obtener(c,r)) \igobs tipoCampo(c,t)$}
+{$res \igobs coincidencias(r, registros(t))$}
+{\bigo($L$) si hay un campo clave e índice string, \\
+    \hspace*{4em} \bigo($L + log(n)$) si hay un campo clave e índice nat, \\
+    \hspace*{4em} \bigo($L * n$) si no}
 {No se debe modificar los resultados}
 {}
 
@@ -505,46 +503,64 @@ Ademas se guarda su nombre, el conjunto de campos, el conjunto de claves, y la c
         \param{in}{$c$}{$campo$},
         \param{in}{$d$}{$dato$}
     }{$conj(registro)$}{\bigo($L + log(n)$) si c es índice, \bigo($L * n$) sino}{
-    \var $its : conj(itConj(registro))$
     \var $it : itConj(registro)$
+    \var $c : campo$
+    \var $d : dato$
     \State $res \gets vacio()$                                      \comment \bigo(1)
 
     \State
-    \If{$t.hayIndiceNat \algAnd t.indiceNat == c$}                  \comment \bigo(1)
-        \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
-            \State $its \gets obtener(t.indicesNat, getNat(d))$     \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
-            \While{$haySiguiente(its)$}
-                \State \icomment Solo se repite una vez si c es clave, ya que no puede haber otro con el mismo valor
-                \State \icomment Se repite a lo sumo $n$ veces si c no es clave
-                \State $it \gets siguiente(its)$                    \comment \bigo(1)
-                \State $agregarRapido(res, siguiente(it))$          \comment \bigo($copy(registro)$) = \bigo($L$)
-                \State $avanzar(its)$
-            \EndWhile
-        \EndIf
-    \ElsIf{$t.hayIndiceString \algAnd t.indiceString == c$}         \comment \bigo(1)
+    \If{$t.hayIndiceString \algAnd def?(r, t.indiceString) \algAnd pertenece?(t.claves, t.indiceString)$}    \comment \bigo(1)
+        \State \icomment Hay un campo clave e índice string
+        \State $c \gets t.indiceString$                             \comment \bigo(1)
+        \State $d \gets obtener(r, c)$                              \comment \bigo(1)
+
+        \State
         \If{$definido(t.indicesString,getString(d))$}               \comment \bigo($L$)
-            \State $its \gets obtener(t.indicesString, getString(d))$       \comment \bigo($L$)
-            \While{$haySiguiente(its)$}
-                \State \icomment Solo se repite una vez si c es clave, ya que no puede haber otro con el mismo valor
-                \State \icomment Se repite a lo sumo $n$ veces si c no es clave
-                \State $it \gets siguiente(its)$                    \comment \bigo(1)
-                \State $agregarRapido(res, siguiente(it))$          \comment \bigo($copy(registro)$) = \bigo($L$)
-                \State $avanzar(its)$
-            \EndWhile
+            \State \icomment Como c es clave, hay un único registro con este valor
+            \State $it \gets siguiente(obtener(t.indicesString, getString(d)))$     \comment \bigo($L$)
+            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($copy(registro)$) = \bigo($L$)
+        \EndIf
+    \ElsIf{$t.hayIndiceNat \algAnd def?(r, t.indiceNat) \algAnd pertenece?(t.claves, t.indiceNat)$}    \comment \bigo(1)
+        \State \icomment Hay un campo clave e índice nat
+        \State $c \gets t.indiceNat$                                \comment \bigo(1)
+        \State $d \gets obtener(r, c)$                              \comment \bigo(1)
+
+        \State
+        \If{$definido(t.indicesNat,getNat(d))$}                     \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+            \State \icomment Como c es clave, hay un único registro con este valor
+            \State $it \gets siguiente(obtener(t.indicesNat, getNat(d)))$   \comment \bigo($log(n) * cmp(nat)$) = \bigo($log(n)$)
+            \State $agregarRapido(res, siguiente(it))$              \comment \bigo($copy(registro)$) = \bigo($L$)
         \EndIf
     \Else
+        \State \icomment Hacemos una búsqueda lineal sobre los registros
         \State $it \gets crearIt(t.registros)$                      \comment \bigo(1)
+
         \While{$haySiguiente(it)$}                                  \comment \bigo(1)
-            \Statex             \comment El loop se repite $n$ veces
-            \If{$obtener(siguiente(it),c) == d$}                    \comment \bigo($cmp(dato)$) = \bigo($L$)
-                \State $agregarRapido(res, siguiente(it))$          \comment \bigo($copy(registro)$) = \bigo($L$)
+            \State             \icomment El loop se repite $n$ veces
+            \var $itCs : itDiccLog(campo, dato)$
+            \var $r_{tabla} : registro$
+            \var $todoIgual : bool$
+            \State $r_{tabla} \gets obtener(siguiente(it))$         \comment \bigo(1)
+            \State $itCs : crearIt(r)$                              \comment \bigo(1)
+            \State $todoIgual \gets true$                           \comment \bigo(1)
+
+            \While{$hayMas?(itCs)$}                                 \comment \bigo(1)
+                \State \icomment El loop se repite a lo sumo $|campos(t)|$ veces, acotado por constante
+                \If{$obtener(actual(itCs).clave,r_{tabla}) \neq obtener(actual(itCs).significado$}  \comment \bigo($cmp(dato)$) = \bigo($L$)
+                    \State $todoIgual \gets false$                  \comment \bigo(1)
+                \EndIf
+                \State $avanzar(itCs)$                              \comment \bigo(1)
+            \EndWhile
+
+            \If{$todoIgual$}                                        \comment \bigo(1)
+                \State $agregarRapido(res, r_{tabla})$              \comment \bigo($copy(registro)$) = \bigo($L$)
             \EndIf
-            \State avanzar(it)                                      \comment \bigo(1)
+            \State $avanzar(it)$                                    \comment \bigo(1)
         \EndWhile
     \EndIf
-}{Si c es clave y c es indiceNat: 2 * \big(1) + 2 * \bigo($log(n)$) + \bigo($L$) = \bigo($L + log(n)$) \\
-    \hspace*{8.25em} Si c es clave y c es indiceString: 3 * \bigo(1) + 3 * \bigo($L$) = \bigo($L$) \\
-    \hspace*{8.25em} Si no: 4 * \bigo(1) + n * (\bigo(1) + 2 * \bigo($L$) + \bigo(1)) = \bigo($L * n$)
+}{Si hay un campo en r que es clave e indiceNat: 4 * \bigo(1) + 2 * \bigo($log(n)$) + \bigo($L$) = \bigo($L + log(n)$) \\
+    \hspace*{8.25em} Si hay un campo en r que es clave e indiceString: 3 * \bigo(1) + 3 * \bigo($L$) = \bigo($L$) \\
+    \hspace*{8.25em} Si no: 4 * \bigo(1) + n * (4 * \bigo(1) + \bigo($L$) + \bigo(1) + \bigo($L$)) = \bigo($L * n$)
 }
 
 \algoritmo{iCantidadRegistros}{
