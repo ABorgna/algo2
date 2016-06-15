@@ -157,7 +157,6 @@ Dada una estructura, devuelve un conjunto con el \'unico camino existente entre 
 
   \absfunc{}{(\forall s:string)((definido?(s,d)) \Leftrightarrow ((s \in e.claves) \yluego ((\exists n: nodo)((n \in todasLasHojas(e)) \yluego n.valor = obtener(s,d))) )}
   \absfunc{}{(\exists i:nat)(i \in \{0..\vert e.claves \vert  \})  \Rightarrow  (e.claves[i] = c \yluego significado(c,d) = leer(e.clave).valor)}
-alor)}
 \end{ABS}
 
 \subsubsection{Representacion del iterador de Claves del diccTrie($\alpha$)}
@@ -232,7 +231,6 @@ Su Rep y Abs son los de itLista($\alpha$) definido en el apunte de iteradores pa
      	\State $i++$   													\comment \bigo(1) 
     \EndWhile		
 	\State $res \gets p.valor != NULL$									\comment \bigo(1)	
-	\EndIf												 
 
 }	{  2* \bigo(1) + L * (4 * \bigo(1)) + \bigo(1) = \bigo(L) }
 
