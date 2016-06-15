@@ -522,9 +522,9 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
     \param{in}{$nt_2$}{$nombreTabla$},
     \param{in}{$c$}{$campo$} \\ \hspace*{9.5em}
     }{itConj(registro)}{}{
-    \var $firstT_1 : bool$
+    \var $recorreTabla1 : bool$
     \var $t_1, t_2 : tabla$
-    \var $pT_a, pT_b : *tabla$
+    \var $T_{recorro}, T_{busco} : tabla$
     \var $it : itConj(registro)$
     \var $v : vistaJoin$
     \State $t_1 \gets tabla(db,nt_1)$                               \comment \bigo(1)
@@ -533,37 +533,70 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
         \hspace*{3em} $joins: vacio(), joinsNat: nuevoDiccLog(), joinString: nuevoTrie()>$      \comment \bigo(1)
 
     \State
-    \If{$(esIndice(t_1, c) \algAnd esIndice(t_2, c) \algAnd cantidadRegistros(t_1) < cantidadRegistros(t_2)) \algOr esIndice(t_2, c)$}
-        \State $firstT_1 \gets true$                                \comment \bigo(1)
-        \State $pT_a \gets \&t_1$                                   \comment \bigo(1)
-        \State $pT_b \gets \&t_2$                                   \comment \bigo(1)
+    \State \icomment Generamos los joins recorriendo linealmente una tabla
+                     y buscando el índice correnspondiente en la otra.
+    \State \icomment Para mantener el mejor orden de complejidad posible,
+                     si alguna tabla tiene un índice clave,
+    \State \icomment la seleccionamos como "tabla a buscar" y recorremos linealmente la otra
+    \State \icomment Si ambas tablas tienen índices clave,
+                     recorremos la que tenga la menor cantidad de elementos
+    \If{$esIndice(t_1, c) \algAnd esClave(t_1, c) \algAnd esIndice(t_2, c) \algAnd esClave(t_2,c)$}
+                                                                        \comment \bigo(1)
+        \If{$cantidadRegistros(t_1) < cantidadRegistros(t_2)$}          \comment \bigo(1)
+            \State $recorreTabla1 \gets true$                           \comment \bigo(1)
+            \State $t_a \gets t_1$                                      \comment \bigo(1)
+            \State $t_b \gets t_2$                                      \comment \bigo(1)
+        \Else
+            \State $recorreTabla1 \gets false$                          \comment \bigo(1)
+            \State $t_a \gets t_2$                                      \comment \bigo(1)
+            \State $t_b \gets t_1$                                      \comment \bigo(1)
+        \EndIf
+    \ElsIf{$esIndice(t_1, c) \algAnd esClave(t_1, c)$}                  \comment \bigo(1)
+        \State $recorreTabla1 \gets true$                               \comment \bigo(1)
+        \State $t_a \gets t_1$                                          \comment \bigo(1)
+        \State $t_b \gets t_2$                                          \comment \bigo(1)
     \Else
-        \State $firstT_1 \gets false$                               \comment \bigo(1)
-        \State $pT_a \gets \&t_2$                                   \comment \bigo(1)
-        \State $pT_b \gets \&t_1$                                   \comment \bigo(1)
+        \State $recorreTabla1 \gets false$                              \comment \bigo(1)
+        \State $t_a \gets t_2$                                          \comment \bigo(1)
+        \State $t_b \gets t_1$                                          \comment \bigo(1)
     \EndIf
-    \State \icomment $t_a$ es $t_1$ si ambas tablas tienen índice en c y $t_1$ tiene la menor cantidad de elementos o solo $t_2$ tiene índice en c
-    \Statex \icomment y $t_2$ en otro caso
+    \State \icomment $t_a$ es $t_1$ si ambas tablas tienen índice clave en c
+                     y $t_1$ tiene la menor cantidad de elementos
+    \State \icomment o solo $t_2$ tiene índice en c, $t_2$ en otro caso
     \Statex \icomment $t_b$ es la otra tabla
 
     \State
-    \State $it \gets registros(*pT_a)$                              \comment \bigo(1)
-    \While{$haySiguiente(it)$}                                      \comment \bigo(1)
+    \State $it \gets registros(t_a)$                                    \comment \bigo(1)
+    \While{$haySiguiente(it)$}                                          \comment \bigo(1)
         \State         \icomment El loop se repite $|registros(t_a)|$ veces
         \var $d : dato$
         \var $rs : conj(registro)$
         \var $r, r_a, r_b : registro$
         \var $it_{reg} : itConj(registro)$
         \State $d \gets significado(r_a, c)$                        \comment \bigo(1)
-        \State $rs \gets buscar(*pT_b, c, d)$      \comment \bigo($L + log(|registros(t_b)|)$) si hay un índice sobre $t_b$,
+        \State $rs \gets buscar(t_b, c, d)$         \comment \bigo($L + log(|registros(t_b)|)$) si hay un índice sobre $t_b$,
                                                             \bigo($L * |registros(t_b)|$) sino
-
-        \State
+    \algstore{generarVistaJoin}
+}{}
+% Cortar para hacer salto de página
+\algoritmo{(Continúa) iGenerarVistaJoin}{
+    \param{in/out}{$db$}{$base$},
+    \param{in}{$nt_1$}{$nombreTabla$},
+    \param{in}{$nt_2$}{$nombreTabla$},
+    \param{in}{$c$}{$campo$} \\ \hspace*{9.5em}
+    }{itConj(registro)}
+    {\bigo($min(n,m) * (L + log(n + m))$) si el campo es indice de ambas tablas, \\
+        \hspace*{8.25em} \bigo($n * (L + log(n + m))$) si el campo es solo índice de $t_2$, \\
+        \hspace*{8.25em} \bigo($m * (L + log(n + m))$) si el campo es solo índice de $t_1$ y \\
+        \hspace*{8.25em} \bigo($m * (n * L + log(n))$) si el campo no es un índice, \\
+        \hspace*{8.25em} donde $n = |registros(t_1)|$ y $m = |registros(t_2)|$}{
+    \algrestore{generarVistaJoin}
         \If{$!esVacio?(rs)$}                                        \comment \bigo(1)
             \State $r_b \gets siguiente(crearIt(rs))$               \comment \bigo(1)
 
             \State
-            \If{$firstT_1$}
+            \State \icomment Los valores de $t_1$ pisan a los de $t_2$ si hay campos repetidos
+            \If{$recorreTabla1$}
                 \State $r \gets combinarRegistros(r_a, r_b)$        \comment \bigo(1)
             \Else
                 \State $r \gets combinarRegistros(r_b, r_a)$        \comment \bigo(1)
@@ -582,27 +615,14 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
         \State $avanzar(it)$                                        \comment \bigo(1)
     \EndWhile
 
-    \algstore{generarVistaJoin}
-}{}
-% Cortar para hacer salto de página
-\algoritmo{(Continúa) iGenerarVistaJoin}{
-    \param{in/out}{$db$}{$base$},
-    \param{in}{$nt_1$}{$nombreTabla$},
-    \param{in}{$nt_2$}{$nombreTabla$},
-    \param{in}{$c$}{$campo$} \\ \hspace*{9.5em}
-    }{itConj(registro)}
-    {\bigo($min(n,m) * (L + log(n + m))$) si el campo es indice de ambas tablas, \\
-        \hspace*{8.25em} \bigo($n * (L + log(n + m))$) si el campo es solo índice de $t_2$, \\
-        \hspace*{8.25em} \bigo($m * (L + log(n + m))$) si el campo es solo índice de $t_1$ y \\
-        \hspace*{8.25em} \bigo($m * (n * L + log(n))$) si el campo no es un índice, \\
-        \hspace*{8.25em} donde $n = |registros(t_1)|$ y $m = |registros(t_2)|$}{
-    \algrestore{generarVistaJoin}
+    \State
     \If{$!definido?(db.vistasJoin, nt_1)$}                          \comment \bigo($|nt_1|$) = \bigo(1)
         \State $definir(db.vistasJoin, nt_1, nuevoTrie())$          \comment \bigo($|nt_1|$) = \bigo(1)
     \EndIf
     \State $definir(obtener(db.vistasJoin, nt_1), nt_2, v)$         \comment \bigo($|nt_2|$) = \bigo(1)
 
     \State $res \gets crearIt(v.joins)$                             \comment \bigo(1)
+
 }{Si c es índice en ambas tablas: $|registros(t_a)|$ = min(n,m) y $|registros(t_b)|$ = max(n,m) $\implies$ \\
     \hspace*{12em} 10 * \bigo(1) + min(n,m) * \\
     \hspace*{14em} (2 * \bigo(1) + \bigo($L + log(max(n,m))$) + 5 * \bigo(1) + \bigo($log(n + m)$) + \bigo($L$) + \bigo(1)) \\
