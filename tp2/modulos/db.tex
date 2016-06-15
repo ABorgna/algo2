@@ -540,8 +540,8 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
     \State \icomment la seleccionamos como "tabla a buscar" y recorremos linealmente la otra
     \State \icomment Si ambas tablas tienen índices clave,
                      recorremos la que tenga la menor cantidad de elementos
-    \If{$esIndice(t_1, c) \algAnd esClave(t_1, c) \algAnd esIndice(t_2, c) \algAnd esClave(t_2,c)$}
-                                                                        \comment \bigo(1)
+    \State \icomment (Por el pre, c es siempre clave)
+    \If{$esIndice(t_1, c) \algAnd esIndice(t_2, c)$}                    \comment \bigo(1)
         \If{$cantidadRegistros(t_1) < cantidadRegistros(t_2)$}          \comment \bigo(1)
             \State $recorreTabla1 \gets true$                           \comment \bigo(1)
             \State $t_a \gets t_1$                                      \comment \bigo(1)
@@ -551,7 +551,7 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
             \State $t_a \gets t_2$                                      \comment \bigo(1)
             \State $t_b \gets t_1$                                      \comment \bigo(1)
         \EndIf
-    \ElsIf{$esIndice(t_1, c) \algAnd esClave(t_1, c)$}                  \comment \bigo(1)
+    \ElsIf{$esIndice(t_1, c)$}                                          \comment \bigo(1)
         \State $recorreTabla1 \gets true$                               \comment \bigo(1)
         \State $t_a \gets t_1$                                          \comment \bigo(1)
         \State $t_b \gets t_2$                                          \comment \bigo(1)
@@ -574,7 +574,8 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
         \var $r, r_a, r_b : registro$
         \var $it_{reg} : itConj(registro)$
         \State $d \gets significado(r_a, c)$                        \comment \bigo(1)
-        \State $rs \gets buscar(t_b, c, d)$         \comment \bigo($L + log(|registros(t_b)|)$) si hay un índice sobre $t_b$,
+        \State $rs \gets buscar(t_b, definir(nuevoDiccLog(),c,d))$ 
+        \State          \comment \bigo($L + log(|registros(t_b)|)$) si hay un índice clave sobre $t_b$,
                                                             \bigo($L * |registros(t_b)|$) sino
     \algstore{generarVistaJoin}
 }{}
