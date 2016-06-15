@@ -721,10 +721,14 @@ Por último, se mantiene un puntero a una de las tablas con mas modificaciones.
         \If{$op.esInsercion$}
             \var $rs : conj(registro)$
             \var $r, r_b : registro$
+            \State \icomment $c$ siempre es clave (por el pre),
+                             por lo que buscar tendrá complejidad \bigo($L + log(n)$) si $c$ es índice
             \If{$!op.enTablaB$}                                     \comment \bigo(1)
-                \State $rs \gets buscar(t_2, v.campo, d)$           \comment \bigo($L + log(m)$) si es índice, \bigo($L * m$) sino
+                \State $rs \gets buscar(t_2, definir(nuevoDiccLog(),v.campo,d))$
+                                        \comment \bigo($L + log(m)$) si es índice, \bigo($L * m$) sino
             \Else
-                \State $rs \gets buscar(t_1, v.campo, d)$           \comment \bigo($L + log(n)$) si es índice, \bigo($L * n$) sino
+                \State $rs \gets buscar(t_1, definir(nuevoDiccLog(),v.campo,d))$
+                                        \comment \bigo($L + log(n)$) si es índice, \bigo($L * n$) sino
             \EndIf
             \If{$!esVacio?(rs)$}                                    \comment \bigo(1)
                 \State $r_b \gets siguiente(crearIt(rs))$           \comment \bigo(1)
