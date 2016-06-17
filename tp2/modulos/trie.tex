@@ -104,16 +104,12 @@ No es necesario pedir operaciónes de comparación sobre los significados.
 
 \subsubsection{Invariante de representación}
 \begin{Rep}{estrDic}{e}
-    \repfunc{ raiz es null $\lor_L$ }
-    {
-        a.raiz = NULL \; \lor_L
-    }
-  \repfunc{Existe un \'unico camino entre cada nodo y el nodo ra\'iz (no hay ciclos)}
-    {noHayCiclos( ag(\emptyset , e.raiz ) , e.raiz)}
-  \repfunc{Todos los nodos hojas, es decir, todos los que tienen su arreglo hijos con todas sus posiciones en NULL, tienen que tener un valor distinto de NULL.}
-    {todasLasHojasTienenValor(e)}
-  \repfunc{Los nodos minimo y maximo son los correspondientes}
-    {e.minimo==minimo(e.raiz) \land e.maximo==maximo(e.raiz)}
+    \repfunc{Existe un \'unico camino entre cada nodo y el nodo ra\'iz (no hay ciclos)}
+        {\neg(a.raiz = NULL) \implies noHayCiclos( ag(e.raiz, \emptyset) , e.raiz)}
+    \repfunc{Todos los nodos hojas, es decir, todos los que tienen su arreglo hijos con todas sus posiciones en NULL, tienen que tener un valor distinto de NULL.}
+        {\neg(a.raiz = NULL) \implies todasLasHojasTienenValor(e)}
+    \repfunc{Los nodos minimo y maximo son los correspondientes}
+        {\neg(a.raiz = NULL) \implies (e.minimo==minimo(e.raiz) \land e.maximo==maximo(e.raiz))}
 
 \end{Rep}
 
@@ -122,30 +118,49 @@ No es necesario pedir operaciónes de comparación sobre los significados.
   \tadOperacion{noHayCiclos}{conjunto(puntero(nodo)) /p, puntero(nodo) /q}{bool}{}
   \tadAxioma{noHayCiclos($p, q$)}{auxNoHayCiclos($p,q,0$)}
   \tadOperacion{auxNoHayCiclos}{conjunto(puntero(nodo)) /p, puntero(nodo) /q, nat /n}{bool}{}
-  \tadAxioma{auxNoHayCiclos($p ,q , n$)}{\IF $(*q).hijos[n] \in p$ THEN false ELSE {\IF (*q).hijos[n]=NULL THEN {\IF $n<255$ $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n==255 THEN true ELSE false FI} FI} ELSE {\IF $n<255$ $\land$ noHayCiclos($ag(p, (*q).hijos[n]), (*q).hijos[n]$) $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n==255 $\land$ noHayCiclos($ag(p, (*q).hijos[n]), (*q).hijos[n]$) THEN true ELSE false  FI} FI} FI} FI}
+  \tadAxioma{auxNoHayCiclos($p ,q , n$)}{\IF $(*q).hijos[n] \in p$ THEN false ELSE {\IF (*q).hijos[n]=NULL THEN {\IF $n<255$ $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n=255 THEN true ELSE false FI} FI} ELSE {\IF $n<255$ $\land$ noHayCiclos($ag(p, (*q).hijos[n]), (*q).hijos[n]$) $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n=255 $\land$ noHayCiclos($ag(p, (*q).hijos[n]), (*q).hijos[n]$) THEN true ELSE false  FI} FI} FI} FI}
 
 
 
- \tadOperacion{maximo}{puntero(nodo) /p}{clavevalor}{noHayCiclos( ag($\emptyset$ , p ) , p)}
-  \tadAxioma{maximo($p$)}{\IF tieneHijos(p)==false THEN (NULL,p.valor) ELSE (chr(auxMaximo(p,255))+maximo((*p).hijos[auxMaximo(p,255)]).clave), (*p).hijos[auxMaximo(p,255)]).valor) FI}
-   \tadOperacion{auxMaximo}{puntero(nodo) /p, nat /n}{nat}{tieneHijos(p)}
-  \tadAxioma{auxMaximo($p , n$)}{\IF (*p).hijos[n]==NULL THEN auxMinimo(p,n-1) ELSE n FI}
+  \tadOperacion{maximo}{puntero(nodo) /p}{clavevalor}{noHayCiclos( ag($\emptyset$ , p ) , p)}
+  \tadAxioma{maximo($p$)}{\IF $\neg$tieneHijos(p) THEN (NULL,p.valor) ELSE (chr(auxMaximo(p,255))+maximo((*p).hijos[auxMaximo(p,255)]).clave), (*p).hijos[auxMaximo(p,255)]).valor) FI}
+  \tadOperacion{auxMaximo}{puntero(nodo) /p, nat /n}{nat}{tieneHijos(p)}
+  \tadAxioma{auxMaximo($p , n$)}{\IF (*p).hijos[n] = NULL THEN auxMinimo(p,n-1) ELSE n FI}
 
   \tadOperacion{minimo}{puntero(nodo) /p}{clavevalor}{noHayCiclos( ag($\emptyset$ , p ) , p)}
-  \tadAxioma{minimo($p$)}{\IF tieneHijos(p)==false  THEN (NULL,p.valor) ELSE {\IF (*p).valor==NULL THEN (chr(auxMinimo(p,0))+minimo((*p).hijos[auxMinimo(p,0)]).clave), (*p).hijos[auxMinimo(p,0)]).valor) ELSE (NULL,p.valor) FI} FI}
-   \tadOperacion{auxMinimo}{puntero(nodo) /p, nat /n}{nat}{tieneHijos(p)}
-  \tadAxioma{auxMinimo($p , n$)}{\IF (*p).hijos[n]==NULL THEN auxMinimo(p,n+1) ELSE n FI}
+  \tadAxioma{minimo($p$)}{\IF $\neg$tieneHijos(p)  THEN (NULL,p.valor) ELSE {\IF (*p).valor = NULL THEN (chr(auxMinimo(p,0))+minimo((*p).hijos[auxMinimo(p,0)]).clave), (*p).hijos[auxMinimo(p,0)]).valor) ELSE (NULL,p.valor) FI} FI}
+  \tadOperacion{auxMinimo}{puntero(nodo) /p, nat /n}{nat}{tieneHijos(p)}
+  \tadAxioma{auxMinimo($p , n$)}{\IF (*p).hijos[n] = NULL THEN auxMinimo(p,n+1) ELSE n FI}
 
-    \tadOperacion{todasLasHojasTienenValor}{trie /e}{bool}{noHayCiclos( ag($\emptyset$ , e.raiz ) , e.raiz)}
-  \tadAxioma{todasLasHojasTienenValor($e$)}{{\IF tieneHijos(e.raiz)==false THEN true ELSE auxTodasLasHojasTienenValor($e.raiz, 0$) FI}}
+  \tadOperacion{todasLasHojasTienenValor}{trie /e}{bool}{noHayCiclos( ag($\emptyset$ , e.raiz ) , e.raiz)}
+  \tadAxioma{todasLasHojasTienenValor($e$)}{{\IF e.raiz = NULL THEN true ELSE auxTodasLasHojasTienenValor($e.raiz, 0$) FI}}
   \tadOperacion{auxTodasLasHojasTienenValor}{puntero(nodo) /p, nat /n}{bool}{noHayCiclos( ag($\emptyset$ , p ) , p)}
-  \tadAxioma{auxTodasLasHojasTienenValor($p, n$)}{\IF $tieneHijos(p)==false$ THEN {\IF (*p).valor==NULL THEN false ELSE true FI} ELSE {\IF (*p).hijos[n]=NULL THEN {\IF $n<255$ $\land$ auxTodasLasHojasTienenValor($p, n+1$) THEN true ELSE {\IF n==255 THEN true ELSE false FI} FI} ELSE {\IF $n<255$ $\land$ auxTodasLasHojasTienenValor($(*p).hijos[n], 0$) $\land$ auxTodasLasHojasTienenValor($p, n+1$) THEN true ELSE {\IF n==255 $\land$ auxTodasLasHojasTienenValor($(*p).hijos[n],0$) THEN true ELSE false  FI} FI} FI} FI}
+  \tadAxioma{auxTodasLasHojasTienenValor($p, n$)}{
+        \IF $\neg tieneHijos(p)$ THEN
+            $\neg((*p).valor = NULL)$
+        ELSE
+            {\IF (*p).hijos[n]=NULL THEN
+                ($n<255$ $\land$ auxTodasLasHojasTienenValor($p, n+1$)) $\lor$ n=255
+            ELSE
+                {\IF $n<255$ $\land_L$ auxTodasLasHojasTienenValor($(*p).hijos[n], 0$) $\land$ \\
+                    \hspace*{6em} auxTodasLasHojasTienenValor($p, n+1$) THEN
+                    true
+                ELSE
+                    (n=255 $\land_L$ auxTodasLasHojasTienenValor($(*p).hijos[n],0$))
+                FI}
+            FI}
+        FI}
 
 
-   \tadOperacion{tieneHijos}{puntero(nodo) /p}{bool}{}
+  \tadOperacion{tieneHijos}{puntero(nodo) /p}{bool}{}
   \tadAxioma{tieneHijos($p$)}{auxTieneHijos($p,0$)}
   \tadOperacion{auxTieneHijos}{puntero(nodo) /p, nat /n}{bool}{}
-  \tadAxioma{auxTieneHijos($p, n$)}{\IF $n<255$ $\land$ (*p).hijos[n]=NULL $\land$ auxTieneHijos($p, n+1$)==false  THEN false ELSE {\IF n==255 $\land$ (*p).hijos[n]==NULL THEN false ELSE true FI} FI}
+  \tadAxioma{auxTieneHijos($p, n$)}
+        {\IF $n<255$ $\land$ (*p).hijos[n]=NULL $\land$ $\neg$auxTieneHijos($p, n+1$) THEN
+            false
+        ELSE
+            $\neg$(n = 255 $\land$ (*p).hijos[n] = NULL)
+        FI}
 
 
 
