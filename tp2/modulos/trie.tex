@@ -117,33 +117,33 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 
 \subsubsection{Operaciones auxiliares del invariante de Representaci\'on}
 
-  \tadOperacion{noHayCiclos}{conjunto(puntero(nodo)), puntero(nodo)}{bool}{}
+  \tadOperacion{noHayCiclos}{conjunto(puntero(nodo)) /p, puntero(nodo) /q}{bool}{}
   \tadAxioma{noHayCiclos($p, q$)}{auxNoHayCiclos($p,q,0$)}
-  \tadOperacion{auxNoHayCiclos}{conjunto(puntero(nodo)), puntero(nodo), nat}{bool}{}
-  \tadAxioma{auxNoHayCiclos($p ,q , n$)}{\IF $*q.hijos[n] \in p$ THEN false ELSE {\IF *q.hijos[n]=NULL THEN {\IF $n<255$ $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n==255 THEN true ELSE false FI} FI} ELSE {\IF $n<255$ $\land$ noHayCiclos($ag(p, *q.hijos[n]), q.hijos[n]$) $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n==255 $\land$ noHayCiclos($ag(p, *q.hijos[n]), *q.hijos[n]$) THEN true ELSE false  FI} FI} FI} FI}  
+  \tadOperacion{auxNoHayCiclos}{conjunto(puntero(nodo)) /p, puntero(nodo) /q, nat /n}{bool}{}
+  \tadAxioma{auxNoHayCiclos($p ,q , n$)}{\IF $(*q).hijos[n] \in p$ THEN false ELSE {\IF (*q).hijos[n]=NULL THEN {\IF $n<255$ $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n==255 THEN true ELSE false FI} FI} ELSE {\IF $n<255$ $\land$ noHayCiclos($ag(p, (*q).hijos[n]), (*q).hijos[n]$) $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n==255 $\land$ noHayCiclos($ag(p, (*q).hijos[n]), (*q).hijos[n]$) THEN true ELSE false  FI} FI} FI} FI}  
   
  
   
- \tadOperacion{maximo}{puntero(nodo)}{clavevalor}{}
-  \tadAxioma{maximo($p$)}{\IF tieneHijos(p)==false THEN (NULL,p.valor) ELSE (chr(auxMaximo(p,255))+maximo(*p.hijos[auxMaximo(p,255)]).clave), *p.hijos[auxMaximo(p,255)]).valor) FI}
-   \tadOperacion{auxMaximo}{puntero(nodo), nat}{nat}{}
-  \tadAxioma{auxMaximo($p , n$)}{\IF *p.hijos[n]==NULL THEN auxMinimo(p,n-1) ELSE n FI} 
+ \tadOperacion{maximo}{puntero(nodo) /p}{clavevalor}{noHayCiclos( ag($\emptyset$ , p ) , p)}
+  \tadAxioma{maximo($p$)}{\IF tieneHijos(p)==false THEN (NULL,p.valor) ELSE (chr(auxMaximo(p,255))+maximo((*p).hijos[auxMaximo(p,255)]).clave), (*p).hijos[auxMaximo(p,255)]).valor) FI}
+   \tadOperacion{auxMaximo}{puntero(nodo) /p, nat /n}{nat}{tieneHijos(p)}
+  \tadAxioma{auxMaximo($p , n$)}{\IF (*p).hijos[n]==NULL THEN auxMinimo(p,n-1) ELSE n FI} 
   
-  \tadOperacion{minimo}{puntero(nodo)}{clavevalor}{}
-  \tadAxioma{minimo($p$)}{\IF tieneHijos(p)==false  THEN (NULL,p.valor) ELSE {\IF *p.valor==NULL THEN (chr(auxMinimo(p,0))+minimo(*p.hijos[auxMinimo(p,0)]).clave), *p.hijos[auxMinimo(p,0)]).valor) ELSE (NULL,p.valor) FI} FI} 
-   \tadOperacion{auxMinimo}{puntero(nodo), nat}{nat}{}
-  \tadAxioma{auxMinimo($p , n$)}{\IF *p.hijos[n]==NULL THEN auxMinimo(p,n+1) ELSE n FI}
+  \tadOperacion{minimo}{puntero(nodo) /p}{clavevalor}{noHayCiclos( ag($\emptyset$ , p ) , p)}
+  \tadAxioma{minimo($p$)}{\IF tieneHijos(p)==false  THEN (NULL,p.valor) ELSE {\IF (*p).valor==NULL THEN (chr(auxMinimo(p,0))+minimo((*p).hijos[auxMinimo(p,0)]).clave), (*p).hijos[auxMinimo(p,0)]).valor) ELSE (NULL,p.valor) FI} FI} 
+   \tadOperacion{auxMinimo}{puntero(nodo) /p, nat /n}{nat}{tieneHijos(p)}
+  \tadAxioma{auxMinimo($p , n$)}{\IF (*p).hijos[n]==NULL THEN auxMinimo(p,n+1) ELSE n FI}
   
-    \tadOperacion{todasLasHojasTienenValor}{trie}{bool}{}
+    \tadOperacion{todasLasHojasTienenValor}{trie /e}{bool}{noHayCiclos( ag($\emptyset$ , e.raiz ) , e.raiz)}
   \tadAxioma{todasLasHojasTienenValor($e$)}{{\IF tieneHijos(e.raiz)==false THEN true ELSE auxTodasLasHojasTienenValor($e.raiz, 0$) FI}}
-  \tadOperacion{auxTodasLasHojasTienenValor}{puntero(nodo), nat}{bool}{}
-  \tadAxioma{auxTodasLasHojasTienenValor($p, n$)}{\IF $tieneHijos(p)==false$ THEN {\IF *p.valor==NULL THEN false ELSE true FI} ELSE {\IF *p.hijos[n]=NULL THEN {\IF $n<255$ $\land$ auxTodasLasHojasTienenValor($p, n+1$) THEN true ELSE {\IF n==255 THEN true ELSE false FI} FI} ELSE {\IF $n<255$ $\land$ auxTodasLasHojasTienenValor($*p.hijos[n], 0$) $\land$ auxTodasLasHojasTienenValor($p, n+1$) THEN true ELSE {\IF n==255 $\land$ auxTodasLasHojasTienenValor($*p.hijos[n],0$) THEN true ELSE false  FI} FI} FI} FI}  
+  \tadOperacion{auxTodasLasHojasTienenValor}{puntero(nodo) /p, nat /n}{bool}{noHayCiclos( ag($\emptyset$ , p ) , p)}
+  \tadAxioma{auxTodasLasHojasTienenValor($p, n$)}{\IF $tieneHijos(p)==false$ THEN {\IF (*p).valor==NULL THEN false ELSE true FI} ELSE {\IF (*p).hijos[n]=NULL THEN {\IF $n<255$ $\land$ auxTodasLasHojasTienenValor($p, n+1$) THEN true ELSE {\IF n==255 THEN true ELSE false FI} FI} ELSE {\IF $n<255$ $\land$ auxTodasLasHojasTienenValor($(*p).hijos[n], 0$) $\land$ auxTodasLasHojasTienenValor($p, n+1$) THEN true ELSE {\IF n==255 $\land$ auxTodasLasHojasTienenValor($(*p).hijos[n],0$) THEN true ELSE false  FI} FI} FI} FI}  
   
   
-   \tadOperacion{tieneHijos}{puntero(nodo)}{bool}{}
+   \tadOperacion{tieneHijos}{puntero(nodo) /p}{bool}{}
   \tadAxioma{tieneHijos($p$)}{auxTieneHijos($p,0$)}
-  \tadOperacion{auxTieneHijos}{puntero(nodo), nat}{bool}{}
-  \tadAxioma{auxTieneHijos($p, n$)}{\IF $n<255$ $\land$ *p.hijos[n]=NULL $\land$ auxTieneHijos($p, n+1$)==false  THEN false ELSE {\IF n==255 $\land$ *p.hijos[n]==NULL THEN false ELSE true FI} FI}
+  \tadOperacion{auxTieneHijos}{puntero(nodo) /p, nat /n}{bool}{}
+  \tadAxioma{auxTieneHijos($p, n$)}{\IF $n<255$ $\land$ (*p).hijos[n]=NULL $\land$ auxTieneHijos($p, n+1$)==false  THEN false ELSE {\IF n==255 $\land$ (*p).hijos[n]==NULL THEN false ELSE true FI} FI}
  
  
  
@@ -154,9 +154,33 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 
 \begin{ABS}{e}{estrDicc}{d}{dicc(string,$\alpha$)}
 
-  \absfunc{}{(\forall s:string)((definido?(s,d)) \Leftrightarrow ((s \in e.claves) \yluego ((\exists n: nodo)((n \in todasLasHojas(e)) \yluego n.valor = obtener(s,d))) )}
-  \absfunc{}{(\exists i:nat)(i \in \{0..\vert e.claves \vert  \})  \Rightarrow  (e.claves[i] = c \yluego significado(c,d) = leer(e.clave).valor)}
+     \absfunc{}
+    {
+        (\forall s : string\ def?(s, d) \Leftrightarrow existe(s, 0, e.raiz)\ \land_L
+    }
+  
+    \absfunc{}
+    {
+        (\forall s : string)\ def?(s, d) \implies obtener(s, d) = obtener(s, 0, e.raiz)
+    }
 \end{ABS}
+
+\tadOperacion{existe}
+{string /s, nat /k,  puntero(nodo)/n}
+{bool}
+{}
+\tadAxioma{existe(s, k, n)}{\IF (*n).hijos[ord(s[k])] == NULL THEN false ELSE {\IF k==long(s)-1 $\land$ (*n).hijos[ord(s[k])] != NULL THEN true ELSE existe(s,k+1, (*n).hijos[ord(s[k])] ) FI} FI}
+
+
+
+
+\tadOperacion{obtener}
+{string /s, nat /k,  puntero(nodo)/n}
+{$\alpha$}
+{existe(s, 0, n)}
+\tadAxioma{obtener(s, 0, n)}{\IF k==long(s)-1  THEN (*((*n).hijos[ord(s[k])])).valor ELSE obtener(s,k+1, (*n).hijos[ord(s[k])]) FI}
+
+
 
 \subsubsection{Representacion del iterador de Claves del diccTrie($\alpha$)}
 
