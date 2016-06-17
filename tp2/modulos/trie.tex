@@ -89,12 +89,10 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 \serepresenta{diccTrie($\alpha$)}{trie}
 \donde{trie}{tupla(\\
     $raiz$: puntero(nodo),\\
-    $claves$: lista(string),
     $minimo$: clavevalor,
     $maximo$: clavevalor }
 \donde{nodo}{tupla(\\
     $valor$: $\alpha$,\\
-    $clave$: itClaves(string),
     $hijos$: arreglo\_estático[256] (puntero(nodo)) )}
 \donde{clavevalor}{tupla(\\
     $clave$: string,\\
@@ -105,51 +103,52 @@ El módulo diccTrie provee un diccionario con claves de tipo String y acceso, in
 \subsubsection{Invariante de representación}
 \begin{Rep}{estrDic}{e}
   \repfunc{Raíz es distinto de NULL}
-    {raiz != NULL}
+    {e.raiz != NULL}
+   \repfunc{El valor de la raíz es NULL}
+    {e.raiz.valor == NULL}
   \repfunc{Existe un \'unico camino entre cada nodo y el nodo ra\'iz (no hay ciclos)}
-    {noHayCiclos(e)}
+    {noHayCiclos( ag(\emptyset , e.raiz ) , e.raiz)}
   \repfunc{Todos los nodos hojas, es decir, todos los que tienen su arreglo hijos con todas sus posiciones en NULL, tienen que tener un valor distinto de NULL.}
     {todasLasHojasTienenValor(e)}
-  \repfunc{En claves est\'a el camino que se recorre desde la ra\'z hasta cada nodo hoja}
-    {hayHojas(e) \Rightarrow \vert e.claves \vert > 0 \\
-        \land  (\forall c : string)(c \in caminosANodos(e)) \Rightarrow  ((\exists i: nat)( i \in \{0.. \vert e.claves \vert  \}) \Rightarrow (e.claves[i] = c))
-    }
   \repfunc{Los nodos minimo y maximo son los correspondientes}
-    {}
+    {e.minimo==minimo(e.raiz) \land e.maximo==maximo(e.raiz)}
 
 \end{Rep}
 
 \subsubsection{Operaciones auxiliares del invariante de Representaci\'on}
 
-  \tadOperacion{noHayCiclos}{puntero(nodo)}{bool}{}
-  \tadAxioma{noHayCiclos($n,p$)}{($\exists$ n:nat)(($\forall$ c: string)($\vert$s$\vert$ = n $\Rightarrow$ leer($p,s$) = NULL))}
-  \tadOperacion{leer}{puntero(nodo), string}{bool}{}
-  \tadAxioma{leer($p,s$)}{\IF vacia?($s$) THEN p $\rightarrow$ valor ELSE {\IF p $\rightarrow$ hijos[prim(s)] = NULL THEN NULL ELSE leer(p $\rightarrow$ hijos[prim(s)], fin(s)) FI} FI}
-  \tadOperacion{todosNull}{arreglo(puntero(nodo))}{bool}{}
-  \tadAxioma{todosNull($a$)}{auxTodosNull($a, 0$)}
-  \tadOperacion{auxTodosNull}{arreglo(puntero(nodo)), nat}{bool}{}
-  \tadAxioma{auxTodosNull($a, i$)}{\IF i < $\vert$a$\vert$ THEN a[i] == NULL $\land$ auxTodosNull($a, i+1$) ELSE a[i].valor == NULL FI}
-  \tadOperacion{esHoja}{puntero(nodo)}{bool}{}
-  \tadAxioma{esHoja($p$)}{\IF p == NULL THEN false ELSE todosNull(p.hijos) FI}
-  \tadOperacion{todasLasHojas}{puntero(nodo), nat}{conj(nodo)}{}
-  \tadAxioma{todasLasHojas($p, n$)}{\IF p == NULL THEN false ELSE {\IF esHoja($p$) THEN Ag(*p, vacio) ELSE auxTodasLasHojas((*p).hijos, 256) FI} FI}
-
-  \tadOperacion{auxTodasLasHojas}{arreglo(puntero(nodo)), nat}{conj(nodo)}{}
-  \tadAxioma{auxTodasLasHojas($a, n$)}{hojasDeHijos($a,n,0$)}
-
-  \tadOperacion{hojasDeHijos}{arreglo(puntero(nodo)), nat, nat}{conj(nodo)}{}
-  \tadAxioma{hojasDeHijos($a, n, i$)}{\IF i = n THEN $\emptyset$ ELSE todasLasHojas(a[i]) $\cup$ hojasDeHijos($a, n, (i+1)$) FI}
-
-  \tadOperacion{todasLasHojasTienenValor}{puntero(nodo)}{bool}{}
-  \tadAxioma{todasLasHojasTienenValor($p$)}{auxTodasLasHojasTienenValor(todasLasHojas($p, 256$))}
-
-  \tadOperacion{auxTodasLasHojasTienenValor}{arreglo(puntero(nodo))}{bool}{}
-  \tadAxioma{auxTodasLasHojasTienenValor($a$)}{\IF |a| = 0 THEN true ELSE dameUno(a).valor != NULL $\land$ auxTodasLasHojasTienenValor(sinUno(a)) FI}
-
-\tadOperacion{hayHojas}{puntero(nodo)}{bool}{}
-Dada una estructura, indica si en la misma existe alg\'un nodo cuyo arreglo hijos tenga todas las posiciones NULL.
-\tadOperacion{caminosANodos}{puntero(nodo)}{conj(string)}{}
-Dada una estructura, devuelve un conjunto con el \'unico camino existente entre la raiz y cada hoja. El camino se obtiene de agregar la posici\'on del arreglo hijos por la cual hay que bajar en cada nivel de la estructura hasta llegar a la hoja, conviritendo en cada paso esa posici\'on en un \textsc{char} y junt\'andolos en un \textsc{string}.
+  \tadOperacion{noHayCiclos}{conjunto(puntero(nodo)), puntero(nodo)}{bool}{}
+  \tadAxioma{noHayCiclos($p, q$)}{auxNoHayCiclos($p,q,0$)}
+  \tadOperacion{auxNoHayCiclos}{conjunto(puntero(nodo)), puntero(nodo), nat}{bool}{}
+  \tadAxioma{auxNoHayCiclos($p ,q , n$)}{\IF $*q.hijos[n] \in p$ THEN false ELSE {\IF *q.hijos[n]=NULL THEN {\IF $n<255$ $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n==255 THEN true ELSE false FI} FI} ELSE {\IF $n<255$ $\land$ noHayCiclos($ag(p, *q.hijos[n]), q.hijos[n]$) $\land$ auxNoHayCiclos($p ,q , n+1$) THEN true ELSE {\IF n==255 $\land$ noHayCiclos($ag(p, *q.hijos[n]), *q.hijos[n]$) THEN true ELSE false  FI} FI} FI} FI}  
+  
+ 
+  
+ \tadOperacion{maximo}{puntero(nodo)}{clavevalor}{}
+  \tadAxioma{maximo($p$)}{\IF tieneHijos(p)==false THEN (NULL,p.valor) ELSE (chr(auxMaximo(p,255))+maximo(*p.hijos[auxMaximo(p,255)]).clave), *p.hijos[auxMaximo(p,255)]).valor) FI}
+   \tadOperacion{auxMaximo}{puntero(nodo), nat}{nat}{}
+  \tadAxioma{auxMaximo($p , n$)}{\IF *p.hijos[n]==NULL THEN auxMinimo(p,n-1) ELSE n FI} 
+  
+  \tadOperacion{minimo}{puntero(nodo)}{clavevalor}{}
+  \tadAxioma{minimo($p$)}{\IF tieneHijos(p)==false  THEN (NULL,p.valor) ELSE {\IF *p.valor==NULL THEN (chr(auxMinimo(p,0))+minimo(*p.hijos[auxMinimo(p,0)]).clave), *p.hijos[auxMinimo(p,0)]).valor) ELSE (NULL,p.valor) FI} FI} 
+   \tadOperacion{auxMinimo}{puntero(nodo), nat}{nat}{}
+  \tadAxioma{auxMinimo($p , n$)}{\IF *p.hijos[n]==NULL THEN auxMinimo(p,n+1) ELSE n FI}
+  
+    \tadOperacion{todasLasHojasTienenValor}{trie}{bool}{}
+  \tadAxioma{todasLasHojasTienenValor($e$)}{{\IF tieneHijos(e.raiz)==false THEN true ELSE auxTodasLasHojasTienenValor($e.raiz, 0$) FI}}
+  \tadOperacion{auxTodasLasHojasTienenValor}{puntero(nodo), nat}{bool}{}
+  \tadAxioma{auxTodasLasHojasTienenValor($p, n$)}{\IF $tieneHijos(p)==false$ THEN {\IF *p.valor==NULL THEN false ELSE true FI} ELSE {\IF *p.hijos[n]=NULL THEN {\IF $n<255$ $\land$ auxTodasLasHojasTienenValor($p, n+1$) THEN true ELSE {\IF n==255 THEN true ELSE false FI} FI} ELSE {\IF $n<255$ $\land$ auxTodasLasHojasTienenValor($*p.hijos[n], 0$) $\land$ auxTodasLasHojasTienenValor($p, n+1$) THEN true ELSE {\IF n==255 $\land$ auxTodasLasHojasTienenValor($*p.hijos[n],0$) THEN true ELSE false  FI} FI} FI} FI}  
+  
+  
+   \tadOperacion{tieneHijos}{puntero(nodo)}{bool}{}
+  \tadAxioma{tieneHijos($p$)}{auxTieneHijos($p,0$)}
+  \tadOperacion{auxTieneHijos}{puntero(nodo), nat}{bool}{}
+  \tadAxioma{auxTieneHijos($p, n$)}{\IF $n<255$ $\land$ *p.hijos[n]=NULL $\land$ auxTieneHijos($p, n+1$)==false  THEN false ELSE {\IF n==255 $\land$ *p.hijos[n]==NULL THEN false ELSE true FI} FI}
+ 
+ 
+ 
+  
+ 
 
 \subsubsection{Función de abstracción}
 
@@ -287,6 +286,7 @@ Su Rep y Abs son los de itLista($\alpha$) definido en el apunte de iteradores pa
 	\Else
          \State $ p \gets e.raiz$	\comment \bigo(1)
          \var $s : string$ 
+         \State $ s \gets <>$	\comment \bigo(1)
          \While{$(*p).valor==NULL $}
      		\Statex             \comment El loop se repite L veces como mucho
      		\State $s \gets s+chr(MenorHijo(*p))$								\comment \bigo(1)	
@@ -295,7 +295,8 @@ Su Rep y Abs son los de itLista($\alpha$) definido en el apunte de iteradores pa
     	\EndWhile		
     	\State $e.minimo.clave \gets s$								\comment \bigo(1)	
     	\State $e.minimo.valor \gets (*p).valor$								\comment \bigo(1)	
-    	\While{$iTieneHijos(*p)$}
+    	\State $ s \gets <>$	\comment \bigo(1)
+    	\While{$TieneHijos(*p)$}
      		\Statex             \comment El loop se repite L veces como mucho
      		\State $s \gets s+chr(MayorHijo(*p))$								\comment \bigo(1)	
      		\State $p \gets MayorHijo(*p)$								\comment \bigo(1)	
@@ -307,7 +308,7 @@ Su Rep y Abs son los de itLista($\alpha$) definido en el apunte de iteradores pa
      \EndIf
 												 
 
-}	{  2* \bigo(1) + L * (2 * \bigo(1) + \bigo(copy(tupla(punte: puntero(nodo), siguiente: nat)))) + \bigo(1) +\bigo(copy(tupla(punte: puntero(nodo), siguiente: nat))))+ L * 2 * \bigo(1)+ 5 * \bigo(1)== \bigo(L) en caso de que el arbol este vacio, el el otro caso es 
+}	{  2* \bigo(1) + L * (2 * \bigo(1) + \bigo(copy(tupla(punte: puntero(nodo), siguiente: nat)))) + \bigo(1) +\bigo(copy(tupla(punte: puntero(nodo), siguiente: nat))))+ L * 2 * \bigo(1)+ 7 * \bigo(1)== \bigo(L) en caso de que el arbol este vacio, el el otro caso es 
 2* \bigo(1) + L * (2 * \bigo(1) + \bigo(copy(tupla(punte: puntero(nodo), siguiente: nat)))) + \bigo(1) +\bigo(copy(tupla(punte: puntero(nodo), siguiente: nat))))+ L * 2 * \bigo(1)+\bigo(1)+2* L * 2 * \bigo(1) +2 * 2 *big O(1) == \bigo(L)}
 
 \algoritmo{iMaximo}{
@@ -362,7 +363,7 @@ Su Rep y Abs son los de itLista($\alpha$) definido en el apunte de iteradores pa
 
 \algoritmo{iMenorHijo}{
 \param{in}{$n$}{nodo}
-}{bool}{\bigo(1)}
+}{nat}{\bigo(1)}
   {
     \var $i : nat$
     \State $i \gets 0)$                									\comment \bigo(1)
@@ -377,7 +378,7 @@ Su Rep y Abs son los de itLista($\alpha$) definido en el apunte de iteradores pa
 
 \algoritmo{iMayorHijo}{
 \param{in}{$n$}{nodo}
-}{bool}{\bigo(1)}
+}{nat}{\bigo(1)}
   {
     \var $i : nat$
     \State $i \gets 0)$                									\comment \bigo(1)
