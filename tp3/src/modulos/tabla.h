@@ -13,7 +13,8 @@
 namespace tp3 {
 
     typedef std::string NombreTabla;
-    typedef aed2::Conj<Registro>::Iterador itRegistro;
+    typedef aed2::Conj<Registro>::Iterador itRegistros;
+    typedef aed2::Conj<Registro>::const_Iterador itRegistrosConst;
 
     class Tabla {
         private:
@@ -22,11 +23,11 @@ namespace tp3 {
 
             bool hayIndiceNat_;
             Campo indiceNat_;
-            DiccLog<unsigned int, aed2::Conj<itRegistro> > indicesNat_;
+            DiccLog<unsigned int, aed2::Conj<itRegistros> > indicesNat_;
 
             bool hayIndiceString_;
             Campo indiceString_;
-            DiccTrie<aed2::Conj<itRegistro> > indicesString_;
+            DiccTrie<aed2::Conj<itRegistros> > indicesString_;
 
             const NombreTabla nombre_;
             const Registro campos_;
@@ -47,7 +48,7 @@ namespace tp3 {
             bool esClave(const Campo&) const;
             bool esIndice(const Campo&) const;
 
-            const aed2::Conj<Registro>::Iterador registros() const;
+            itRegistrosConst registros() const;
             const Registro campos() const;
             bool tipoCampo(const Campo&) const;
 
