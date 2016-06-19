@@ -5,14 +5,14 @@
 
 namespace aed2
 {
-  typedef String NombreTabla;
-  typedef String NombreCampo;
+    typedef String NombreTabla;
+    typedef String NombreCampo;
 
-  enum TipoCampo { NAT, STR };
+    enum TipoCampo { NAT, STR };
 
-  typedef struct {NombreCampo nombre; TipoCampo tipo;} Columna;
-  bool operator == (const Columna& c1, const Columna& c2);
-  bool operator != (const Columna& c1, const Columna& c2);
+    typedef struct {NombreCampo nombre; TipoCampo tipo;} Columna;
+    bool operator == (const Columna& c1, const Columna& c2);
+    bool operator != (const Columna& c1, const Columna& c2);
 }
 
 #endif // AED2_TIPOS_H_
