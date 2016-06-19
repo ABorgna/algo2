@@ -1,12 +1,13 @@
 
 GCC=g++
 CFLAGS= -O0 -Wall -Wextra -ggdb -std=c++03
+#CFLAGS= -O0 -Wall -Wextra -ggdb -std=c++03 -D NDEBUG
 VALGRIND=valgrind --leak-check=full
 
 MODULES=modulos/dato.cpp modulos/dato.h \
 	modulos/db.cpp modulos/db.h \
-	modulos/diccLog.cpp modulos/diccLog.h \
-	modulos/diccTrie.cpp modulos/diccTrie.h \
+	modulos/diccLog.h \
+	modulos/diccTrie.h \
 	modulos/tabla.cpp modulos/tabla.h
 
 DEPEND= makefile \
@@ -32,8 +33,8 @@ tests: tests.cpp mini_test.h $(OBJ) $(DEPEND)
 test: tests
 	$(VALGRIND) ./tests
 
-%.o: %.cpp
-	$(GCC) $(CFLAGS) -c -o $@ $^
+%.o: %.cpp %.h
+	$(GCC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	find . -name '*.o' -type f -exec rm -f {} \;

@@ -2,20 +2,35 @@
 #ifndef DATO_INCLUDED_H
 #define DATO_INCLUDED_H
 
-#include "../aed2.h"
+#include <assert.h>
 #include <string.h>
 
+#include "../aed2.h"
+
 namespace tp3 {
-
-    typedef std::string NombreTabla;
     typedef std::string Campo;
-
-    enum TipoCampo { NAT, STR };
 
     class Dato {
         private:
-            //TipoCampo tipo;
+            bool esNat_;
+            std::string valorString_;
+            unsigned int valorNat_;
+
+            Dato();
+
+        public:
+            Dato(unsigned int n);
+            Dato(const std::string& s);
+            Dato(const Dato& otro);
+
+            bool isNat() const;
+            bool isString() const;
+
+            unsigned int getNat() const;
+            std::string getString() const;
     };
+    bool operator == (const Dato& c1, const Dato& c2);
+    bool operator > (const Dato& c1, const Dato& c2);
 
     typedef aed2::Dicc<Campo, Dato> Registro;
 

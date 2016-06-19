@@ -2,6 +2,8 @@
 #ifndef DB_INCLUDED_H
 #define DB_INCLUDED_H
 
+#include <assert.h>
+
 #include "../aed2.h"
 
 #include "dato.h"
