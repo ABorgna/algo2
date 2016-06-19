@@ -5,6 +5,11 @@ bool aed2::operator == (const aed2::Columna& c1, const aed2::Columna& c2)
   return c1.nombre == c2.nombre and c1.tipo == c2.tipo;
 }
 
+bool aed2::operator != (const aed2::Columna& c1, const aed2::Columna& c2)
+{
+  return !(c1 == c2);
+}
+
 using namespace aed2;
 
 ////////////////////////////////////////////////////////////////////////////////
