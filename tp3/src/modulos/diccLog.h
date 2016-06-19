@@ -10,15 +10,12 @@ namespace tp3 {
 
     template<class K, class T>
     class DiccLog {
+        private:
+            struct Nodo;
+
         public:
-
-            struct ClaveValor {
-                const K& clave;
-                const T& significado;
-
-                ClaveValor(const K& c, const T& s) :
-                    clave(c), significado(s) {};
-            };
+            struct ClaveValor;
+            class Iterador;
 
             DiccLog();
 
@@ -32,6 +29,34 @@ namespace tp3 {
 
             DiccLog<K,T>::ClaveValor maximo();
             DiccLog<K,T>::ClaveValor minimo();
+
+            DiccLog<K,T>::Iterador CrearIt();
+
+            struct ClaveValor {
+                const K& clave;
+                const T& significado;
+
+                ClaveValor(const K& c, const T& s) :
+                    clave(c), significado(s) {};
+            };
+
+            class Iterador {
+                public:
+
+                    Iterador();
+                    Iterador(const typename DiccLog<K, T>::Iterador& otro);
+                    Iterador& operator = (const typename DiccLog<K, T>::Iterador& otro);
+
+                    bool hayMas() const;
+                    ClaveValor actual() const;
+                    void avanzar();
+
+                private:
+
+                    Nodo* actual_;
+                    aed2::Lista<Nodo*> siguientes_;
+                    DiccLog<K,T>* dicc;
+            };
 
         private:
 
