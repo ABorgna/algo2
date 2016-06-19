@@ -17,6 +17,29 @@ namespace tp3 {
     typedef aed2::Conj<Tabla>::const_Iterador itTablasConst;
 
     class DB {
+        public:
+            DB();
+
+            void agregarTabla(Tabla&);
+
+            void insertarEntrada(const NombreTabla&, const Registro&);
+            void borrar(const NombreTabla&, const Campo&, const Dato&);
+
+            bool hayTabla(const NombreTabla&) const;
+            const Tabla& tabla(const NombreTabla&) const;
+            itTablasConst tablas(const NombreTabla&) const;
+            const Tabla& tablaMaxima() const;
+
+            itRegistrosConst generarVistaJoin(const NombreTabla&,
+                                              const NombreTabla&,
+                                              const Campo&);
+            bool hayJoin(const NombreTabla&, const NombreTabla&) const;
+            Campo campoJoin(const NombreTabla&, const NombreTabla&) const;
+            void borrarJoin(const NombreTabla&, const NombreTabla&);
+            itRegistrosConst vistaJoin(const NombreTabla&, const NombreTabla&);
+
+            aed2::Conj<Registro> buscar(const NombreTabla&, const Registro&);
+
         private:
 
             typedef struct OperacionJoin_t {
@@ -42,29 +65,6 @@ namespace tp3 {
             DiccTrie<DiccTrie<VistaJoin> > vistasJoin_;
 
             itTablas tablaMaxima_;
-
-        public:
-            DB();
-
-            void agregarTabla(Tabla&);
-
-            void insertarEntrada(const NombreTabla&, const Registro&);
-            void borrar(const NombreTabla&, const Campo&, const Dato&);
-
-            bool hayTabla(const NombreTabla&) const;
-            const Tabla& tabla(const NombreTabla&) const;
-            itTablasConst tablas(const NombreTabla&) const;
-            const Tabla& tablaMaxima() const;
-
-            itRegistrosConst generarVistaJoin(const NombreTabla&,
-                                              const NombreTabla&,
-                                              const Campo&);
-            bool hayJoin(const NombreTabla&, const NombreTabla&) const;
-            Campo campoJoin(const NombreTabla&, const NombreTabla&) const;
-            void borrarJoin(const NombreTabla&, const NombreTabla&);
-            itRegistrosConst vistaJoin(const NombreTabla&, const NombreTabla&);
-
-            aed2::Conj<Registro> buscar(const NombreTabla&, const Registro&);
     };
 
 }

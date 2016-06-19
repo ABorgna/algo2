@@ -10,15 +10,12 @@ namespace tp3 {
 
     template<class T>
     class DiccTrie {
+        private:
+            struct Nodo;
+
         public:
-
-            struct ClaveValor {
-                const std::string& clave;
-                const T& significado;
-
-                ClaveValor(const std::string& c, const T& s) :
-                    clave(c), significado(s) {};
-            };
+            struct ClaveValor;
+            class Iterador;
 
             DiccTrie();
 
@@ -32,6 +29,14 @@ namespace tp3 {
 
             DiccTrie<T>::ClaveValor maximo();
             DiccTrie<T>::ClaveValor minimo();
+
+            struct ClaveValor {
+                const std::string& clave;
+                const T& significado;
+
+                ClaveValor(const std::string& c, const T& s) :
+                    clave(c), significado(s) {};
+            };
 
         private:
 

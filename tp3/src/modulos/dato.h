@@ -11,13 +11,6 @@ namespace tp3 {
     typedef std::string Campo;
 
     class Dato {
-        private:
-            const bool esNat_;
-            const std::string valorString_;
-            const unsigned int valorNat_;
-
-            Dato();
-
         public:
             Dato(unsigned int n);
             Dato(const std::string& s);
@@ -28,6 +21,13 @@ namespace tp3 {
 
             unsigned int getNat() const;
             const std::string& getString() const;
+
+        private:
+            const bool esNat_;
+            const std::string valorString_;
+            const unsigned int valorNat_;
+
+            Dato();
     };
     bool operator == (const Dato& c1, const Dato& c2);
     bool operator != (const Dato& c1, const Dato& c2);
