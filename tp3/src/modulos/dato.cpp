@@ -22,10 +22,12 @@ bool Dato::isString() const {
 }
 
 unsigned int Dato::getNat() const {
+    assert(esNat_);
     return valorNat_;
 }
 
 const std::string& Dato::getString() const {
+    assert(!esNat_);
     return valorString_;
 }
 
