@@ -244,6 +244,7 @@ const NombreCampo& Driver::campoIndiceNat(const NombreTabla& tabla) const {
 
     // Deberia terminar antes
     assert(false);
+    __builtin_unreachable();
 }
 
 const NombreCampo& Driver::campoIndiceString(const NombreTabla& tabla) const {
@@ -263,6 +264,7 @@ const NombreCampo& Driver::campoIndiceString(const NombreTabla& tabla) const {
 
     // Deberia terminar antes
     assert(false);
+    __builtin_unreachable();
 }
 
 void Driver::crearIndiceNat(const NombreTabla& tabla, const NombreCampo& campo) {
@@ -290,58 +292,149 @@ bool Driver::hayJoin(const NombreTabla& tabla1, const NombreTabla& tabla2) const
 }
 
 const NombreCampo& Driver::campoJoin(const NombreTabla& tabla1, const NombreTabla& tabla2) const {
+    assert(db.hayJoin(tabla1,tabla2));
     return db.campoJoin(tabla1, tabla2);
 }
 
 void Driver::generarVistaJoin(const NombreTabla& tabla1, const NombreTabla& tabla2, const NombreCampo& campo) {
+    assert(db.hayTabla(tabla1));
+    assert(db.hayTabla(tabla2));
+    assert(!db.hayJoin(tabla1,tabla2));
+
     db.generarVistaJoin(tabla1, tabla2, campo);
 }
 
 void Driver::borrarVistaJoin(const NombreTabla& tabla1, const NombreTabla& tabla2) {
+    assert(db.hayJoin(tabla1,tabla2));
     db.borrarJoin(tabla1, tabla2);
 }
 
-Driver::Registro unir(const Driver::Registro& reg1, const Driver::Registro& reg2, const NombreCampo& clave) {
-    // TODO ...
-    assert(false);
+Driver::Registro unir(const Driver::Registro& reg1, const Driver::Registro& reg2,
+                      const NombreCampo& clave __attribute__((unused))) {
+    Driver::Registro res;
+    Driver::Registro::const_Iterador it;
+
+    // Se pisan los valores de reg2 con los de reg1
+
+    it = reg2.CrearIt();
+    while(it.HaySiguiente()) {
+        res.DefinirRapido(it.SiguienteClave(), it.SiguienteSignificado());
+        it.Avanzar();
+    }
+
+    it = reg1.CrearIt();
+    while(it.HaySiguiente()) {
+        res.Definir(it.SiguienteClave(), it.SiguienteSignificado());
+        it.Avanzar();
+    }
+
+    return res;
 }
 
-aed2::Conj<Driver::Registro> Driver::vistaJoin(const NombreTabla& tabla1, const NombreTabla& tabla2) const {
-    // TODO ...
-    assert(false);
+aed2::Conj<Driver::Registro> Driver::vistaJoin(const NombreTabla& tabla1, const NombreTabla& tabla2) {
+    assert(db.hayJoin(tabla1,tabla2));
+    return itRegsConstToRegistros(db.vistaJoin(tabla1, tabla2));
 }
 
 /***************************************
  * Funciones auxiliares
  ***************************************/
 
-tp3::Registro Driver::colsToRegistro(const aed2::Conj<Columna>&) const {
-    // TODO ...
-    assert(false);
+tp3::Registro Driver::colsToRegistro(const aed2::Conj<Columna>& cols) const {
+    tp3::Registro r;
+    aed2::Conj<Columna>::const_Iterador it = cols.CrearIt();
+
+    while(it.HaySiguiente()) {
+        const Columna& col = it.Siguiente();
+
+        r.DefinirRapido(col.nombre, col.tipo == NAT ? tp3::Dato(0) : tp3::Dato(""));
+
+        it.Avanzar();
+    }
+
+    return r;
 }
 
-aed2::Conj<Columna> Driver::registroToCols(const tp3::Registro&) const {
-    // TODO ...
-    assert(false);
+aed2::Conj<Columna> Driver::registroToCols(const tp3::Registro& r) const {
+    aed2::Conj<Columna> cols;
+    tp3::Registro::const_Iterador it = r.CrearIt();
+
+    while(it.HaySiguiente()) {
+        const tp3::Campo& c = it.SiguienteClave();
+        const tp3::Dato& d = it.SiguienteSignificado();
+        Columna col = {c, d.isNat() ? NAT : STR};
+
+        cols.AgregarRapido(col);
+
+        it.Avanzar();
+    }
+
+    return cols;
 }
 
-aed2::Conj<Driver::Registro> Driver::itRegsConstToRegistros(const tp3::itRegistrosConst&) const {
-    // TODO ...
-    assert(false);
+aed2::Conj<Driver::Registro> Driver::itRegsConstToRegistros(tp3::itRegistrosConst it) const {
+    aed2::Conj<Driver::Registro> regs;
+
+    while(it.HaySiguiente()) {
+        const tp3::Registro& r = it.Siguiente();
+
+        regs.AgregarRapido(registroTp3ToRegistro(r));
+
+        it.Avanzar();
+    }
+
+    return regs;
 }
 
-aed2::Conj<Driver::Registro> Driver::regsTp3ToRegistros(const aed2::Conj<tp3::Registro>&) const {
-    // TODO ...
-    assert(false);
+aed2::Conj<Driver::Registro> Driver::regsTp3ToRegistros(const aed2::Conj<tp3::Registro>& regs) const {
+    return itRegsConstToRegistros(regs.CrearIt());
 }
 
-tp3::Registro Driver::registroToRegistroTp3(const Driver::Registro&) const {
-    // TODO ...
-    assert(false);
+Driver::Registro Driver::registroTp3ToRegistro(const tp3::Registro& r) const {
+    Driver::Registro rr;
+    tp3::Registro::const_Iterador it = r.CrearIt();
+
+    while(it.HaySiguiente()) {
+        const tp3::Campo& c = it.SiguienteClave();
+        const tp3::Dato& d = it.SiguienteSignificado();
+
+        rr.DefinirRapido(c, datoTp3ToDato(d));
+
+        it.Avanzar();
+    }
+
+    return rr;
 }
 
-tp3::Dato Driver::datoToDatoTp3(const Driver::Dato&) const {
-    // TODO ...
-    assert(false);
+tp3::Registro Driver::registroToRegistroTp3(const Driver::Registro& r) const {
+    tp3::Registro rr;
+    Driver::Registro::const_Iterador it = r.CrearIt();
+
+    while(it.HaySiguiente()) {
+        const aed2::NombreCampo& c = it.SiguienteClave();
+        const Driver::Dato& d = it.SiguienteSignificado();
+
+        rr.DefinirRapido(c, datoToDatoTp3(d));
+
+        it.Avanzar();
+    }
+
+    return rr;
+}
+
+Driver::Dato Driver::datoTp3ToDato(const tp3::Dato& d) const {
+    if(d.isNat()) {
+        return Driver::Dato(d.getNat());
+    } else {
+        return Driver::Dato(d.getString());
+    }
+}
+
+tp3::Dato Driver::datoToDatoTp3(const Driver::Dato& d) const {
+    if(d.esNat()) {
+        return tp3::Dato(d.dameNat());
+    } else {
+        return tp3::Dato(d.dameString());
+    }
 }
 

@@ -240,7 +240,7 @@ namespace aed2
              * 
              * PRE: existe un Join entre las tablas 'tabla1' y 'tabla2'.
              */
-            aed2::Conj<Registro> vistaJoin(const NombreTabla& tabla1, const NombreTabla& tabla2) const;
+            aed2::Conj<Registro> vistaJoin(const NombreTabla& tabla1, const NombreTabla& tabla2);
 
         private:
 
@@ -257,11 +257,13 @@ namespace aed2
             tp3::Registro colsToRegistro(const aed2::Conj<Columna>&) const;
             aed2::Conj<Columna> registroToCols(const tp3::Registro&) const;
 
-            aed2::Conj<Driver::Registro> itRegsConstToRegistros(const tp3::itRegistrosConst&) const;
+            aed2::Conj<Driver::Registro> itRegsConstToRegistros(tp3::itRegistrosConst) const;
             aed2::Conj<Driver::Registro> regsTp3ToRegistros(const aed2::Conj<tp3::Registro>&) const;
 
+            Driver::Registro registroTp3ToRegistro(const tp3::Registro&) const;
             tp3::Registro registroToRegistroTp3(const Driver::Registro&) const;
 
+            Driver::Dato datoTp3ToDato(const tp3::Dato&) const;
             tp3::Dato datoToDatoTp3(const Driver::Dato&) const;
 
     }; // class Driver

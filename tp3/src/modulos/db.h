@@ -36,7 +36,7 @@ namespace tp3 {
                                               const NombreTabla&,
                                               const Campo&);
             bool hayJoin(const NombreTabla&, const NombreTabla&) const;
-            Campo campoJoin(const NombreTabla&, const NombreTabla&) const;
+            const Campo& campoJoin(const NombreTabla&, const NombreTabla&) const;
             void borrarJoin(const NombreTabla&, const NombreTabla&);
             itRegistrosConst vistaJoin(const NombreTabla&, const NombreTabla&);
 

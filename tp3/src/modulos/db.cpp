@@ -64,7 +64,7 @@ bool DB::hayJoin(const NombreTabla&, const NombreTabla&) const {
     assert(false);
 }
 
-Campo DB::campoJoin(const NombreTabla&, const NombreTabla&) const {
+const Campo& DB::campoJoin(const NombreTabla&, const NombreTabla&) const {
     // TODO ...
     assert(false);
 }
