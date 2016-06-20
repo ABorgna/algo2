@@ -18,6 +18,7 @@ namespace tp3 {
             class Iterador;
 
             DiccTrie();
+            ~DiccTrie();
 
             void definir(const std::string& k, const T& v);
             bool definido(const std::string& k) const;
@@ -177,8 +178,7 @@ namespace tp3 {
         aed2::Lista<Paso> camino;
 
         while(i < k.length() ) {
-            Paso p = {prox, k[i]};
-            camino.AgregarAdelante(p);
+            camino.AgregarAdelante(Paso (prox, k[i]));
             prox = prox->hijos[k[i]];
             i++;
         }

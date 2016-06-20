@@ -18,6 +18,7 @@ namespace tp3 {
             class Iterador;
 
             DiccLog();
+            ~DiccLog();
 
             void definir(const K& k, const T& v);
             bool definido(const K& k) const;

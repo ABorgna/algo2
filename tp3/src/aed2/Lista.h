@@ -17,8 +17,12 @@ namespace aed2
     template <typename T>
         class Lista
         {
+            private:
+                // forward declaratons
+                struct Nodo;
+
             public:
-                // forward declarations
+                // more forward declarations
                 // Las estructuras estan definidas mas abajo
                 class Iterador;
                 class const_Iterador;

@@ -10,6 +10,9 @@ MODULES=modulos/dato.cpp modulos/dato.h \
 	modulos/diccTrie.h \
 	modulos/tabla.cpp modulos/tabla.h
 
+TESTS=	tests/testsEjemplo.h \
+	tests/testsDiccLog.h
+
 DEPEND= makefile \
 	aed2.h \
 	Driver.cpp Driver.h \
@@ -25,18 +28,20 @@ DEPEND= makefile \
 
 OBJ= $(filter %.o, $(DEPEND:.cpp=.o))
 
-all: tests
+all: build
 
-tests: tests.cpp mini_test.h $(OBJ) $(DEPEND)
+build: tests.cpp mini_test.h $(OBJ) $(DEPEND)
 	$(GCC) $(CFLAGS) $< $(OBJ) -o $@
 
-test: tests
-	$(VALGRIND) ./tests
+tests.o: tests.cpp mini_test.h $(OBJ) $(DEPEND) $(TESTS)
+	$(GCC) $(CFLAGS) $< $(OBJ) -o $@
+
+test: tests.o
+	$(VALGRIND) ./tests.o
 
 %.o: %.cpp %.h
 	$(GCC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	find . -name '*.o' -type f -exec rm -f {} \;
-	rm -f tests
 
