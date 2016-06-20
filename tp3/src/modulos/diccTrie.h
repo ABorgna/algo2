@@ -50,6 +50,15 @@ namespace tp3 {
                 Nodo() : hijos(0), esta(false) {};
             };
 
+            // Estructura auxiliar para el borrado
+            // (en c++03 no la podemos meter como local en la funcion)
+            struct Paso {
+                Nodo* nodo;
+                unsigned char siguiente;
+
+                Paso(Nodo* n, unsigned char s) : nodo(n), siguiente(s) {};
+            };
+
             Nodo* raiz_;
             ClaveValor minimo_;
             ClaveValor maximo_;
@@ -57,8 +66,8 @@ namespace tp3 {
             /* Funciones auxiliares */
             Nodo& crearNodo() const;
             bool tieneHijos(const Nodo&) const;
-            char menorHijo(const Nodo&) const;
-            char mayorHijo(const Nodo&) const;
+            unsigned char menorHijo(const Nodo&) const;
+            unsigned char mayorHijo(const Nodo&) const;
     };
 
     /****************************
@@ -93,11 +102,11 @@ namespace tp3 {
         prox = raiz_;
 
         while(i < k.length()) {
-            if(prox->hijos[k[i]] == NULL) {
+            if(prox->hijos[(unsigned char) k[i]] == NULL) {
                 nodo = crearNodo();
-                prox->hijos[k[i]] = &nodo;
+                prox->hijos[(unsigned char) k[i]] = &nodo;
             }
-            prox = prox->hijos[k[i]];
+            prox = prox->hijos[(unsigned char) k[i]];
             i++;
         }
 
@@ -128,8 +137,8 @@ namespace tp3 {
             prox = raiz_;
 
             while(i < k.length()) {
-                if(prox->hijos[k[i]] == NULL){
-                    prox = prox->hijos[k[i]];
+                if(prox->hijos[(unsigned char) k[i]] == NULL){
+                    prox = prox->hijos[(unsigned char) k[i]];
                 } else {
                     return false;
                 }
@@ -148,7 +157,7 @@ namespace tp3 {
         Nodo* prox = raiz_;
 
         while(i < k.length()) {
-            prox = prox->hijos[k[i]];
+            prox = prox->hijos[(unsigned char) k[i]];
             i++;
         }
 
@@ -164,7 +173,7 @@ namespace tp3 {
         Nodo* prox = raiz_;
 
         while(i < k.length()) {
-            prox = prox->hijos[k[i]];
+            prox = prox->hijos[(unsigned char) k[i]];
             i++;
         }
 
@@ -176,27 +185,22 @@ namespace tp3 {
         // Tiene que estar definido
         assert(definido(k));
 
-        struct Paso {
-            Nodo* nodo;
-            char siguiente;
-        };
-
         unsigned int i = 0;
         Nodo* prox;
         aed2::Lista<Paso> camino;
 
         while(i < k.length() ) {
             camino.AgregarAdelante(Paso (prox, k[i]));
-            prox = prox->hijos[k[i]];
+            prox = prox->hijos[(unsigned char) k[i]];
             i++;
         }
 
         prox->esta = false;
-        while(camino.Cardinal() and !prox->esta and !tieneHijos(*prox)) {
+        while(camino.Longitud() and !prox->esta and !tieneHijos(*prox)) {
             Paso paso = camino.Primero();
             camino.Fin();
 
-            free(prox);
+            delete prox;
             prox = paso.nodo;
             prox->hijos[paso.siguiente] = NULL;
         }
@@ -209,7 +213,7 @@ namespace tp3 {
             std::string s = "";
 
             while(!prox->esta) {
-                char menor = menorHijo(*prox);
+                unsigned char menor = menorHijo(*prox);
                 s += menor;
                 prox = prox->hijos[menor];
             }
@@ -222,7 +226,7 @@ namespace tp3 {
             s = "";
 
             while(tieneHijos(*prox)) {
-                char mayor = mayorHijo(*prox);
+                unsigned char mayor = mayorHijo(*prox);
                 s += mayor;
                 prox = prox->hijos[mayor];
             }
@@ -264,11 +268,11 @@ namespace tp3 {
     }
 
     template<class T>
-    char DiccTrie<T>::menorHijo(const Nodo& n) const {
+    unsigned char DiccTrie<T>::menorHijo(const Nodo& n) const {
         assert(tieneHijos(n));
         unsigned int res = 256;
 
-        for(int i=0; i < 256; i++) {
+        for(unsigned int i=0; i < 256; i++) {
             if(n.hijos[i] != NULL and res > i) {
                 res = i;
             }
@@ -277,10 +281,10 @@ namespace tp3 {
     }
 
     template<class T>
-    char DiccTrie<T>::mayorHijo(const Nodo& n) const {
+    unsigned char DiccTrie<T>::mayorHijo(const Nodo& n) const {
         unsigned int res = 0;
 
-        for(int i=0; i < 256; i++) {
+        for(unsigned int i=0; i < 256; i++) {
             if(n.hijos[i] != NULL) {
                 res = i;
             }
