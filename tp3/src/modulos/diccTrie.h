@@ -47,7 +47,7 @@ namespace tp3 {
                 Nodo* hijos[256];
                 bool esta;
 
-                Nodo() : hijos(0), esta(false) {};
+                Nodo() : esta(false) {};
             };
 
             // Estructura auxiliar para el borrado
@@ -111,7 +111,7 @@ namespace tp3 {
         }
 
         // No tiene que estar definido
-        assert(prox->valor == NULL);
+        assert(!prox->esta);
 
         prox->valor = v;
         prox->esta = true;
@@ -177,7 +177,7 @@ namespace tp3 {
             i++;
         }
 
-        return prox->v;
+        return prox->valor;
     }
 
     template<class T>

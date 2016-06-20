@@ -23,7 +23,7 @@ namespace tp3 {
                   const Registro& columnas);
 
             void agregarRegistro(const Registro&);
-            aed2::Conj<Registro> borrarRegistro(const Registro&);
+            aed2::Conj<Registro> borrarRegistro(const Campo&, const Dato&);
             void indexar(const Campo&);
 
             const NombreTabla nombre() const;
