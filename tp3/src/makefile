@@ -33,16 +33,15 @@ all: build
 build: tests.cpp mini_test.h $(OBJ) $(DEPEND)
 	$(GCC) $(CFLAGS) $< $(OBJ) -o $@
 
-tests: tests.cpp mini_test.h $(OBJ) $(DEPEND) $(TESTS)
+tests.o: tests.cpp mini_test.h $(OBJ) $(DEPEND) $(TESTS)
 	$(GCC) $(CFLAGS) $< $(OBJ) -o $@
 
-test: tests
-	$(VALGRIND) ./tests
+test: tests.o
+	$(VALGRIND) ./tests.o
 
 %.o: %.cpp %.h
 	$(GCC) $(CFLAGS) -c -o $@ $<
 
 clean:
 	find . -name '*.o' -type f -exec rm -f {} \;
-	rm -f tests
 
