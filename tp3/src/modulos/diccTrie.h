@@ -175,7 +175,7 @@ namespace tp3 {
         aed2::Lista<Paso> camino;
 
         while(i < k.length() ) {
-            camino.AgregarAdelante(Paso {prox, k[i]});
+            camino.AgregarAdelante(Paso (prox, k[i]));
             prox = prox->hijos[k[i]];
             i++;
         }
