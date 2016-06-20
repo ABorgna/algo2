@@ -18,6 +18,7 @@ namespace tp3 {
             class Iterador;
 
             DiccTrie();
+            ~DiccTrie();
 
             void definir(const std::string& k, const T& v);
             bool definido(const std::string& k) const;
