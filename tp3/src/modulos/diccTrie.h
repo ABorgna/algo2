@@ -44,6 +44,8 @@ namespace tp3 {
                 T valor;
                 Nodo* hijos[256];
                 bool esta;
+
+                Nodo() : hijos({0}), esta(false) {};
             };
 
             Nodo* raiz_;
@@ -53,8 +55,8 @@ namespace tp3 {
             /* Funciones auxiliares */
             Nodo& crearNodo() const;
             bool tieneHijos(const Nodo&) const;
-            unsigned int menorHijo(const Nodo&) const;
-            unsigned int mayorHijo(const Nodo&) const;
+            char menorHijo(const Nodo&) const;
+            char mayorHijo(const Nodo&) const;
     };
 
     /****************************
@@ -180,7 +182,7 @@ namespace tp3 {
         }
 
         prox->esta = false;
-        while(camino.Cardinal() and !tieneHijos(*prox)) {
+        while(camino.Cardinal() and !prox->esta and !tieneHijos(*prox)) {
             Paso paso = camino.Primero();
             camino.Fin();
 
@@ -189,15 +191,47 @@ namespace tp3 {
             prox->hijos[paso.siguiente] = NULL;
         }
 
-        // TODO: falta un cacho
+        if(!raiz_->esta and !tieneHijos(*raiz_)) {
+            raiz_ = NULL;
+        } else {
+            // Recalcular el mínimo
+            prox = raiz_;
+            std::string s = "";
+
+            while(!prox->esta) {
+                char menor = menorHijo(*prox);
+                s += menor;
+                prox = prox->hijos[menor];
+            }
+
+            minimo_.clave = s;
+            minimo_.significado = prox->valor;
+
+            // Recalcular el máximo
+            prox = raiz_;
+            s = "";
+
+            while(tieneHijos(*prox)) {
+                char mayor = mayorHijo(*prox);
+                s += mayor;
+                prox = prox->hijos[mayor];
+            }
+
+            maximo_.clave = s;
+            maximo_.significado = prox->valor;
+        }
     }
 
     template<class T>
     struct DiccTrie<T>::ClaveValor DiccTrie<T>::maximo() const {
+        assert(raiz_ != NULL);
+        return maximo_;
     }
 
     template<class T>
     struct DiccTrie<T>::ClaveValor DiccTrie<T>::minimo() const {
+        assert(raiz_ != NULL);
+        return minimo_;
     }
 
     /****************************
@@ -206,18 +240,42 @@ namespace tp3 {
 
     template<class T>
     struct DiccTrie<T>::Nodo& DiccTrie<T>::crearNodo() const {
+        Nodo* p = new Nodo();
+        return *p;
     }
 
     template<class T>
-    bool DiccTrie<T>::tieneHijos(const Nodo&) const {
+    bool DiccTrie<T>::tieneHijos(const Nodo& n) const {
+        bool res = false;
+        for(int i=0; i < 256; i++) {
+            res |= n.hijos[i] != NULL;
+        }
+        return res;
     }
 
     template<class T>
-    unsigned int DiccTrie<T>::menorHijo(const Nodo&) const {
+    char DiccTrie<T>::menorHijo(const Nodo& n) const {
+        assert(tieneHijos(n));
+        unsigned int res = 256;
+
+        for(int i=0; i < 256; i++) {
+            if(n.hijos[i] != NULL and res > i) {
+                res = i;
+            }
+        }
+        return res;
     }
 
     template<class T>
-    unsigned int DiccTrie<T>::mayorHijo(const Nodo&) const {
+    char DiccTrie<T>::mayorHijo(const Nodo& n) const {
+        unsigned int res = 0;
+
+        for(int i=0; i < 256; i++) {
+            if(n.hijos[i] != NULL) {
+                res = i;
+            }
+        }
+        return res;
     }
 }
 
