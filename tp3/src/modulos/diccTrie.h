@@ -70,6 +70,14 @@ namespace tp3 {
         raiz_(NULL) {}
 
     template<class T>
+    DiccTrie<T>::~DiccTrie() {
+        // Hay formas mas eficientes de hacer esto...
+        while(raiz_ != NULL) {
+            borrar(minimo_.clave);
+        }
+    }
+
+    template<class T>
     void DiccTrie<T>::definir(const std::string& k, const T& v){
         unsigned int i=0;
         Nodo* prox;
