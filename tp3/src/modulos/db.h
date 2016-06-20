@@ -19,15 +19,17 @@ namespace tp3 {
     class DB {
         public:
             DB();
+            ~DB();
 
             void agregarTabla(Tabla&);
 
             void insertarEntrada(const NombreTabla&, const Registro&);
             void borrar(const NombreTabla&, const Campo&, const Dato&);
+            void indexar(const NombreTabla&, const Campo&);
 
             bool hayTabla(const NombreTabla&) const;
             const Tabla& tabla(const NombreTabla&) const;
-            itTablasConst tablas(const NombreTabla&) const;
+            itTablasConst tablas() const;
             const Tabla& tablaMaxima() const;
 
             itRegistrosConst generarVistaJoin(const NombreTabla&,
@@ -38,7 +40,7 @@ namespace tp3 {
             void borrarJoin(const NombreTabla&, const NombreTabla&);
             itRegistrosConst vistaJoin(const NombreTabla&, const NombreTabla&);
 
-            aed2::Conj<Registro> buscar(const NombreTabla&, const Registro&);
+            aed2::Conj<Registro> buscar(const NombreTabla&, const Registro&) const;
 
         private:
 
@@ -65,6 +67,12 @@ namespace tp3 {
             DiccTrie<DiccTrie<VistaJoin> > vistasJoin_;
 
             itTablas tablaMaxima_;
+
+            /***************************************
+             * Funciones auxiliares
+             ***************************************/
+
+            Registro combinarRegistros(const Registro&, const Registro&);
     };
 
 }

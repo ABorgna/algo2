@@ -31,9 +31,10 @@ namespace tp3 {
             DiccTrie<T>::ClaveValor minimo() const;
 
             struct ClaveValor {
-                const std::string& clave;
-                const T& significado;
+                std::string clave;
+                T significado;
 
+                ClaveValor() {};
                 ClaveValor(const std::string& c, const T& s) :
                     clave(c), significado(s) {};
             };
@@ -45,7 +46,7 @@ namespace tp3 {
                 Nodo* hijos[256];
                 bool esta;
 
-                Nodo() : hijos({0}), esta(false) {};
+                Nodo() : hijos(0), esta(false) {};
             };
 
             Nodo* raiz_;
@@ -176,7 +177,8 @@ namespace tp3 {
         aed2::Lista<Paso> camino;
 
         while(i < k.length() ) {
-            camino.AgregarAdelante(Paso {prox, k[i]});
+            Paso p = {prox, k[i]};
+            camino.AgregarAdelante(p);
             prox = prox->hijos[k[i]];
             i++;
         }

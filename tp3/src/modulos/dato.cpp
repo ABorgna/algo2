@@ -13,6 +13,12 @@ Dato::Dato(const std::string& s) :
     valorNat_(0) {
 }
 
+Dato::Dato(const Dato& otro) :
+    esNat_(otro.isNat()),
+    valorString_(otro.isNat() ? "" : otro.getString()),
+    valorNat_(otro.isNat() ? otro.getNat() : 0) {
+}
+
 bool Dato::isNat() const {
     return esNat_;
 }
