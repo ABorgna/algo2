@@ -51,7 +51,13 @@ namespace tp3 {
                 Nodo* hijos[256];
                 bool esta;
 
-                Nodo() : esta(false) {};
+                Nodo() : esta(false) {
+                    // En c++03 no se puede usar initalization lists
+                    // con arreglos...
+                    for(int i=0; i<256; i++) {
+                        hijos[i] = NULL;
+                    }
+                };
             };
 
             // Estructura auxiliar para el borrado
@@ -68,7 +74,6 @@ namespace tp3 {
             ClaveValor maximo_;
 
             /* Funciones auxiliares */
-            Nodo& crearNodo() const;
             bool tieneHijos(const Nodo&) const;
             unsigned char menorHijo(const Nodo&) const;
             unsigned char mayorHijo(const Nodo&) const;
@@ -112,8 +117,7 @@ namespace tp3 {
         bool eraVacio = false;
 
         if(raiz_ == NULL) {
-            nodo = crearNodo();
-            raiz_ = &nodo;
+            raiz_ = new Nodo();
             eraVacio = true;
         }
 
@@ -121,8 +125,7 @@ namespace tp3 {
 
         while(i < k.length()) {
             if(prox->hijos[(unsigned char) k[i]] == NULL) {
-                nodo = crearNodo();
-                prox->hijos[(unsigned char) k[i]] = &nodo;
+                prox->hijos[(unsigned char) k[i]] = new Nodo();
             }
             prox = prox->hijos[(unsigned char) k[i]];
             i++;
@@ -155,7 +158,7 @@ namespace tp3 {
             prox = raiz_;
 
             while(i < k.length()) {
-                if(prox->hijos[(unsigned char) k[i]] == NULL){
+                if(prox->hijos[(unsigned char) k[i]] != NULL){
                     prox = prox->hijos[(unsigned char) k[i]];
                 } else {
                     return false;
@@ -204,7 +207,7 @@ namespace tp3 {
         assert(definido(k));
 
         unsigned int i = 0;
-        Nodo* prox;
+        Nodo* prox = raiz_;
         aed2::Lista<Paso> camino;
 
         while(i < k.length() ) {
@@ -224,6 +227,7 @@ namespace tp3 {
         }
 
         if(!raiz_->esta and !tieneHijos(*raiz_)) {
+            delete raiz_;
             raiz_ = NULL;
         } else {
             // Recalcular el mínimo
@@ -274,12 +278,6 @@ namespace tp3 {
     /****************************
      * Auxiliares
      ****************************/
-
-    template<class T>
-    struct DiccTrie<T>::Nodo& DiccTrie<T>::crearNodo() const {
-        Nodo* p = new Nodo();
-        return *p;
-    }
 
     template<class T>
     bool DiccTrie<T>::tieneHijos(const Nodo& n) const {

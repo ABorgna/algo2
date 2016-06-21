@@ -18,3 +18,5 @@
 
 - En DB::VistaJoin no se borraba el buffer de operaciones despues de procesarlas
 
+- DiccTrie::CrearNodo es el constructor de nodo
+
