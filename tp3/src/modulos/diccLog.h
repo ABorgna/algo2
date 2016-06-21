@@ -90,6 +90,54 @@ namespace tp3 {
         assert(false);
     }
 
+    template<class K, class T>
+    void DiccLog<K, T>::definir(const K& k, const T& v)
+    {
+        assert(false);
+    }
+
+    template<class K, class T>
+    bool DiccLog<K, T>::definido(const K& k) const
+    {
+        assert(false);
+    }
+
+    template<class K, class T>
+    const T& DiccLog<K, T>::obtener(const K& k) const
+    {
+        assert(false);
+    }
+
+    template<class K, class T>
+    T& DiccLog<K, T>::obtener(const K& k)
+    {
+        assert(false);
+    }
+
+    template<class K, class T>
+    void DiccLog<K, T>::borrar(const K& k)
+    {
+        assert(false);
+    }
+
+    template<class K, class T>
+    typename DiccLog<K, T>::ClaveValor DiccLog<K, T>::maximo() const
+    {
+        assert(false);
+    }
+    
+    template<class K, class T>
+    typename DiccLog<K, T>::ClaveValor DiccLog<K, T>::minimo() const
+    {
+        assert(false);
+    }
+
+    template<class K, class T>
+    typename DiccLog<K, T>::Iterador DiccLog<K, T>::CrearIt()
+    {
+        assert(false);
+    }
+
     
 }
 
