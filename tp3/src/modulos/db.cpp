@@ -143,8 +143,8 @@ itRegistrosConst DB::generarVistaJoin(const NombreTabla& nt1,
     const Tabla& t2 = tabla(nt2);
     bool recorreTabla1;
 
-    assert(t1.campos().Definido(c));
-    assert(t2.campos().Definido(c));
+    assert(t1.campos().definido(c));
+    assert(t2.campos().definido(c));
     assert(t1.esClave(c));
     assert(t2.esClave(c));
 
@@ -188,10 +188,10 @@ itRegistrosConst DB::generarVistaJoin(const NombreTabla& nt1,
 
     while(it.HaySiguiente()) {
         const Registro& rA = it.Siguiente();
-        const Dato& d = rA.Significado(c);
+        const Dato& d = rA.obtener(c);
 
         Registro crit;
-        crit.DefinirRapido(c,d);
+        crit.definir(c,d);
         aed2::Conj<Registro> rs = tBusco->buscar(crit);
 
         // c es clave, por lo que rs tiene a lo sumo un elemento
@@ -250,13 +250,13 @@ itRegistrosConst DB::vistaJoin(const NombreTabla& nt1, const NombreTabla& nt2) {
     aed2::Lista<OperacionJoin>::const_Iterador it = v.buffer.CrearIt();
     while(it.HaySiguiente()) {
         const OperacionJoin& op = it.Siguiente();
-        const Dato& d = op.reg.Significado(v.campo);
+        const Dato& d = op.reg.obtener(v.campo);
 
         if(op.esInsercion) {
             aed2::Conj<Registro> rs;
 
             Registro crit;
-            crit.DefinirRapido(v.campo,d);
+            crit.definir(v.campo,d);
             if(!op.enTablaB) {
                 rs = t2.buscar(crit);
             } else {
@@ -320,23 +320,23 @@ Registro DB::combinarRegistros(const Registro& r1, const Registro& r2) {
     Registro::const_Iterador it;
 
     it = r2.CrearIt();
-    while(it.HaySiguiente()) {
-        const Campo& c = it.SiguienteClave();
-        const Dato& d = it.SiguienteSignificado();
+    while(it.hayMas()) {
+        const Campo& c = it.actual().clave;
+        const Dato& d = it.actual().significado;
 
-        res.DefinirRapido(c,d);
+        res.definir(c,d);
 
-        it.Avanzar();
+        it.avanzar();
     }
 
     it = r1.CrearIt();
-    while(it.HaySiguiente()) {
-        const Campo& c = it.SiguienteClave();
-        Dato d = it.SiguienteSignificado();
+    while(it.hayMas()) {
+        const Campo& c = it.actual().clave;
+        Dato d = it.actual().significado;
 
-        res.Definir(c,d);
+        res.definir(c,d);
 
-        it.Avanzar();
+        it.avanzar();
     }
 
     return res;

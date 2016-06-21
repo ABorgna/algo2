@@ -6,6 +6,7 @@
 #include <string.h>
 
 #include "../aed2.h"
+#include "diccLog.h"
 
 namespace tp3 {
     typedef std::string Campo;
@@ -35,7 +36,7 @@ namespace tp3 {
             Dato();
     };
 
-    typedef aed2::Dicc<Campo, Dato> Registro;
+    typedef DiccLog<Campo, Dato> Registro;
 
 }
 

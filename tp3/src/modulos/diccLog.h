@@ -15,7 +15,9 @@ namespace tp3 {
 
         public:
             struct ClaveValor;
+            struct const_ClaveValor;
             class Iterador;
+            class const_Iterador;
 
             DiccLog();
             ~DiccLog();
@@ -32,12 +34,24 @@ namespace tp3 {
             DiccLog<K,T>::ClaveValor minimo() const;
 
             DiccLog<K,T>::Iterador CrearIt();
+            DiccLog<K,T>::const_Iterador CrearIt() const;
+
+            bool operator == (const DiccLog<K, T>& otro) const;
+            bool operator != (const DiccLog<K, T>& otro) const;
 
             struct ClaveValor {
                 const K& clave;
+                T& significado;
+
+                ClaveValor(const K& c, T& s) :
+                    clave(c), significado(s) {};
+            };
+
+            struct const_ClaveValor {
+                const K& clave;
                 const T& significado;
 
-                ClaveValor(const K& c, const T& s) :
+                const_ClaveValor(const K& c, const T& s) :
                     clave(c), significado(s) {};
             };
 
@@ -48,8 +62,32 @@ namespace tp3 {
                     Iterador(const typename DiccLog<K, T>::Iterador& otro);
                     Iterador& operator = (const typename DiccLog<K, T>::Iterador& otro);
 
+                    bool operator == (const typename DiccLog<K, T>::Iterador& otro) const;
+                    bool operator != (const typename DiccLog<K, T>::Iterador& otro) const;
+
                     bool hayMas() const;
                     ClaveValor actual() const;
+                    void avanzar();
+
+                private:
+
+                    Nodo* actual_;
+                    aed2::Lista<Nodo*> siguientes_;
+                    DiccLog<K,T>* dicc;
+            };
+
+            class const_Iterador {
+                public:
+
+                    const_Iterador();
+                    const_Iterador(const typename DiccLog<K, T>::Iterador& otro);
+                    const_Iterador& operator = (const typename DiccLog<K, T>::Iterador& otro);
+
+                    bool operator == (const typename DiccLog<K, T>::const_Iterador& otro) const;
+                    bool operator != (const typename DiccLog<K, T>::const_Iterador& otro) const;
+
+                    bool hayMas() const;
+                    const_ClaveValor actual() const;
                     void avanzar();
 
                 private:

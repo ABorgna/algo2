@@ -12,7 +12,7 @@ Tabla::Tabla(const std::string& nombre,
         claves_(claves),
         accesos_(0) {
 
-    assert(columnas.CantClaves() > 0);
+    assert(columnas.CrearIt().hayMas() > 0);
     assert(claves.Cardinal() > 0);
 }
 
@@ -20,10 +20,10 @@ void Tabla::agregarRegistro(const Registro& r) {
     itRegistros it = registros_.AgregarRapido(r);
 
     if(hayIndiceNat_) {
-        assert(r.Definido(indiceNat_));
-        assert(r.Significado(indiceNat_).isNat());
+        assert(r.definido(indiceNat_));
+        assert(r.obtener(indiceNat_).isNat());
 
-        unsigned int k = r.Significado(indiceNat_).getNat();
+        unsigned int k = r.obtener(indiceNat_).getNat();
 
         assert(!esClave(indiceNat_) or !indicesNat_.definido(k));
 
@@ -35,10 +35,10 @@ void Tabla::agregarRegistro(const Registro& r) {
     }
 
     if(hayIndiceString_) {
-        assert(r.Definido(indiceString_));
-        assert(r.Significado(indiceString_).isString());
+        assert(r.definido(indiceString_));
+        assert(r.obtener(indiceString_).isString());
 
-        const std::string& k = r.Significado(indiceString_).getString();
+        const std::string& k = r.obtener(indiceString_).getString();
 
         assert(!esClave(indiceString_) or !indicesString_.definido(k));
 
@@ -75,7 +75,7 @@ aed2::Conj<Registro> Tabla::borrarRegistro(const Campo& c, const Dato& d) {
         }
     } else {
         it = registros_.CrearIt();
-        while(it.HaySiguiente() and it.Siguiente().Significado(c) != d) {
+        while(it.HaySiguiente() and it.Siguiente().obtener(c) != d) {
             it.Avanzar();
         }
         if(it.HaySiguiente()) {
@@ -90,7 +90,7 @@ aed2::Conj<Registro> Tabla::borrarRegistro(const Campo& c, const Dato& d) {
 
         // Borrar la entrada como índice nat
         if(hayIndiceNat_) {
-            unsigned int k = r.Significado(indiceNat_).getNat();
+            unsigned int k = r.obtener(indiceNat_).getNat();
 
             if(esClave(indiceNat_)) {
                 indicesNat_.borrar(k);
@@ -103,9 +103,9 @@ aed2::Conj<Registro> Tabla::borrarRegistro(const Campo& c, const Dato& d) {
 
                 while(itIndex.HaySiguiente()) {
                     const Dato& datoClave =
-                        itIndex.Siguiente().Siguiente().Significado(clave);
+                        itIndex.Siguiente().Siguiente().obtener(clave);
 
-                    if(datoClave == r.Significado(clave)) {
+                    if(datoClave == r.obtener(clave)) {
                         itIndex.EliminarSiguiente();
                         break;
                     }
@@ -117,7 +117,7 @@ aed2::Conj<Registro> Tabla::borrarRegistro(const Campo& c, const Dato& d) {
 
         // Borrar la entrada como índice string
         if(hayIndiceString_) {
-            const std::string& k = r.Significado(indiceString_).getString();
+            const std::string& k = r.obtener(indiceString_).getString();
 
             if(esClave(indiceString_)) {
                 indicesString_.borrar(k);
@@ -130,9 +130,9 @@ aed2::Conj<Registro> Tabla::borrarRegistro(const Campo& c, const Dato& d) {
 
                 while(itIndex.HaySiguiente()) {
                     const Dato& datoClave =
-                        itIndex.Siguiente().Siguiente().Significado(clave);
+                        itIndex.Siguiente().Siguiente().obtener(clave);
 
-                    if(datoClave == r.Significado(clave)) {
+                    if(datoClave == r.obtener(clave)) {
                         itIndex.EliminarSiguiente();
                         break;
                     }
@@ -151,7 +151,7 @@ aed2::Conj<Registro> Tabla::borrarRegistro(const Campo& c, const Dato& d) {
 }
 
 void Tabla::indexar(const Campo& c) {
-    assert(campos_.Definido(c));
+    assert(campos_.definido(c));
     itRegistros it = registros_.CrearIt();
 
     if(tipoCampo(c)) {
@@ -161,7 +161,7 @@ void Tabla::indexar(const Campo& c) {
         hayIndiceNat_ = true;
 
         while(it.HaySiguiente()) {
-            unsigned int k = it.Siguiente().Significado(c).getNat();
+            unsigned int k = it.Siguiente().obtener(c).getNat();
 
             if(!indicesNat_.definido(k)) {
                 indicesNat_.definir(k, aed2::Conj<itRegistros>());
@@ -179,7 +179,7 @@ void Tabla::indexar(const Campo& c) {
         hayIndiceString_ = true;
 
         while(it.HaySiguiente()) {
-            const std::string& k = it.Siguiente().Significado(c).getString();
+            const std::string& k = it.Siguiente().obtener(c).getString();
 
             if(!indicesString_.definido(k)) {
                 indicesString_.definir(k, aed2::Conj<itRegistros>());
@@ -197,12 +197,12 @@ const NombreTabla Tabla::nombre() const {
 }
 
 bool Tabla::esClave(const Campo& c) const {
-    assert(campos_.Definido(c));
+    assert(campos_.definido(c));
     return claves_.Pertenece(c);
 }
 
 bool Tabla::esIndice(const Campo& c) const {
-    assert(campos_.Definido(c));
+    assert(campos_.definido(c));
 
     if(tipoCampo(c)) {
         return hayIndiceNat_ and indiceNat_ == c;
@@ -220,8 +220,8 @@ const Registro Tabla::campos() const {
 }
 
 bool Tabla::tipoCampo(const Campo& c) const {
-    assert(campos_.Definido(c));
-    return campos_.Significado(c).isNat();
+    assert(campos_.definido(c));
+    return campos_.obtener(c).isNat();
 }
 
 unsigned int Tabla::accesos() const {
@@ -247,41 +247,41 @@ std::string Tabla::minString() const {
 const aed2::Conj<Registro> Tabla::buscar(const Registro& crit) const {
     aed2::Conj<Registro> res;
 
-    if(hayIndiceString_ and crit.Definido(indiceString_) and esClave(indiceString_)) {
+    if(hayIndiceString_ and crit.definido(indiceString_) and esClave(indiceString_)) {
         const Campo& c = indiceString_;
-        const std::string& k = crit.Significado(c).getString();
+        const std::string& k = crit.obtener(c).getString();
 
         if(indicesString_.definido(k)) {
             const Registro& r = indicesString_.obtener(k).CrearIt().Siguiente().Siguiente();
             Registro::const_Iterador it = crit.CrearIt();
             bool igual = true;
 
-            while(it.HaySiguiente()) {
-                const Campo& c = it.SiguienteClave();
-                if(r.Definido(c)) {
-                    igual &= it.SiguienteSignificado() == r.Significado(c);
+            while(it.hayMas()) {
+                const Campo& c = it.actual().clave;
+                if(r.definido(c)) {
+                    igual &= it.actual().significado == r.obtener(c);
                 }
-                it.Avanzar();
+                it.avanzar();
             }
             if(igual) {
                 res.AgregarRapido(r);
             }
         }
-    } else if(hayIndiceNat_ and crit.Definido(indiceNat_) and esClave(indiceNat_)) {
+    } else if(hayIndiceNat_ and crit.definido(indiceNat_) and esClave(indiceNat_)) {
         const Campo& c = indiceNat_;
-        unsigned int k = crit.Significado(c).getNat();
+        unsigned int k = crit.obtener(c).getNat();
 
         if(indicesNat_.definido(k)) {
             const Registro& r = indicesNat_.obtener(k).CrearIt().Siguiente().Siguiente();
             Registro::const_Iterador it = crit.CrearIt();
             bool igual = true;
 
-            while(it.HaySiguiente()) {
-                const Campo& c = it.SiguienteClave();
-                if(r.Definido(c)) {
-                    igual &= it.SiguienteSignificado() == r.Significado(c);
+            while(it.hayMas()) {
+                const Campo& c = it.actual().clave;
+                if(r.definido(c)) {
+                    igual &= it.actual().significado == r.obtener(c);
                 }
-                it.Avanzar();
+                it.avanzar();
             }
             if(igual) {
                 res.AgregarRapido(r);
@@ -297,9 +297,9 @@ const aed2::Conj<Registro> Tabla::buscar(const Registro& crit) const {
             bool igual = true;
 
             while(it.HaySiguiente()) {
-                const Campo& c = itReg.SiguienteClave();
-                if(r.Definido(c)) {
-                    igual &= itReg.SiguienteSignificado() == r.Significado(c);
+                const Campo& c = itReg.actual().clave;
+                if(r.definido(c)) {
+                    igual &= itReg.actual().significado == r.obtener(c);
                 }
                 it.Avanzar();
             }

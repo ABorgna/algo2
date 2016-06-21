@@ -113,14 +113,14 @@ aed2::Conj<NombreCampo> Driver::columnasClaveDeTabla(const NombreTabla& tabla) c
     const tp3::Registro campos = t.campos();
     aed2::Conj<NombreCampo> res;
 
-    aed2::Dicc<tp3::Campo, tp3::Dato>::const_Iterador it = campos.CrearIt();
+    tp3::Registro::const_Iterador it = campos.CrearIt();
 
-    while(it.HaySiguiente()) {
-        const tp3::Campo c = it.SiguienteClave();
+    while(it.hayMas()) {
+        const tp3::Campo c = it.actual().clave;
         if(t.esClave(c)) {
             res.AgregarRapido(c);
         }
-        it.Avanzar();
+        it.avanzar();
     }
 
     return res;
@@ -200,13 +200,13 @@ bool Driver::tieneIndiceNat(const NombreTabla& tabla) const {
     const tp3::Tabla t = db.tabla(tabla);
     tp3::Registro::const_Iterador it = t.campos().CrearIt();
 
-    while(it.HaySiguiente()) {
-        const tp3::Campo& c = it.SiguienteClave();
-        bool esNat = it.SiguienteSignificado().isNat();
+    while(it.hayMas()) {
+        const tp3::Campo& c = it.actual().clave;
+        bool esNat = it.actual().significado.isNat();
 
         if(esNat && t.esIndice(c)) return true;
 
-        it.Avanzar();
+        it.avanzar();
     }
     return false;
 }
@@ -216,13 +216,13 @@ bool Driver::tieneIndiceString(const NombreTabla& tabla) const {
     const tp3::Tabla t = db.tabla(tabla);
     tp3::Registro::const_Iterador it = t.campos().CrearIt();
 
-    while(it.HaySiguiente()) {
-        const tp3::Campo& c = it.SiguienteClave();
-        bool esString = it.SiguienteSignificado().isString();
+    while(it.hayMas()) {
+        const tp3::Campo& c = it.actual().clave;
+        bool esString = it.actual().significado.isString();
 
         if(esString && t.esIndice(c)) return true;
 
-        it.Avanzar();
+        it.avanzar();
     }
     return false;
 }
@@ -233,13 +233,13 @@ const NombreCampo& Driver::campoIndiceNat(const NombreTabla& tabla) const {
     const tp3::Tabla t = db.tabla(tabla);
     tp3::Registro::const_Iterador it = t.campos().CrearIt();
 
-    while(it.HaySiguiente()) {
-        const tp3::Campo& c = it.SiguienteClave();
-        bool esNat = it.SiguienteSignificado().isNat();
+    while(it.hayMas()) {
+        const tp3::Campo& c = it.actual().clave;
+        bool esNat = it.actual().significado.isNat();
 
         if(esNat && t.esIndice(c)) return c;
 
-        it.Avanzar();
+        it.avanzar();
     }
 
     // Deberia terminar antes
@@ -253,13 +253,13 @@ const NombreCampo& Driver::campoIndiceString(const NombreTabla& tabla) const {
     const tp3::Tabla t = db.tabla(tabla);
     tp3::Registro::const_Iterador it = t.campos().CrearIt();
 
-    while(it.HaySiguiente()) {
-        const tp3::Campo& c = it.SiguienteClave();
-        bool esString = it.SiguienteSignificado().isString();
+    while(it.hayMas()) {
+        const tp3::Campo& c = it.actual().clave;
+        bool esString = it.actual().significado.isString();
 
         if(esString && t.esIndice(c)) return c;
 
-        it.Avanzar();
+        it.avanzar();
     }
 
     // Deberia terminar antes
@@ -270,7 +270,7 @@ const NombreCampo& Driver::campoIndiceString(const NombreTabla& tabla) const {
 void Driver::crearIndiceNat(const NombreTabla& tabla, const NombreCampo& campo) {
     assert(db.hayTabla(tabla));
     assert(!tieneIndiceNat(tabla));
-    assert(db.tabla(tabla).campos().Definido(campo));
+    assert(db.tabla(tabla).campos().definido(campo));
     assert(db.tabla(tabla).tipoCampo(campo));
 
     tp3::Tabla& t = db.tabla(tabla);
@@ -280,7 +280,7 @@ void Driver::crearIndiceNat(const NombreTabla& tabla, const NombreCampo& campo) 
 void Driver::crearIndiceString(const NombreTabla& tabla, const NombreCampo& campo) {
     assert(db.hayTabla(tabla));
     assert(!tieneIndiceString(tabla));
-    assert(db.tabla(tabla).campos().Definido(campo));
+    assert(db.tabla(tabla).campos().definido(campo));
     assert(!db.tabla(tabla).tipoCampo(campo));
 
     tp3::Tabla& t = db.tabla(tabla);
@@ -349,7 +349,7 @@ tp3::Registro Driver::colsToRegistro(const aed2::Conj<Columna>& cols) const {
     while(it.HaySiguiente()) {
         const Columna& col = it.Siguiente();
 
-        r.DefinirRapido(col.nombre, col.tipo == NAT ? tp3::Dato(0) : tp3::Dato(""));
+        r.definir(col.nombre, col.tipo == NAT ? tp3::Dato(0) : tp3::Dato(""));
 
         it.Avanzar();
     }
@@ -361,14 +361,14 @@ aed2::Conj<Columna> Driver::registroToCols(const tp3::Registro& r) const {
     aed2::Conj<Columna> cols;
     tp3::Registro::const_Iterador it = r.CrearIt();
 
-    while(it.HaySiguiente()) {
-        const tp3::Campo& c = it.SiguienteClave();
-        const tp3::Dato& d = it.SiguienteSignificado();
+    while(it.hayMas()) {
+        const tp3::Campo& c = it.actual().clave;
+        const tp3::Dato& d = it.actual().significado;
         Columna col = {c, d.isNat() ? NAT : STR};
 
         cols.AgregarRapido(col);
 
-        it.Avanzar();
+        it.avanzar();
     }
 
     return cols;
@@ -396,13 +396,13 @@ Driver::Registro Driver::registroTp3ToRegistro(const tp3::Registro& r) const {
     Driver::Registro rr;
     tp3::Registro::const_Iterador it = r.CrearIt();
 
-    while(it.HaySiguiente()) {
-        const tp3::Campo& c = it.SiguienteClave();
-        const tp3::Dato& d = it.SiguienteSignificado();
+    while(it.hayMas()) {
+        const tp3::Campo& c = it.actual().clave;
+        const tp3::Dato& d = it.actual().significado;
 
         rr.DefinirRapido(c, datoTp3ToDato(d));
 
-        it.Avanzar();
+        it.avanzar();
     }
 
     return rr;
@@ -416,7 +416,7 @@ tp3::Registro Driver::registroToRegistroTp3(const Driver::Registro& r) const {
         const aed2::NombreCampo& c = it.SiguienteClave();
         const Driver::Dato& d = it.SiguienteSignificado();
 
-        rr.DefinirRapido(c, datoToDatoTp3(d));
+        rr.definir(c, datoToDatoTp3(d));
 
         it.Avanzar();
     }
