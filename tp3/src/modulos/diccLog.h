@@ -80,7 +80,7 @@ namespace tp3 {
                 public:
 
                     const_Iterador();
-                    const_Iterador(const typename DiccLog<K, T>::Iterador& otro);
+                    const_Iterador(const typename DiccLog<K, T>::const_Iterador& otro);
                     const_Iterador& operator = (const typename DiccLog<K, T>::Iterador& otro);
 
                     bool operator == (const typename DiccLog<K, T>::const_Iterador& otro) const;
@@ -163,7 +163,7 @@ namespace tp3 {
     {
         assert(false);
     }
-    
+
     template<class K, class T>
     typename DiccLog<K, T>::ClaveValor DiccLog<K, T>::minimo() const
     {
@@ -176,7 +176,113 @@ namespace tp3 {
         assert(false);
     }
 
-    
+    template<class K, class T>
+    typename DiccLog<K, T>::const_Iterador DiccLog<K, T>::CrearIt() const
+    {
+        assert(false);
+    }
+
+    template<class K, class T>
+    bool DiccLog<K,T>::operator==(const DiccLog<K,T>& otro) const {
+        assert(false);
+    }
+
+    template<class K, class T>
+    bool DiccLog<K,T>::operator!=(const DiccLog<K,T>& otro) const {
+        return !(this->operator==(otro));
+    }
+
+    /************************
+     * Iterador
+     ************************/
+
+    template<class K, class T>
+    DiccLog<K,T>::Iterador::Iterador() {
+        assert(false);
+    }
+
+    template<class K, class T>
+    DiccLog<K,T>::Iterador::Iterador(const typename DiccLog<K,T>::Iterador& otro) {
+        assert(false);
+    }
+
+    template<class K, class T>
+    typename DiccLog<K,T>::Iterador& DiccLog<K,T>::Iterador::operator=(
+            const typename DiccLog<K,T>::Iterador& otro) {
+        assert(false);
+    }
+
+    template<class K, class T>
+    bool DiccLog<K,T>::Iterador::operator==(const typename DiccLog<K,T>::Iterador& otro) const {
+        assert(false);
+    }
+
+    template<class K, class T>
+    bool DiccLog<K,T>::Iterador::operator!=(const typename DiccLog<K,T>::Iterador& otro) const {
+        return !(this->operator==(otro));
+    }
+
+    template<class K, class T>
+    bool DiccLog<K,T>::Iterador::hayMas() const {
+        assert(false);
+    }
+
+    template<class K, class T>
+    typename DiccLog<K,T>::ClaveValor DiccLog<K,T>::Iterador::actual() const {
+        assert(false);
+    }
+
+    template<class K, class T>
+    void DiccLog<K,T>::Iterador::avanzar() {
+        assert(false);
+    }
+
+    /************************
+     * Iterador constante
+     ************************/
+
+    template<class K, class T>
+    DiccLog<K,T>::const_Iterador::const_Iterador() {
+        assert(false);
+    }
+
+    template<class K, class T>
+    DiccLog<K,T>::const_Iterador::const_Iterador(const typename DiccLog<K,T>::const_Iterador& otro) {
+        assert(false);
+    }
+
+    template<class K, class T>
+    typename DiccLog<K,T>::const_Iterador& DiccLog<K,T>::const_Iterador::operator=(
+            const typename DiccLog<K,T>::Iterador& otro) {
+        assert(false);
+    }
+
+    template<class K, class T>
+    bool DiccLog<K,T>::const_Iterador::operator==(
+            const typename DiccLog<K,T>::const_Iterador& otro) const {
+        assert(false);
+    }
+
+    template<class K, class T>
+    bool DiccLog<K,T>::const_Iterador::operator!=(
+            const typename DiccLog<K,T>::const_Iterador& otro) const {
+        return !(this->operator==(otro));
+    }
+
+    template<class K, class T>
+    bool DiccLog<K,T>::const_Iterador::hayMas() const {
+        assert(false);
+    }
+
+    template<class K, class T>
+    typename DiccLog<K,T>::const_ClaveValor DiccLog<K,T>::const_Iterador::actual() const {
+        assert(false);
+    }
+
+    template<class K, class T>
+    void DiccLog<K,T>::const_Iterador::avanzar() {
+        assert(false);
+    }
 }
 
 #endif //AVL_INCLUDED_H
