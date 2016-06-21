@@ -318,3 +318,23 @@ unsigned int Tabla::cantidadRegistros() const {
     return registros_.Cardinal();
 }
 
+bool Tabla::operator == (const Tabla& other) const {
+    if(nombre_ != other.nombre_) return false;
+    if(campos_ != other.campos_) return false;
+    if(claves_ != other.claves_) return false;
+    if(accesos_ != other.accesos_) return false;
+    if(hayIndiceNat_ != other.hayIndiceNat_) return false;
+    if(hayIndiceNat_ and (indiceNat_ != other.indiceNat_)) return false;
+    if(hayIndiceString_ != other.hayIndiceString_) return false;
+    if(hayIndiceString_ and (indiceString_ != other.indiceString_)) return false;
+    return registros_ == other.registros_;
+}
+
+bool operator == (const Tabla& t1, const Tabla& t2) {
+    return t1.operator==(t2);
+}
+
+bool operator != (const Tabla& t1, const Tabla& t2) {
+    return !(t1.operator==(t2));
+}
+

@@ -31,6 +31,8 @@ namespace tp3 {
             DiccTrie<T>::ClaveValor maximo() const;
             DiccTrie<T>::ClaveValor minimo() const;
 
+            bool operator == (const DiccTrie<T>& other) const;
+
             struct ClaveValor {
                 std::string clave;
                 T significado;
@@ -69,6 +71,20 @@ namespace tp3 {
             unsigned char menorHijo(const Nodo&) const;
             unsigned char mayorHijo(const Nodo&) const;
     };
+
+    template <class T>
+    bool operator == (const DiccTrie<T>&, const DiccTrie<T>&);
+
+    template <class T>
+    bool operator != (const DiccTrie<T>&, const DiccTrie<T>&);
+
+    template <class T>
+    bool operator == (const typename DiccTrie<T>::Nodo&,
+                      const typename DiccTrie<T>::Nodo&);
+
+    template <class T>
+    bool operator != (const typename DiccTrie<T>::Nodo&,
+                      const typename DiccTrie<T>::Nodo&);
 
     /****************************
      * Implementación
@@ -290,6 +306,41 @@ namespace tp3 {
             }
         }
         return res;
+    }
+
+    template <class T>
+    bool DiccTrie<T>::operator == (const DiccTrie<T>& other) const {
+        if(raiz_ == NULL) return other.raiz_ == NULL;
+        return *raiz_ == *other.raiz_;
+    }
+
+    template <class T>
+    bool operator == (const DiccTrie<T>& t1, const DiccTrie<T>& t2) {
+        return t1.operator==(t2);
+    }
+
+    template <class T>
+    bool operator != (const DiccTrie<T>& t1, const DiccTrie<T>& t2) {
+        return !(t1.operator==(t2));
+    }
+
+    template <class T>
+    bool operator == (const typename DiccTrie<T>::Nodo& n1,
+                      const typename DiccTrie<T>::Nodo& n2) {
+        if(n1.esta != n2.esta) return false;
+        if(n1.esta and n1.valor != n2.valor) return false;
+
+        for(int i=0; i<256; i++) {
+            if(n1.hijo[i] == NULL xor n2.hijo[i] == NULL) return false;
+            if(n1.hijo[i] != NULL and *n1.hijo[i] != *n2.hijo[i]) return false;
+        }
+        return true;
+    }
+
+    template <class T>
+    bool operator != (const typename DiccTrie<T>::Nodo& n1,
+                      const typename DiccTrie<T>::Nodo& n2) {
+        return !(n1 == n2);
     }
 }
 

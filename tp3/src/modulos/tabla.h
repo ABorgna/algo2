@@ -44,6 +44,8 @@ namespace tp3 {
 
             unsigned int cantidadRegistros() const;
 
+            bool operator == (const Tabla& other) const;
+
         private:
 
             aed2::Conj<Registro> registros_;
@@ -62,6 +64,8 @@ namespace tp3 {
 
             unsigned int accesos_;
     };
+    bool operator == (const Tabla&, const Tabla&);
+    bool operator != (const Tabla&, const Tabla&);
 
 }
 
