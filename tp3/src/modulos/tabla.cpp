@@ -150,73 +150,171 @@ aed2::Conj<Registro> Tabla::borrarRegistro(const Campo& c, const Dato& d) {
     return res;
 }
 
-void Tabla::indexar(const Campo&) {
-    // TODO
-    assert(false);
+void Tabla::indexar(const Campo& c) {
+    assert(campos_.Definido(c));
+    itRegistros it = registros_.CrearIt();
+
+    if(tipoCampo(c)) {
+        assert(!hayIndiceNat_);
+
+        indiceNat_ = c;
+        hayIndiceNat_ = true;
+
+        while(it.HaySiguiente()) {
+            unsigned int k = it.Siguiente().Significado(c).getNat();
+
+            if(!indicesNat_.definido(k)) {
+                indicesNat_.definir(k, aed2::Conj<itRegistros>());
+            }
+
+            indicesNat_.obtener(k).AgregarRapido(it);
+
+            it.Avanzar();
+        }
+
+    } else {
+        assert(!hayIndiceString_);
+
+        indiceString_ = c;
+        hayIndiceString_ = true;
+
+        while(it.HaySiguiente()) {
+            const std::string& k = it.Siguiente().Significado(c).getString();
+
+            if(!indicesString_.definido(k)) {
+                indicesString_.definir(k, aed2::Conj<itRegistros>());
+            }
+
+            indicesString_.obtener(k).AgregarRapido(it);
+
+            it.Avanzar();
+        }
+    }
 }
 
 const NombreTabla Tabla::nombre() const {
-    // TODO
-    assert(false);
+    return nombre_;
 }
 
-bool Tabla::esClave(const Campo&) const {
-    // TODO
-    assert(false);
+bool Tabla::esClave(const Campo& c) const {
+    assert(campos_.Definido(c));
+    return claves_.Pertenece(c);
 }
 
-bool Tabla::esIndice(const Campo&) const {
-    // TODO
-    assert(false);
+bool Tabla::esIndice(const Campo& c) const {
+    assert(campos_.Definido(c));
+
+    if(tipoCampo(c)) {
+        return hayIndiceNat_ and indiceNat_ == c;
+    } else {
+        return hayIndiceString_ and indiceString_ == c;
+    }
 }
 
 itRegistrosConst Tabla::registros() const {
-    // TODO
-    assert(false);
+    return registros_.CrearIt();
 }
 
 const Registro Tabla::campos() const {
-    // TODO
-    assert(false);
+    return campos_;
 }
 
-bool Tabla::tipoCampo(const Campo&) const {
-    // TODO
-    assert(false);
+bool Tabla::tipoCampo(const Campo& c) const {
+    assert(campos_.Definido(c));
+    return campos_.Significado(c).isNat();
 }
 
 unsigned int Tabla::accesos() const {
-    // TODO
-    assert(false);
+    return accesos_;
 }
 
 unsigned int Tabla::maxNat() const {
-    // TODO
-    assert(false);
+    return indicesNat_.maximo().clave;
 }
 
 unsigned int Tabla::minNat() const {
-    // TODO
-    assert(false);
+    return indicesNat_.minimo().clave;
 }
 
 std::string Tabla::maxString() const {
-    // TODO
-    assert(false);
+    return indicesString_.maximo().clave;
 }
 
 std::string Tabla::minString() const {
-    // TODO
-    assert(false);
+    return indicesString_.minimo().clave;
 }
 
-const aed2::Conj<Registro> Tabla::buscar(const Registro&) const {
-    // TODO
-    assert(false);
+const aed2::Conj<Registro> Tabla::buscar(const Registro& crit) const {
+    aed2::Conj<Registro> res;
+
+    if(hayIndiceString_ and crit.Definido(indiceString_) and esClave(indiceString_)) {
+        const Campo& c = indiceString_;
+        const std::string& k = crit.Significado(c).getString();
+
+        if(indicesString_.definido(k)) {
+            const Registro& r = indicesString_.obtener(k).CrearIt().Siguiente().Siguiente();
+            Registro::const_Iterador it = crit.CrearIt();
+            bool igual = true;
+
+            while(it.HaySiguiente()) {
+                const Campo& c = it.SiguienteClave();
+                if(r.Definido(c)) {
+                    igual &= it.SiguienteSignificado() == r.Significado(c);
+                }
+                it.Avanzar();
+            }
+            if(igual) {
+                res.AgregarRapido(r);
+            }
+        }
+    } else if(hayIndiceNat_ and crit.Definido(indiceNat_) and esClave(indiceNat_)) {
+        const Campo& c = indiceNat_;
+        unsigned int k = crit.Significado(c).getNat();
+
+        if(indicesNat_.definido(k)) {
+            const Registro& r = indicesNat_.obtener(k).CrearIt().Siguiente().Siguiente();
+            Registro::const_Iterador it = crit.CrearIt();
+            bool igual = true;
+
+            while(it.HaySiguiente()) {
+                const Campo& c = it.SiguienteClave();
+                if(r.Definido(c)) {
+                    igual &= it.SiguienteSignificado() == r.Significado(c);
+                }
+                it.Avanzar();
+            }
+            if(igual) {
+                res.AgregarRapido(r);
+            }
+        }
+    } else {
+        // Busqueda lineal sobre los registros
+        itRegistrosConst it = registros_.CrearIt();
+
+        while(it.HaySiguiente()) {
+            const Registro& r = it.Siguiente();
+            Registro::const_Iterador itReg = crit.CrearIt();
+            bool igual = true;
+
+            while(it.HaySiguiente()) {
+                const Campo& c = itReg.SiguienteClave();
+                if(r.Definido(c)) {
+                    igual &= itReg.SiguienteSignificado() == r.Significado(c);
+                }
+                it.Avanzar();
+            }
+            if(igual) {
+                res.AgregarRapido(r);
+            }
+
+            it.Avanzar();
+        }
+    }
+
+    return res;
 }
 
 unsigned int Tabla::cantidadRegistros() const {
-    // TODO
-    assert(false);
+    return registros_.Cardinal();
 }
 

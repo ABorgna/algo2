@@ -28,8 +28,8 @@ namespace tp3 {
 
             void borrar(const K& k);
 
-            DiccLog<K,T>::ClaveValor maximo();
-            DiccLog<K,T>::ClaveValor minimo();
+            DiccLog<K,T>::ClaveValor maximo() const;
+            DiccLog<K,T>::ClaveValor minimo() const;
 
             DiccLog<K,T>::Iterador CrearIt();
 

@@ -161,7 +161,7 @@ namespace tp3 {
             i++;
         }
 
-        return prox->v;
+        return prox->valor;
     }
 
     template<class T>
