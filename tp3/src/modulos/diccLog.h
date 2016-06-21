@@ -78,6 +78,19 @@ namespace tp3 {
 
     };
 
+    template<class K, class T>
+    DiccLog<K, T>::DiccLog() 
+    {
+        assert(false);
+    }
+
+    template<class K, class T>
+    DiccLog<K, T>::~DiccLog()
+    {
+        assert(false);
+    }
+
+    
 }
 
 #endif //AVL_INCLUDED_H
