@@ -13,7 +13,7 @@ namespace testsDiccLog
 
     void main(int, char **)
     {
-        std::cout << "diccLog:" << std::endl;
+        std::cout << "******** diccLog *******" << std::endl;
         RUN_TEST( constructor );
     }
 }

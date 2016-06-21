@@ -11,7 +11,7 @@ namespace testsTabla
     }
 
     void main(int, char**) {
-        std::cout << "tabla:" << std::endl;
+        std::cout << "******** tabla *********" << std::endl;
         RUN_TEST( constructor );
     }
 }

@@ -49,6 +49,7 @@ namespace testsDriver
 
     void main(int, char**)
     {
+        std::cout << "******** driver ********" << std::endl;
         RUN_TEST( ejemplo_simple );
     }
 }

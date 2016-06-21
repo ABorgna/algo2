@@ -56,7 +56,7 @@ namespace testsDato
     }
 
     void main(int, char**) {
-        std::cout << "dato:" << std::endl;
+        std::cout << "******** dato **********" << std::endl;
         RUN_TEST( constructor );
         RUN_TEST( cmp );
         RUN_TEST( ord );

@@ -89,7 +89,7 @@ namespace testsDiccTrie
     }
 
     void main(int, char**) {
-        std::cout << "trie:" << std::endl;
+        std::cout << "******** trie **********" << std::endl;
         RUN_TEST( constructor );
         RUN_TEST( definirSimple );
         RUN_TEST( maxMin );

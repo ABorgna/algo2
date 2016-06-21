@@ -11,7 +11,7 @@ namespace testsDB
     }
 
     void main(int, char**) {
-        std::cout << "DB:" << std::endl;
+        std::cout << "******** DB ************" << std::endl;
         RUN_TEST( constructor );
     }
 }
