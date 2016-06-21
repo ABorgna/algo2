@@ -24,6 +24,8 @@ namespace tp3 {
 
             bool operator == (const Dato& other) const;
             bool operator != (const Dato& other) const;
+            bool operator > (const Dato& other) const;
+            bool operator < (const Dato& other) const;
 
         private:
             bool esNat_;
@@ -32,7 +34,6 @@ namespace tp3 {
 
             Dato();
     };
-    bool operator > (const Dato& c1, const Dato& c2);
 
     typedef aed2::Dicc<Campo, Dato> Registro;
 

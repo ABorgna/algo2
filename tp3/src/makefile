@@ -11,6 +11,7 @@ MODULES=modulos/dato.cpp modulos/dato.h \
 	modulos/tabla.cpp modulos/tabla.h
 
 TESTS=	tests/testsEjemplo.h \
+	tests/testsDato.h \
 	tests/testsDiccLog.h
 
 DEPEND= makefile \
