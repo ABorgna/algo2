@@ -50,6 +50,7 @@ namespace aed2
                 //esta funcion la agregamos aca, porque nos conviene acceder a
                 //la representación.  Sino, no haria falta.
                 bool operator == (const Conj<T>& otro) const;
+                bool operator != (const Conj<T>& otro) const;
 
                 /************************************
                  * Iterador de Conjunto, modificable *
@@ -65,6 +66,7 @@ namespace aed2
                         Iterador& operator = (const typename Conj<T>::Iterador& otra);
 
                         bool operator == (const typename Conj<T>::Iterador& otro) const;
+                        bool operator != (const typename Conj<T>::Iterador& otro) const;
 
                         bool HaySiguiente() const;
                         bool HayAnterior() const;
@@ -109,6 +111,7 @@ namespace aed2
                         const_Iterador& operator = (const typename Conj<T>::const_Iterador& otra);
 
                         bool operator==(const typename Conj<T>::const_Iterador& otro) const;
+                        bool operator!=(const typename Conj<T>::const_Iterador& otro) const;
 
                         bool HaySiguiente()const;
                         bool HayAnterior()const;
@@ -139,6 +142,9 @@ namespace aed2
 
     template<class T>
         bool operator==(const Conj<T>&, const Conj<T>&);
+
+    template<class T>
+        bool operator!=(const Conj<T>&, const Conj<T>&);
 
     //  Implementacion de Conjunto
 
@@ -187,6 +193,11 @@ namespace aed2
         }
 
     template<class T>
+        bool Conj<T>::operator!=(const Conj<T>& otro) const {
+            return dicc_ != otro.dicc_;
+        }
+
+    template<class T>
         typename Conj<T>::Iterador Conj<T>::CrearIt(){
             return Iterador(*this);
         }
@@ -218,6 +229,12 @@ namespace aed2
         bool Conj<T>::Iterador::operator == (const typename Conj<T>::Iterador& otro) const
         {
             return it_dicc_ == otro.it_dicc_;
+        }
+
+    template<class T>
+        bool Conj<T>::Iterador::operator != (const typename Conj<T>::Iterador& otro) const
+        {
+            return it_dicc_ != otro.it_dicc_;
         }
 
     template<class T>
@@ -333,6 +350,12 @@ namespace aed2
         }
 
     template<class T>
+        bool Conj<T>::const_Iterador::operator != (const typename Conj<T>::const_Iterador& otro) const
+        {
+            return it_dicc_ != otro.it_dicc_;
+        }
+
+    template<class T>
         bool Conj<T>::const_Iterador::HaySiguiente() const
         {
             return it_dicc_.HaySiguiente();
@@ -395,6 +418,12 @@ namespace aed2
         bool operator==(const Conj<T>& c1, const Conj<T>& c2)
         {
             return c1.operator==(c2);
+        }
+
+    template<class T>
+        bool operator!=(const Conj<T>& c1, const Conj<T>& c2)
+        {
+            return c1.operator!=(c2);
         }
 
     template<class T>

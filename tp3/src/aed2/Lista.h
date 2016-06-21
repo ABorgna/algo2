@@ -103,6 +103,7 @@ namespace aed2
                         void EliminarSiguiente();
 
                         bool operator == (const typename Lista<T>::Iterador& otro) const;
+                        bool operator != (const typename Lista<T>::Iterador& otro) const;
 
                     private:
 
@@ -146,6 +147,7 @@ namespace aed2
                         void Retroceder();
 
                         bool operator == (const typename Lista<T>::const_Iterador& otro) const;
+                        bool operator != (const typename Lista<T>::const_Iterador& otro) const;
 
                     private:
 
@@ -183,6 +185,9 @@ namespace aed2
 
     template<class T>
         bool operator == (const Lista<T>& l1, const Lista<T>& k2);
+
+    template<class T>
+        bool operator != (const Lista<T>& l1, const Lista<T>& k2);
 
     //  Implementacion de Lista
 
@@ -543,6 +548,11 @@ namespace aed2
         }
 
     template<class T>
+        bool Lista<T>::Iterador::operator != (const typename Lista<T>::Iterador& otro) const {
+            return lista_ != otro.lista_ || nodo_siguiente_ != otro.nodo_siguiente_;
+        }
+
+    template<class T>
         Lista<T>::Iterador::Iterador(Lista<T>* lista, typename Lista<T>::Nodo* proximo)
         : lista_(lista), nodo_siguiente_(proximo)
         {};
@@ -640,6 +650,11 @@ namespace aed2
             return lista_ == otro.lista_ && nodo_siguiente_ == otro.nodo_siguiente_;
         }
 
+    template<class T>
+        bool Lista<T>::const_Iterador::operator != (const typename Lista<T>::const_Iterador& otro) const {
+            return lista_ != otro.lista_ || nodo_siguiente_ != otro.nodo_siguiente_;
+        }
+
     template <typename T>
         Lista<T>::const_Iterador::const_Iterador(const Lista<T>* lista, const typename Lista<T>::Nodo* proximo)
         : lista_(lista), nodo_siguiente_(proximo)
@@ -670,6 +685,12 @@ namespace aed2
             }
 
             return not it1.HaySiguiente() and not it2.HaySiguiente();
+        }
+
+    template <typename T>
+        bool operator != (const Lista<T>& l1, const Lista<T>& l2)
+        {
+            return !(l1 == l2);
         }
 
 }

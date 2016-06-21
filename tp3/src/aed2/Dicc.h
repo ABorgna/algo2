@@ -57,6 +57,7 @@ class Dicc
         Iterador& operator = (const typename Dicc<K, S>::Iterador& otro);
 
         bool operator == (const typename Dicc<K,S>::Iterador&) const;
+        bool operator != (const typename Dicc<K,S>::Iterador&) const;
 
         bool HaySiguiente() const;
         bool HayAnterior() const;
@@ -95,6 +96,7 @@ class Dicc
         const_Iterador& operator = (const typename Dicc<K, S>::const_Iterador& otro);
 
         bool operator==(const typename Dicc<K,S>::const_Iterador&) const;
+        bool operator!=(const typename Dicc<K,S>::const_Iterador&) const;
 
         bool HaySiguiente() const;
         bool HayAnterior() const;
@@ -169,6 +171,9 @@ std::ostream& operator << (std::ostream &os, const Dicc<K,S>& d);
 
 template<class K, class S>
 bool operator == (const Dicc<K,S>& d1, const Dicc<K,S>& d2);
+
+template<class K, class S>
+bool operator != (const Dicc<K,S>& d1, const Dicc<K,S>& d2);
 
   // Implementacion Dicc
 
@@ -543,9 +548,21 @@ bool Dicc<K,S>::const_Iterador::operator == (const typename Dicc<K,S>::const_Ite
 }
 
 template<class K, class S>
+bool Dicc<K,S>::const_Iterador::operator != (const typename Dicc<K,S>::const_Iterador& otro) const
+{
+  return it_claves_ != otro.it_claves_ || it_significados_ != otro.it_significados_;
+}
+
+template<class K, class S>
 bool Dicc<K,S>::Iterador::operator == (const typename Dicc<K,S>::Iterador& otro) const
 {
   return it_claves_ == otro.it_claves_ && it_significados_ == otro.it_significados_;
+}
+
+template<class K, class S>
+bool Dicc<K,S>::Iterador::operator != (const typename Dicc<K,S>::Iterador& otro) const
+{
+  return it_claves_ != otro.it_claves_ || it_significados_ != otro.it_significados_;
 }
 
   ///Funciones auxiliares
@@ -587,6 +604,12 @@ bool operator == (const Dicc<K,S>& d1, const Dicc<K,S>& d2)
     it1.Avanzar();
   }
   return retval;
+}
+
+template<class K, class S>
+bool operator != (const Dicc<K,S>& d1, const Dicc<K,S>& d2)
+{
+  return !(d1 == d2);
 }
 
 }

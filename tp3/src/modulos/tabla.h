@@ -23,7 +23,7 @@ namespace tp3 {
                   const Registro& columnas);
 
             void agregarRegistro(const Registro&);
-            aed2::Conj<Registro> borrarRegistro(const Registro&);
+            aed2::Conj<Registro> borrarRegistro(const Campo&, const Dato&);
             void indexar(const Campo&);
 
             const NombreTabla nombre() const;
@@ -44,6 +44,8 @@ namespace tp3 {
 
             unsigned int cantidadRegistros() const;
 
+            bool operator == (const Tabla& other) const;
+
         private:
 
             aed2::Conj<Registro> registros_;
@@ -62,6 +64,8 @@ namespace tp3 {
 
             unsigned int accesos_;
     };
+    bool operator == (const Tabla&, const Tabla&);
+    bool operator != (const Tabla&, const Tabla&);
 
 }
 

@@ -23,9 +23,9 @@ namespace tp3 {
             const std::string& getString() const;
 
         private:
-            const bool esNat_;
-            const std::string valorString_;
-            const unsigned int valorNat_;
+            bool esNat_;
+            std::string valorString_;
+            unsigned int valorNat_;
 
             Dato();
     };

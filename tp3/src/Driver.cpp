@@ -82,9 +82,9 @@ void Driver::crearTabla(const NombreTabla& nombre, const aed2::Conj<Columna>& co
     assert(!columnas.EsVacio());
     assert(!claves.EsVacio());
 
-    tp3::Tabla* t = new tp3::Tabla(nombre, claves, colsToRegistro(columnas));
+    tp3::Tabla t = tp3::Tabla(nombre, claves, colsToRegistro(columnas));
 
-    db.agregarTabla(*t);
+    db.agregarTabla(t);
 }
 
 void Driver::insertarRegistro(const NombreTabla& tabla, const Registro& registro) {
@@ -273,7 +273,8 @@ void Driver::crearIndiceNat(const NombreTabla& tabla, const NombreCampo& campo) 
     assert(db.tabla(tabla).campos().Definido(campo));
     assert(db.tabla(tabla).tipoCampo(campo));
 
-    db.indexar(tabla, campo);
+    tp3::Tabla& t = db.tabla(tabla);
+    t.indexar(campo);
 }
 
 void Driver::crearIndiceString(const NombreTabla& tabla, const NombreCampo& campo) {
@@ -282,7 +283,8 @@ void Driver::crearIndiceString(const NombreTabla& tabla, const NombreCampo& camp
     assert(db.tabla(tabla).campos().Definido(campo));
     assert(!db.tabla(tabla).tipoCampo(campo));
 
-    db.indexar(tabla, campo);
+    tp3::Tabla& t = db.tabla(tabla);
+    t.indexar(campo);
 }
 
 // Joins
