@@ -3,10 +3,8 @@
 - Los nodos de diccTrie ahora tienen un bool `esta` para saber si tienen un valor válido.
     Cambiaron un cacho los algoritmos.
 
-- DB ahora tiene una fn `indexar` para poder crear un índice en una tabla.
-    El tema es que no tiene una función que devuelva una tabla mutable,
-    como para correr `indexar` directamente ahí.
-    TODO: agregar un `tabla(nt)` no const ?
+- El conjunto de tablas de DB se cambia a una aed2::Lista, pues `siguiente()` del iterador
+    de conjuntos solo devuelve objetos inmutables, y necesitamos poder acceder rápido a las tablas.
 
 - Tabla::borrarRegistro siempre siempre borraba todo el conjunto de valores
     indexados en indices[T]_, por mas que el índice no sea clave.
@@ -15,4 +13,8 @@
 - Le agregamos operadores != a Lista, Dicc y Conj de la cátedra.
     Dicc usa != de K en su implementación, lo que no nos permitía
     hacer un diccionario de registros.
+
+- Agregamos DiccTrie::vacio() para poder eliminar tries de DB::vistasJoin_ al borrar joins
+
+- En DB::VistaJoin no se borraba el buffer de operaciones despues de procesarlas
 

@@ -28,6 +28,8 @@ namespace tp3 {
 
             void borrar(const std::string& k);
 
+            bool vacio() const;
+
             DiccTrie<T>::ClaveValor maximo() const;
             DiccTrie<T>::ClaveValor minimo() const;
 
@@ -250,6 +252,11 @@ namespace tp3 {
             maximo_.clave = s;
             maximo_.significado = prox->valor;
         }
+    }
+
+    template<class T>
+    bool DiccTrie<T>::vacio() const {
+        return raiz_ == NULL;
     }
 
     template<class T>
