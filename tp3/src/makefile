@@ -10,9 +10,12 @@ MODULES=modulos/dato.cpp modulos/dato.h \
 	modulos/diccTrie.h \
 	modulos/tabla.cpp modulos/tabla.h
 
-TESTS=	tests/testsEjemplo.h \
-	tests/testsDato.h \
-	tests/testsDiccLog.h
+TESTS=	tests/testsDato.h \
+	tests/testsDB.h \
+	tests/testsDiccLog.h \
+	tests/testsDiccTrie.h \
+	tests/testsDriver.h \
+	tests/testsTabla.h
 
 DEPEND= makefile \
 	aed2.h \

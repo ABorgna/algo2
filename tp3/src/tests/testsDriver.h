@@ -1,7 +1,10 @@
 #include <string>
 #include <iostream>
 
-namespace testsEjemplo 
+#include "../Driver.h"
+#include "../mini_test.h"
+
+namespace testsDriver
 {
     void ejemplo_simple()
     {
@@ -44,7 +47,7 @@ namespace testsEjemplo
       // ...
     }
 
-    void main(int argc, char **argv)
+    void main(int, char**)
     {
         RUN_TEST( ejemplo_simple );
     }

@@ -2,6 +2,7 @@
 #include <iostream>
 
 #include "../modulos/diccLog.h"
+#include "../mini_test.h"
 
 namespace testsDiccLog
 {
@@ -10,9 +11,9 @@ namespace testsDiccLog
         tp3::DiccLog<int, int> dicc;
     }
 
-    void main(int argc, char **argv)
+    void main(int, char **)
     {
-        std::cout << "diccLog:" << std::endl;  
+        std::cout << "diccLog:" << std::endl;
         RUN_TEST( constructor );
     }
 }
