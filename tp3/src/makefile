@@ -48,4 +48,7 @@ test: tests.o
 
 clean:
 	find . -name '*.o' -type f -exec rm -f {} \;
+	rm -f vgcore.*
+	rm -f build
+	rm -f tests.o
 
