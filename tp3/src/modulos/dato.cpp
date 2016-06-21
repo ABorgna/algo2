@@ -37,14 +37,18 @@ const std::string& Dato::getString() const {
     return valorString_;
 }
 
-bool operator == (const Dato& c1, const Dato& c2) {
-    if(c1.isNat() != c2.isNat()) return false;
+bool Dato::operator==(const tp3::Dato& other) const {
+    if(isNat() != other.isNat()) return false;
 
-    if(c1.isNat()){
-        return c1.getNat() == c2.getNat();
+    if(isNat()){
+        return getNat() == other.getNat();
     } else {
-        return c1.getString() == c2.getString();
+        return getString() == other.getString();
     }
+}
+
+bool Dato::operator!=(const tp3::Dato& other) const {
+    return !(this->operator==(other));
 }
 
 bool operator > (const Dato& c1, const Dato& c2) {

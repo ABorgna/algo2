@@ -22,6 +22,9 @@ namespace tp3 {
             unsigned int getNat() const;
             const std::string& getString() const;
 
+            bool operator == (const Dato& other) const;
+            bool operator != (const Dato& other) const;
+
         private:
             bool esNat_;
             std::string valorString_;
@@ -29,8 +32,6 @@ namespace tp3 {
 
             Dato();
     };
-    bool operator == (const Dato& c1, const Dato& c2);
-    bool operator != (const Dato& c1, const Dato& c2);
     bool operator > (const Dato& c1, const Dato& c2);
 
     typedef aed2::Dicc<Campo, Dato> Registro;
