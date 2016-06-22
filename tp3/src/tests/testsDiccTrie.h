@@ -17,6 +17,14 @@ namespace testsDiccTrie
     void definirSimple() {
         tp3::DiccTrie<unsigned int> d;
 
+        d.definir("asd",22);
+
+        ASSERT(!d.vacio());
+        ASSERT(!d.definido(""));
+        ASSERT(!d.definido("asdf"));
+        ASSERT(d.definido("asd"));
+        ASSERT_EQ(d.obtener("asd"), 22);
+
         d.definir("asd",44);
 
         ASSERT(!d.vacio());
@@ -47,6 +55,11 @@ namespace testsDiccTrie
         ASSERT(d.vacio());
         ASSERT(!d.definido(""));
         ASSERT(!d.definido("aoe"));
+
+        d.definir("",0);
+
+        ASSERT(!d.vacio());
+        ASSERT(d.definido(""));
     }
 
     void maxMin() {
@@ -88,10 +101,39 @@ namespace testsDiccTrie
         ASSERT_EQ(d.minimo().significado, 88);
     }
 
+    void eq() {
+        tp3::DiccTrie<unsigned int> d1;
+        tp3::DiccTrie<unsigned int> d2;
+
+        ASSERT(d1 == d1);
+
+        ASSERT(d1 == d2);
+        ASSERT(!(d1 != d2));
+
+        d1.definir("asd", 44);
+
+        ASSERT(d1 != d2);
+
+        d2.definir("asd", 88);
+
+        ASSERT(d1 != d2);
+
+        d1.definir("a",8);
+        d2.definir("a",8);
+
+        ASSERT(d1 != d2);
+
+        d2.definir("asd",44);
+
+        ASSERT(d1 == d2);
+        ASSERT(d2 == d2);
+    }
+
     void main(int, char**) {
         std::cout << "******** trie **********" << std::endl;
         RUN_TEST( constructor );
         RUN_TEST( definirSimple );
         RUN_TEST( maxMin );
+        RUN_TEST( eq );
     }
 }

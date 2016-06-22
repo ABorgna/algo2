@@ -58,6 +58,11 @@ namespace tp3 {
                         hijos[i] = NULL;
                     }
                 };
+
+                bool operator == (
+                        const typename DiccTrie<T>::Nodo& other) const;
+                bool operator != (
+                        const typename DiccTrie<T>::Nodo& other) const;
             };
 
             // Estructura auxiliar para el borrado
@@ -84,14 +89,6 @@ namespace tp3 {
 
     template <class T>
     bool operator != (const DiccTrie<T>&, const DiccTrie<T>&);
-
-    template <class T>
-    bool operator == (const typename DiccTrie<T>::Nodo&,
-                      const typename DiccTrie<T>::Nodo&);
-
-    template <class T>
-    bool operator != (const typename DiccTrie<T>::Nodo&,
-                      const typename DiccTrie<T>::Nodo&);
 
     /****************************
      * Implementación
@@ -130,9 +127,6 @@ namespace tp3 {
             prox = prox->hijos[(unsigned char) k[i]];
             i++;
         }
-
-        // No tiene que estar definido
-        assert(!prox->esta);
 
         prox->valor = v;
         prox->esta = true;
@@ -315,8 +309,8 @@ namespace tp3 {
 
     template <class T>
     bool DiccTrie<T>::operator == (const DiccTrie<T>& other) const {
-        if(raiz_ == NULL) return other.raiz_ == NULL;
-        return *raiz_ == *other.raiz_;
+        if(raiz_ == NULL xor other.raiz_ == NULL) return false;
+        return raiz_ == NULL or *raiz_ == *other.raiz_;
     }
 
     template <class T>
@@ -330,22 +324,22 @@ namespace tp3 {
     }
 
     template <class T>
-    bool operator == (const typename DiccTrie<T>::Nodo& n1,
-                      const typename DiccTrie<T>::Nodo& n2) {
-        if(n1.esta != n2.esta) return false;
-        if(n1.esta and n1.valor != n2.valor) return false;
+    bool DiccTrie<T>::Nodo::operator==(
+            const typename DiccTrie<T>::Nodo& other) const {
+        if(esta != other.esta) return false;
+        if(esta and valor != other.valor) return false;
 
         for(int i=0; i<256; i++) {
-            if(n1.hijo[i] == NULL xor n2.hijo[i] == NULL) return false;
-            if(n1.hijo[i] != NULL and *n1.hijo[i] != *n2.hijo[i]) return false;
+            if(hijos[i] == NULL xor other.hijos[i] == NULL) return false;
+            if(hijos[i] != NULL and *hijos[i] != *other.hijos[i]) return false;
         }
         return true;
     }
 
     template <class T>
-    bool operator != (const typename DiccTrie<T>::Nodo& n1,
-                      const typename DiccTrie<T>::Nodo& n2) {
-        return !(n1 == n2);
+    bool DiccTrie<T>::Nodo::operator!=(
+            const typename DiccTrie<T>::Nodo& other) const {
+        return !(this->operator==(other));
     }
 }
 
