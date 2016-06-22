@@ -309,7 +309,7 @@ namespace tp3 {
 
     template <class T>
     bool DiccTrie<T>::operator == (const DiccTrie<T>& other) const {
-        if(raiz_ == NULL xor other.raiz_ == NULL) return false;
+        if((raiz_ == NULL) xor (other.raiz_ == NULL)) return false;
         return raiz_ == NULL or *raiz_ == *other.raiz_;
     }
 
@@ -330,7 +330,7 @@ namespace tp3 {
         if(esta and valor != other.valor) return false;
 
         for(int i=0; i<256; i++) {
-            if(hijos[i] == NULL xor other.hijos[i] == NULL) return false;
+            if((hijos[i] == NULL) xor (other.hijos[i] == NULL)) return false;
             if(hijos[i] != NULL and *hijos[i] != *other.hijos[i]) return false;
         }
         return true;
