@@ -76,7 +76,166 @@ namespace testsTabla
     }
 
     void indexar() {
-        // TODO
+        tp3::Registro campos = sampleCampos();
+        aed2::Conj<tp3::Campo> claves = sampleClaves();
+
+        // Indexar sobre vacío
+
+        tp3::Tabla t = tp3::Tabla("nombre", claves, campos);
+
+        ASSERT(!t.esIndice("claveNat0"));
+        ASSERT(!t.esIndice("claveStr0"));
+
+        t.indexar("claveNat0");
+
+        ASSERT(t.esIndice("claveNat0"));
+        ASSERT(!t.esIndice("claveStr0"));
+
+        t.indexar("claveStr0");
+
+        ASSERT(t.esIndice("claveNat0"));
+        ASSERT(t.esIndice("claveStr0"));
+
+        // Inserciones y max/min
+
+        t.agregarRegistro(sampleReg0());
+
+        ASSERT_EQ(t.maxNat(), 0);
+        ASSERT_EQ(t.minNat(), 0);
+        ASSERT_EQ(t.maxString(), "a");
+        ASSERT_EQ(t.minString(), "a");
+
+        t.agregarRegistro(sampleReg1());
+        t.agregarRegistro(sampleReg2());
+        t.agregarRegistro(sampleReg3());
+
+        ASSERT_EQ(t.maxNat(), 3);
+        ASSERT_EQ(t.minNat(), 0);
+        ASSERT_EQ(t.maxString(), "d");
+        ASSERT_EQ(t.minString(), "a");
+
+        // Borrar indexados
+
+        t.borrarRegistro("claveNat0", tp3::Dato(0));
+        t.borrarRegistro("claveStr0", tp3::Dato("d"));
+
+        ASSERT_EQ(t.cantidadRegistros(), 2);
+        ASSERT_EQ(t.maxNat(), 2);
+        ASSERT_EQ(t.minNat(), 1);
+        ASSERT_EQ(t.maxString(), "c");
+        ASSERT_EQ(t.minString(), "b");
+
+        // Borrar inexistentes por indice
+
+        t.borrarRegistro("claveNat0", tp3::Dato(0xDEADBEEF));
+        t.borrarRegistro("claveStr0", tp3::Dato("no existe"));
+
+        ASSERT_EQ(t.cantidadRegistros(), 2);
+
+
+        // Indexar con registros indexados
+
+        tp3::Tabla q = tp3::Tabla("nombre", claves, campos);
+
+        q.agregarRegistro(sampleReg1());
+        q.agregarRegistro(sampleReg2());
+        q.agregarRegistro(sampleReg3());
+
+        q.indexar("claveNat0");
+        q.indexar("claveStr0");
+
+        ASSERT_EQ(q.maxNat(), 3);
+        ASSERT_EQ(q.minNat(), 1);
+        ASSERT_EQ(q.maxString(), "d");
+        ASSERT_EQ(q.minString(), "b");
+
+        q.agregarRegistro(sampleReg0());
+
+        ASSERT_EQ(q.maxNat(), 3);
+        ASSERT_EQ(q.minNat(), 0);
+        ASSERT_EQ(q.maxString(), "d");
+        ASSERT_EQ(q.minString(), "a");
+
+    }
+
+    void buscar() {
+        tp3::Registro campos = sampleCampos();
+        aed2::Conj<tp3::Campo> claves = sampleClaves();
+
+        tp3::Tabla t = tp3::Tabla("nombre", claves, campos);
+
+        t.agregarRegistro(sampleReg0());
+        t.agregarRegistro(sampleReg1());
+        t.agregarRegistro(sampleReg2());
+        t.agregarRegistro(sampleReg3());
+
+        // Buscar sin indices, un registro
+
+        tp3::Registro crit0;
+        crit0.definir("claveNat0", tp3::Dato(0));
+
+        const aed2::Conj<tp3::Registro> res0 = t.buscar(crit0);
+
+        ASSERT_EQ(res0.Cardinal(), 1);
+
+        const tp3::Registro res0_r0 = res0.CrearIt().Siguiente();
+
+        ASSERT_EQ(res0_r0.obtener("claveNat0").getNat(), 0);
+        ASSERT_EQ(res0_r0.obtener("claveNat1").getNat(), 0);
+        ASSERT_EQ(res0_r0.obtener("claveStr0").getString(), "a");
+        ASSERT_EQ(res0_r0.obtener("claveStr1").getString(), "0");
+
+        // Buscar sin indices, varios registros
+
+        tp3::Registro crit1;
+        crit1.definir("str2", tp3::Dato("asd"));
+
+        const aed2::Conj<tp3::Registro> res1 = t.buscar(crit1);
+
+        ASSERT_EQ(res1.Cardinal(), 2);
+
+        aed2::Conj<tp3::Registro>::const_Iterador it1 = res0.CrearIt();
+        const tp3::Registro res1_r0 = it1.Siguiente();
+        it1.Avanzar();
+        const tp3::Registro res1_r1 = it1.Siguiente();
+
+        ASSERT_EQ(res1_r0.obtener("claveNat0").getNat(), 0);
+        ASSERT_EQ(res1_r1.obtener("claveNat0").getNat(), 1);
+
+        // Buscar sin resultados
+
+        tp3::Registro crit2;
+        crit2.definir("str2", tp3::Dato("no existe"));
+
+        const aed2::Conj<tp3::Registro> res2 = t.buscar(crit1);
+
+        ASSERT_EQ(res2.Cardinal(), 0);
+
+        // Buscar indexados
+
+        t.indexar("claveNat0");
+        t.indexar("claveStr0");
+
+        tp3::Registro crit3;
+        crit3.definir("claveStr0", tp3::Dato("a"));
+
+        const aed2::Conj<tp3::Registro> res3 = t.buscar(crit3);
+
+        ASSERT_EQ(res3.Cardinal(), 1);
+
+        const tp3::Registro res3_r0 = res3.CrearIt().Siguiente();
+
+        ASSERT_EQ(res3_r0.obtener("claveNat0").getNat(), 0);
+
+        // Buscar indexados sin resultado
+
+        tp3::Registro crit4;
+        crit4.definir("claveNat0", tp3::Dato(0xDEADBEEF));
+
+        const aed2::Conj<tp3::Registro> res4 = t.buscar(crit4);
+
+        ASSERT_EQ(res4.Cardinal(), 0);
+
     }
 
     void main(int, char**) {
@@ -84,6 +243,7 @@ namespace testsTabla
         RUN_TEST( constructor );
         RUN_TEST( insertar );
         RUN_TEST( indexar );
+        RUN_TEST( buscar );
     }
 
     /* Auxiliares */
