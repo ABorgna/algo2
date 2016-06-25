@@ -57,9 +57,9 @@ namespace tp3 {
 
             class Iterador {
                 public:
-
                     Iterador();
-                    Iterador(const typename DiccLog<K, T>::Iterador& otro);
+                    Iterador(DiccLog<K,T>* d, typename DiccLog<K,T>::Nodo* r);
+                    Iterador(const typename DiccLog<K,T>::Iterador& otro);
                     Iterador& operator = (const typename DiccLog<K, T>::Iterador& otro);
 
                     bool operator == (const typename DiccLog<K, T>::Iterador& otro) const;
@@ -78,8 +78,8 @@ namespace tp3 {
 
             class const_Iterador {
                 public:
-
                     const_Iterador();
+                    const_Iterador(const DiccLog<K, T>* d, const typename DiccLog<K,T>::Nodo* r);
                     const_Iterador(const typename DiccLog<K, T>::const_Iterador& otro);
                     const_Iterador& operator = (const typename DiccLog<K, T>::Iterador& otro);
 
@@ -92,9 +92,9 @@ namespace tp3 {
 
                 private:
 
-                    Nodo* actual_;
+                    const Nodo* actual_;
                     aed2::Lista<Nodo*> siguientes_;
-                    DiccLog<K,T>* dicc;
+                    const DiccLog<K,T>* dicc;
             };
 
         private:
@@ -178,13 +178,13 @@ namespace tp3 {
     template<class K, class T>
     typename DiccLog<K, T>::Iterador DiccLog<K, T>::CrearIt()
     {
-        assert(false);
+        return DiccLog<K, T>::Iterador(this, this->raiz_);
     }
 
     template<class K, class T>
     typename DiccLog<K, T>::const_Iterador DiccLog<K, T>::CrearIt() const
     {
-        assert(false);
+        return DiccLog<K, T>::const_Iterador(this, this->raiz_);
     }
 
     template<class K, class T>
@@ -202,12 +202,21 @@ namespace tp3 {
      ************************/
 
     template<class K, class T>
-    DiccLog<K,T>::Iterador::Iterador() {
+    DiccLog<K,T>::Iterador::Iterador()
+    {
         assert(false);
     }
 
     template<class K, class T>
-    DiccLog<K,T>::Iterador::Iterador(const typename DiccLog<K,T>::Iterador& otro) {
+    DiccLog<K,T>::Iterador::Iterador(DiccLog<K,T>* dicc, typename DiccLog<K,T>::Nodo* raiz) {
+        this->dicc = dicc;
+        this->actual_ = raiz;
+        this->siguientes_ = aed2::Lista<Nodo*>();
+    }
+
+    template<class K, class T>
+    DiccLog<K,T>::Iterador::Iterador(const typename DiccLog<K,T>::Iterador& otro) 
+    {
         assert(false);
     }
 
@@ -229,16 +238,20 @@ namespace tp3 {
 
     template<class K, class T>
     bool DiccLog<K,T>::Iterador::hayMas() const {
-        assert(false);
+        return this->actual_ != NULL;
     }
 
     template<class K, class T>
     typename DiccLog<K,T>::ClaveValor DiccLog<K,T>::Iterador::actual() const {
+        if(this->actual_ == NULL)
+            throw -1;
         assert(false);
     }
 
     template<class K, class T>
     void DiccLog<K,T>::Iterador::avanzar() {
+        if(this->siguientes_.EsVacia())
+            throw -1;
         assert(false);
     }
 
@@ -252,7 +265,19 @@ namespace tp3 {
     }
 
     template<class K, class T>
-    DiccLog<K,T>::const_Iterador::const_Iterador(const typename DiccLog<K,T>::const_Iterador& otro) {
+    DiccLog<K,T>::const_Iterador::const_Iterador(
+            const DiccLog<K,T>* dicc, 
+            const typename DiccLog<K,T>::Nodo* raiz
+    ) {
+        this->dicc = dicc;
+        this->actual_ = raiz;
+        this->siguientes_ = aed2::Lista<Nodo*>();
+    }
+
+    template<class K, class T>
+    DiccLog<K,T>::const_Iterador::const_Iterador(
+            const typename DiccLog<K,T>::const_Iterador& otro
+    ) {
         assert(false);
     }
 
@@ -276,7 +301,7 @@ namespace tp3 {
 
     template<class K, class T>
     bool DiccLog<K,T>::const_Iterador::hayMas() const {
-        assert(false);
+        return this->actual_ != NULL;
     }
 
     template<class K, class T>

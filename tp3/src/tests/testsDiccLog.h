@@ -17,6 +17,22 @@ namespace testsDiccLog
         ASSERT_RAISE(d.minimo());
     }
 
+    void iterador_vacio() {
+        tp3::DiccLog<std::string, int> d;
+        tp3::DiccLog<std::string, int>::Iterador it = d.CrearIt();
+        
+        ASSERT(!it.hayMas());
+        ASSERT_RAISE(it.actual());
+        ASSERT_RAISE(it.avanzar());
+        
+        const tp3::DiccLog<std::string, int> dc;
+        tp3::DiccLog<std::string, int>::const_Iterador itc = dc.CrearIt();
+        
+        ASSERT(!it.hayMas());
+        ASSERT_RAISE(it.actual());
+        ASSERT_RAISE(it.avanzar());
+    }
+
     void definirSimple() {
         tp3::DiccLog<std::string, int> d;
 
@@ -249,6 +265,7 @@ namespace testsDiccLog
     void main(int, char **) {
         std::cout << "******** diccLog *******" << std::endl;
         RUN_TEST( constructor );
+        RUN_TEST( iterador_vacio );
         // RUN_TEST( definirSimple );
         // RUN_TEST( maxMin );
         // RUN_TEST( eq );
