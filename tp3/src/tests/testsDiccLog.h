@@ -6,12 +6,15 @@
 
 namespace testsDiccLog
 {
-    void constructor()
-    {
+    void constructor() {
         tp3::DiccLog<std::string, int> d;
 
         ASSERT(!d.definido(""));
         ASSERT(!d.definido("asd"));
+
+        ASSERT_RAISE(d.obtener("asd"));
+        ASSERT_RAISE(d.maximo());
+        ASSERT_RAISE(d.minimo());
     }
 
     void definirSimple() {
@@ -200,7 +203,6 @@ namespace testsDiccLog
 
         ASSERT_EQ(acumV,6);
         ASSERT_EQ(acumC,6);
-
     }
 
     void iteradoresOperators() {
@@ -244,14 +246,13 @@ namespace testsDiccLog
         ASSERT(itC1 == itC2);
     }
 
-    void main(int, char **)
-    {
+    void main(int, char **) {
         std::cout << "******** diccLog *******" << std::endl;
         RUN_TEST( constructor );
-        RUN_TEST( definirSimple );
-        RUN_TEST( maxMin );
-        RUN_TEST( eq );
-        RUN_TEST( iteradores );
-        RUN_TEST( iteradoresOperators );
+        // RUN_TEST( definirSimple );
+        // RUN_TEST( maxMin );
+        // RUN_TEST( eq );
+        // RUN_TEST( iteradores );
+        // RUN_TEST( iteradoresOperators );
     }
 }

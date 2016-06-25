@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
 
     testsDato::main(argc, argv);
     testsDiccTrie::main(argc, argv);
-    //testsDiccLog::main(argc, argv);
+    testsDiccLog::main(argc, argv);
     //testsTabla::main(argc, argv);
     testsDB::main(argc, argv);
     //testsDriver::main(argc, argv);

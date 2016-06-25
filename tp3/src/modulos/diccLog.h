@@ -119,13 +119,14 @@ namespace tp3 {
     template<class K, class T>
     DiccLog<K, T>::DiccLog() 
     {
-        assert(false);
+        raiz_ = NULL;
+        minimo_ = NULL;
+        maximo_ = NULL;
     }
 
     template<class K, class T>
     DiccLog<K, T>::~DiccLog()
     {
-        assert(false);
     }
 
     template<class K, class T>
@@ -137,18 +138,20 @@ namespace tp3 {
     template<class K, class T>
     bool DiccLog<K, T>::definido(const K& k) const
     {
-        assert(false);
+        return false;
     }
 
     template<class K, class T>
     const T& DiccLog<K, T>::obtener(const K& k) const
     {
+        if(raiz_ == NULL) throw -1;
         assert(false);
     }
 
     template<class K, class T>
     T& DiccLog<K, T>::obtener(const K& k)
     {
+        if(raiz_ == NULL) throw -1;
         assert(false);
     }
 
@@ -161,12 +164,14 @@ namespace tp3 {
     template<class K, class T>
     typename DiccLog<K, T>::ClaveValor DiccLog<K, T>::maximo() const
     {
+        if(maximo_ == NULL) throw -1;
         assert(false);
     }
 
     template<class K, class T>
     typename DiccLog<K, T>::ClaveValor DiccLog<K, T>::minimo() const
     {
+        if(minimo_ == NULL) throw -1;
         assert(false);
     }
 
