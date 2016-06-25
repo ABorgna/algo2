@@ -100,6 +100,9 @@ namespace tp3 {
         private:
 
             struct Nodo {
+
+                Nodo(const K& k, const T& v, Nodo* p);
+
                 K clave;
                 T valor;
 
@@ -107,13 +110,14 @@ namespace tp3 {
                 Nodo* mayor;
                 Nodo* padre;
 
-                unsigned int fdb;
+                int fdb;
             };
 
             Nodo* raiz_;
             Nodo* minimo_;
             Nodo* maximo_;
 
+            void auxDefinir(Nodo* n, const K& k, const T& v);
     };
 
     template<class K, class T>
@@ -127,32 +131,62 @@ namespace tp3 {
     template<class K, class T>
     DiccLog<K, T>::~DiccLog()
     {
+        if( this->raiz_ != NULL )
+            delete this->raiz_;
     }
 
     template<class K, class T>
     void DiccLog<K, T>::definir(const K& k, const T& v)
     {
-        assert(false);
+        if( this->raiz_ == NULL ) {
+            this->raiz_ = new Nodo(k, v, NULL);
+        }
+        else {
+            auxDefinir(this->raiz_, k, v);
+        }
+    }
+
+    template<class K, class T>
+    DiccLog<K, T>::Nodo::Nodo(const K& k, const T& v, typename DiccLog<K, T>::Nodo* p)
+        : valor(v)
+    {
+        this->clave = k;
+        this->menor = NULL;
+        this->mayor = NULL;
+        this->padre = p;
+        this->fdb = 0;
+    }
+    
+    template<class K, class T>
+    void DiccLog<K, T>::auxDefinir(typename DiccLog<K, T>::Nodo* n, const K& k, const T& v)
+    {
     }
 
     template<class K, class T>
     bool DiccLog<K, T>::definido(const K& k) const
     {
+        if( this->raiz_ == NULL )
+            return false;
+        if( this->raiz_->clave == k )
+            return true;
         return false;
     }
 
     template<class K, class T>
     const T& DiccLog<K, T>::obtener(const K& k) const
     {
-        if(raiz_ == NULL) throw -1;
-        assert(false);
+        if( this->raiz_ == NULL ) throw -1;
+        if( this->raiz_->clave == k )
+            return this->raiz_->valor;
     }
 
     template<class K, class T>
     T& DiccLog<K, T>::obtener(const K& k)
     {
-        if(raiz_ == NULL) throw -1;
-        assert(false);
+        if( this->raiz_ == NULL ) 
+            throw -1;
+        if( this->raiz_->clave == k )
+            return this->raiz_->valor;
     }
 
     template<class K, class T>

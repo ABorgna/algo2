@@ -12,7 +12,7 @@ namespace testsDiccLog
         ASSERT(!d.definido(""));
         ASSERT(!d.definido("asd"));
 
-        ASSERT_RAISE(d.obtener("asd"));
+        ASSERT_RAISE(d.obtener("as"));
         ASSERT_RAISE(d.maximo());
         ASSERT_RAISE(d.minimo());
     }
@@ -31,6 +31,14 @@ namespace testsDiccLog
         ASSERT(!it.hayMas());
         ASSERT_RAISE(it.actual());
         ASSERT_RAISE(it.avanzar());
+    }
+
+    void definir_uno() {
+        tp3::DiccLog<std::string, int> d;
+       
+        d.definir("ave", 2);
+        ASSERT(d.definido("ave"));
+        ASSERT_EQ(d.obtener("ave"), 2);
     }
 
     void definirSimple() {
@@ -266,6 +274,7 @@ namespace testsDiccLog
         std::cout << "******** diccLog *******" << std::endl;
         RUN_TEST( constructor );
         RUN_TEST( iterador_vacio );
+        RUN_TEST( definir_uno );
         // RUN_TEST( definirSimple );
         // RUN_TEST( maxMin );
         // RUN_TEST( eq );
