@@ -527,7 +527,6 @@ namespace tp3 {
                 this->siguientes_.AgregarAdelante(this->actual_->mayor);
             }
         }
-
     }
 
     /************************
@@ -543,10 +542,19 @@ namespace tp3 {
     DiccLog<K,T>::const_Iterador::const_Iterador(
             const DiccLog<K,T>* dicc, 
             const typename DiccLog<K,T>::Nodo* raiz
-    ) {
+    ) 
+    : siguientes_(aed2::Lista<Nodo*>())
+    {
         this->dicc = dicc;
         this->actual_ = raiz;
-        this->siguientes_ = aed2::Lista<Nodo*>();
+        if( this->actual_ != NULL ) {
+            if( this->actual_->menor != NULL ) {
+                this->siguientes_.AgregarAdelante(this->actual_->menor);
+            }
+            if( this->actual_->mayor != NULL ) {
+                this->siguientes_.AgregarAdelante(this->actual_->mayor);
+            }
+        }
     }
 
     template<class K, class T>
@@ -581,12 +589,30 @@ namespace tp3 {
 
     template<class K, class T>
     typename DiccLog<K,T>::const_ClaveValor DiccLog<K,T>::const_Iterador::actual() const {
-        assert(false);
+        if( this->actual_ == NULL ) {
+            throw -1;
+        }
+        return DiccLog<K,T>::const_ClaveValor(this->actual_->clave, this->actual_->valor);
     }
 
     template<class K, class T>
     void DiccLog<K,T>::const_Iterador::avanzar() {
-        assert(false);
+        if( this->actual_ == NULL ) {
+            throw -1;
+        }
+        if(this->siguientes_.EsVacia()) {
+            this->actual_ = NULL;
+        }
+        else {
+            this->actual_ = this->siguientes_.Primero();
+            this->siguientes_.Fin();
+            if( this->actual_->menor != NULL ) {
+                this->siguientes_.AgregarAdelante(this->actual_->menor);
+            }
+            if( this->actual_->mayor != NULL ) {
+                this->siguientes_.AgregarAdelante(this->actual_->mayor);
+            }
+        }
     }
 }
 

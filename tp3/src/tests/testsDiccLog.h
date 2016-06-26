@@ -100,6 +100,19 @@ namespace testsDiccLog
         it.avanzar();
         ASSERT_EQ(it.hayMas(), false);
         ASSERT_RAISE(it.avanzar());
+
+        tp3::DiccLog<std::string, int> dc; 
+        dc.definir("ave constante", 2);
+        dc.definir("berenjena invariante", 1);
+        dc.definir("caballo estatico", 6);
+
+        tp3::DiccLog<std::string, int>::Iterador itc = dc.CrearIt();
+        ASSERT(itc.hayMas());
+        itc.avanzar();
+        itc.avanzar();
+        itc.avanzar();
+        ASSERT_EQ(itc.hayMas(), false);
+        ASSERT_RAISE(itc.avanzar());
     }
 
     void definirSimple() {
