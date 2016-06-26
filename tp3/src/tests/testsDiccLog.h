@@ -87,6 +87,21 @@ namespace testsDiccLog
         ASSERT_RAISE(d.minimo());
     }
 
+    void iterador() {
+        tp3::DiccLog<std::string, int> d; 
+        d.definir("ave", 2);
+        d.definir("berenjena", 1);
+        d.definir("caballo", 6);
+
+        tp3::DiccLog<std::string, int>::Iterador it = d.CrearIt();
+        ASSERT(it.hayMas());
+        it.avanzar();
+        it.avanzar();
+        it.avanzar();
+        ASSERT_EQ(it.hayMas(), false);
+        ASSERT_RAISE(it.avanzar());
+    }
+
     void definirSimple() {
         tp3::DiccLog<std::string, int> d;
 
@@ -324,6 +339,7 @@ namespace testsDiccLog
         RUN_TEST( definir_varios );
         RUN_TEST( borrar );
         RUN_TEST( maximo_y_minimo );
+        RUN_TEST( iterador );
         // RUN_TEST( definirSimple );
         // RUN_TEST( maxMin );
         // RUN_TEST( eq );
