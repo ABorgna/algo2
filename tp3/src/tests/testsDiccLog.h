@@ -86,8 +86,8 @@ namespace testsDiccLog
         d.definir("ave", 2);
         d.definir("berenjena", 1);
         d.definir("caballo", 6);
-    
-        ASSERT("ave" < "berenjena");
+
+        ASSERT(std::string("ave") < std::string("berenjena"));
         ASSERT_EQ(d.minimo().clave, "ave");
         ASSERT_EQ(d.maximo().clave, "caballo");
         d.borrar("ave");

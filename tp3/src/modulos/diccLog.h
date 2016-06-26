@@ -261,14 +261,12 @@ namespace tp3 {
     }
 
     template<class K, class T>
-    int DiccLog<K, T>::auxMin(int a, int b) 
+    int DiccLog<K, T>::auxMin(int a, int b)
     {
         if( a > b ) {
             return b;
         }
-        else {
-            return a;
-        }
+        return a;
     }
 
     template<class K, class T>
@@ -611,6 +609,8 @@ namespace tp3 {
         this->actual_ = otro.actual_;
         this->siguientes_ = aed2::Lista<typename DiccLog<K,T>::Nodo*>(otro.siguientes_);
         this->dicc = otro.dicc;
+
+        return *this;
     }
 
     template<class K, class T>
@@ -701,6 +701,8 @@ namespace tp3 {
         this->actual_ = otro.actual_;
         this->siguientes_ = aed2::Lista<typename DiccLog<K,T>::Nodo*>(otro.siguientes_);
         this->dicc = otro.dicc;
+
+        return *this;
     }
 
     template<class K, class T>
