@@ -296,12 +296,12 @@ const aed2::Conj<Registro> Tabla::buscar(const Registro& crit) const {
             Registro::const_Iterador itReg = crit.CrearIt();
             bool igual = true;
 
-            while(it.HaySiguiente()) {
+            while(itReg.hayMas()) {
                 const Campo& c = itReg.actual().clave;
                 if(r.definido(c)) {
                     igual &= itReg.actual().significado == r.obtener(c);
                 }
-                it.Avanzar();
+                itReg.avanzar();
             }
             if(igual) {
                 res.AgregarRapido(r);
