@@ -125,6 +125,7 @@ namespace testsDiccLog
         d.definir("fulano", 5);
 
         tp3::DiccLog<std::string, int>::Iterador it = d.CrearIt();
+
         ASSERT_EQ(it.actual().clave, "desierto");
         it.avanzar();
         ASSERT_EQ(it.actual().clave, "berenjena");
@@ -379,7 +380,7 @@ namespace testsDiccLog
         RUN_TEST( borrar );
         RUN_TEST( maximo_y_minimo );
         RUN_TEST( iterador );
-        // RUN_TEST( orden_y_balanceo );
+        RUN_TEST( orden_y_balanceo );
         // RUN_TEST( definirSimple );
         // RUN_TEST( maxMin );
         // RUN_TEST( eq );

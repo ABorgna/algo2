@@ -575,11 +575,11 @@ namespace tp3 {
         this->dicc = dicc;
         this->actual_ = raiz;
         if( this->actual_ != NULL ) {
-            if( this->actual_->menor != NULL ) {
-                this->siguientes_.AgregarAdelante(this->actual_->menor);
-            }
             if( this->actual_->mayor != NULL ) {
                 this->siguientes_.AgregarAdelante(this->actual_->mayor);
+            }
+            if( this->actual_->menor != NULL ) {
+                this->siguientes_.AgregarAdelante(this->actual_->menor);
             }
         }
     }
@@ -630,11 +630,11 @@ namespace tp3 {
         else {
             this->actual_ = this->siguientes_.Primero();
             this->siguientes_.Fin();
-            if( this->actual_->menor != NULL ) {
-                this->siguientes_.AgregarAdelante(this->actual_->menor);
-            }
             if( this->actual_->mayor != NULL ) {
                 this->siguientes_.AgregarAdelante(this->actual_->mayor);
+            }
+            if( this->actual_->menor != NULL ) {
+                this->siguientes_.AgregarAdelante(this->actual_->menor);
             }
         }
     }
@@ -658,11 +658,11 @@ namespace tp3 {
         this->dicc = dicc;
         this->actual_ = raiz;
         if( this->actual_ != NULL ) {
-            if( this->actual_->menor != NULL ) {
-                this->siguientes_.AgregarAdelante(this->actual_->menor);
-            }
             if( this->actual_->mayor != NULL ) {
                 this->siguientes_.AgregarAdelante(this->actual_->mayor);
+            }
+            if( this->actual_->menor != NULL ) {
+                this->siguientes_.AgregarAdelante(this->actual_->menor);
             }
         }
     }
@@ -716,11 +716,11 @@ namespace tp3 {
         else {
             this->actual_ = this->siguientes_.Primero();
             this->siguientes_.Fin();
-            if( this->actual_->menor != NULL ) {
-                this->siguientes_.AgregarAdelante(this->actual_->menor);
-            }
             if( this->actual_->mayor != NULL ) {
                 this->siguientes_.AgregarAdelante(this->actual_->mayor);
+            }
+            if( this->actual_->menor != NULL ) {
+                this->siguientes_.AgregarAdelante(this->actual_->menor);
             }
         }
     }
