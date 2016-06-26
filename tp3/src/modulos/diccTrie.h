@@ -18,6 +18,7 @@ namespace tp3 {
             class Iterador;
 
             DiccTrie();
+            DiccTrie(const DiccTrie<T>& otro);
             ~DiccTrie();
 
             void definir(const std::string& k, const T& v);
@@ -97,6 +98,11 @@ namespace tp3 {
     template<class T>
     DiccTrie<T>::DiccTrie() :
         raiz_(NULL) {}
+
+    template<class T>
+    DiccTrie<T>::DiccTrie(__attribute__((unused)) const DiccTrie<T>& otro) {
+        assert(false);
+    }
 
     template<class T>
     DiccTrie<T>::~DiccTrie() {

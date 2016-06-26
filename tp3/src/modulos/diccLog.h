@@ -105,6 +105,7 @@ namespace tp3 {
             struct Nodo {
 
                 Nodo(const K& k, const T& v, Nodo* p);
+                Nodo(const Nodo& otro);
 
                 K clave;
                 T valor;
@@ -154,8 +155,13 @@ namespace tp3 {
     }
 
     template<class K, class T>
-    DiccLog<K,T>::DiccLog(__attribute((unused)) const DiccLog<K,T>& otro) {
-        assert(false);
+    DiccLog<K,T>::DiccLog(const DiccLog<K,T>& otro) {
+        if(otro.raiz_ != NULL) {
+            this->raiz_ = new Nodo(*otro.raiz_);
+
+            this->maximo_ = auxMaximoNodo(this->raiz_);
+            this->minimo_ = auxMinimoNodo(this->raiz_);
+        }
     }
 
     template<class K, class T>
@@ -198,6 +204,25 @@ namespace tp3 {
           padre(p),
           fdb(0)
     {
+    }
+
+    template<class K, class T>
+    DiccLog<K, T>::Nodo::Nodo(const Nodo& otro)
+        : clave(otro.clave),
+          valor(otro.valor),
+          menor(NULL),
+          mayor(NULL),
+          padre(NULL),
+          fdb(otro.fdb)
+    {
+        if(otro.menor != NULL) {
+            this->menor = new Nodo(*otro.menor);
+            this->menor->padre = this;
+        }
+        if(otro.mayor != NULL) {
+            this->mayor = new Nodo(*otro.mayor);
+            this->mayor->padre = this;
+        }
     }
 
     template<class K, class T>
@@ -607,6 +632,9 @@ namespace tp3 {
     DiccLog<K,T>::Iterador::Iterador(const typename DiccLog<K,T>::Iterador& otro) 
     : actual_(otro.actual_), siguientes_(otro.siguientes_), dicc(otro.dicc)
     {
+        assert(false);
+        // TODO: Hay que hacer una deep copy de todo,
+        // teniendo en cuenta que copy(Lista) esta para el orto
     }
 
     template<class K, class T>
@@ -697,6 +725,10 @@ namespace tp3 {
     )
     : actual_(otro.actual_), siguientes_(otro.siguientes_), dicc(otro.dicc)
     {
+        assert(false);
+        // TODO: Hay que hacer una deep copy de todo,
+        // teniendo en cuenta que copy(Lista) esta para el orto
+
         // this->siguientes_ = aed2::Lista<typename DiccLog<K,T>::Nodo*>(otro.siguientes_);
         // this->dicc = otro.dicc;
     }
