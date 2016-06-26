@@ -5,9 +5,6 @@ using namespace tp3;
 DB::DB() {
 }
 
-DB::~DB() {
-}
-
 void DB::agregarTabla(const Tabla& t) {
     NombreTabla nt = t.nombre();
     assert(!tablasTree_.definido(nt));
