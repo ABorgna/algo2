@@ -11,8 +11,9 @@ namespace testsDiccLog
 
         ASSERT(!d.definido(""));
         ASSERT(!d.definido("as"));
-
+        std::cout << "hey...";
         ASSERT_RAISE(d.obtener("as"));
+        std::cout << "you...";
         ASSERT_RAISE(d.maximo());
         ASSERT_RAISE(d.minimo());
     }

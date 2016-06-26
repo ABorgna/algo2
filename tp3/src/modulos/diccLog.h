@@ -117,6 +117,8 @@ namespace tp3 {
             Nodo* minimo_;
             Nodo* maximo_;
 
+            Nodo* auxObtenerNodo(Nodo* n, const K& k);
+            const Nodo* auxObtenerNodo(const Nodo* n, const K& k) const;
             bool auxDefinidoNodo(Nodo* n, const K& k) const;
             void auxDefinirNodo(Nodo* n, const K& k, const T& v);
             void auxPropagarInsercion(Nodo* n);
@@ -222,22 +224,62 @@ namespace tp3 {
     template<class K, class T>
     const T& DiccLog<K, T>::obtener(const K& k) const
     {
-        if( this->raiz_ == NULL ) throw -1;
-        if( this->raiz_->clave == k )
-            return this->raiz_->valor;
+        const typename DiccLog<K, T>::Nodo* n = auxObtenerNodo(this->raiz_, k);
+        if( n == NULL)
+            throw -1;
+        return n->valor;
     }
 
     template<class K, class T>
     T& DiccLog<K, T>::obtener(const K& k)
     {
-        if( this->raiz_ == NULL ) {
+        typename DiccLog<K, T>::Nodo* n = auxObtenerNodo(this->raiz_, k);
+        if( n == NULL)
             throw -1;
+        return n->valor;
+    }
+
+    template<class K, class T>
+    const typename DiccLog<K, T>::Nodo* DiccLog<K, T>::auxObtenerNodo(const typename DiccLog<K, T>::Nodo* n, const K& k) const
+    {
+        if( n == NULL ) {
+            return NULL;
         }
-        if( this->raiz_->clave == k ) {
-            return this->raiz_->valor;
+        else {
+            if( k == n->clave ) {
+                return n;
+            }
+            else {
+                if( k > n->clave ) {
+                    return auxObtenerNodo(n->mayor, k);
+                }
+                else {
+                    return auxObtenerNodo(n->menor, k);
+                }
+            }
         }
     }
 
+    template<class K, class T>
+    typename DiccLog<K, T>::Nodo* DiccLog<K, T>::auxObtenerNodo(typename DiccLog<K, T>::Nodo* n, const K& k)
+    {
+        if( n == NULL ) {
+            return NULL;
+        }
+        else {
+            if( k == n->clave ) {
+                return n;
+            }
+            else {
+                if( k > n->clave ) {
+                    return auxObtenerNodo(n->mayor, k);
+                }
+                else {
+                    return auxObtenerNodo(n->menor, k);
+                }
+            }
+        }
+    }
 
     template<class K, class T>
     void DiccLog<K, T>::borrar(const K& k)
