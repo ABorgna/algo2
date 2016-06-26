@@ -155,7 +155,9 @@ namespace tp3 {
     }
 
     template<class K, class T>
-    DiccLog<K,T>::DiccLog(const DiccLog<K,T>& otro) {
+    DiccLog<K,T>::DiccLog(const DiccLog<K,T>& otro) :
+        raiz_(NULL)
+    {
         if(otro.raiz_ != NULL) {
             this->raiz_ = new Nodo(*otro.raiz_);
 

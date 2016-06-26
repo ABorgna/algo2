@@ -114,6 +114,7 @@ namespace tp3 {
 
     template<class T>
     DiccTrie<T>::DiccTrie(__attribute__((unused)) const DiccTrie<T>& otro) :
+        raiz_(NULL),
         minimo_(otro.minimo_),
         maximo_(otro.maximo_)
     {
