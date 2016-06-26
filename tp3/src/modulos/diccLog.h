@@ -117,7 +117,9 @@ namespace tp3 {
             Nodo* minimo_;
             Nodo* maximo_;
 
-            void auxDefinir(Nodo* n, const K& k, const T& v);
+            bool auxDefinidoNodo(Nodo* n, const K& k) const;
+            void auxDefinirNodo(Nodo* n, const K& k, const T& v);
+            void auxPropagarInsercion(Nodo* n);
     };
 
     template<class K, class T>
@@ -142,7 +144,7 @@ namespace tp3 {
             this->raiz_ = new Nodo(k, v, NULL);
         }
         else {
-            auxDefinir(this->raiz_, k, v);
+            auxDefinirNodo(this->raiz_, k, v);
         }
     }
 
@@ -158,18 +160,63 @@ namespace tp3 {
     }
     
     template<class K, class T>
-    void DiccLog<K, T>::auxDefinir(typename DiccLog<K, T>::Nodo* n, const K& k, const T& v)
+    void DiccLog<K, T>::auxDefinirNodo(typename DiccLog<K, T>::Nodo* n, const K& k, const T& v)
+    {
+        if( n->clave == k ) {
+            n->valor = v;
+        }
+        else {
+            if( k > n->clave ) {
+                if( n->mayor == NULL ) {
+                    n->mayor = new Nodo(k, v, n);
+                    auxPropagarInsercion(n->mayor);
+                }
+                else {
+                    auxDefinirNodo(n->mayor, k, v);
+                }
+            }
+            else {
+                if( n->menor == NULL ) {
+                    n->menor = new Nodo(k, v, n);
+                    auxPropagarInsercion(n->menor);
+                }
+                else {
+                    auxDefinirNodo(n->menor, k, v);
+                }
+            }
+        }
+    }
+
+    template<class K, class T>
+    void DiccLog<K, T>::auxPropagarInsercion(typename DiccLog<K, T>::Nodo* n)
     {
     }
 
     template<class K, class T>
     bool DiccLog<K, T>::definido(const K& k) const
     {
-        if( this->raiz_ == NULL )
+        return auxDefinidoNodo(this->raiz_, k);
+    }
+
+    template<class K, class T>
+    bool DiccLog<K, T>::auxDefinidoNodo(typename DiccLog<K, T>::Nodo* n, const K& k) const
+    {
+        if( n == NULL ) {
             return false;
-        if( this->raiz_->clave == k )
-            return true;
-        return false;
+        }
+        else {
+            if( k == n->clave ) {
+                return true;
+            }
+            else {
+                if( k > n->clave ) {
+                    return auxDefinidoNodo(n->mayor, k);
+                }
+                else {
+                    return auxDefinidoNodo(n->menor, k);
+                }
+            }
+        }
     }
 
     template<class K, class T>
@@ -183,11 +230,14 @@ namespace tp3 {
     template<class K, class T>
     T& DiccLog<K, T>::obtener(const K& k)
     {
-        if( this->raiz_ == NULL ) 
+        if( this->raiz_ == NULL ) {
             throw -1;
-        if( this->raiz_->clave == k )
+        }
+        if( this->raiz_->clave == k ) {
             return this->raiz_->valor;
+        }
     }
+
 
     template<class K, class T>
     void DiccLog<K, T>::borrar(const K& k)
@@ -201,7 +251,7 @@ namespace tp3 {
         if(maximo_ == NULL) throw -1;
         assert(false);
     }
-
+    
     template<class K, class T>
     typename DiccLog<K, T>::ClaveValor DiccLog<K, T>::minimo() const
     {

@@ -10,7 +10,7 @@ namespace testsDiccLog
         tp3::DiccLog<std::string, int> d;
 
         ASSERT(!d.definido(""));
-        ASSERT(!d.definido("asd"));
+        ASSERT(!d.definido("as"));
 
         ASSERT_RAISE(d.obtener("as"));
         ASSERT_RAISE(d.maximo());
@@ -39,6 +39,34 @@ namespace testsDiccLog
         d.definir("ave", 2);
         ASSERT(d.definido("ave"));
         ASSERT_EQ(d.obtener("ave"), 2);
+    }
+
+    void definir_varios() {
+        tp3::DiccLog<std::string, int> d; 
+        d.definir("ave", 2);
+        d.definir("berenjena", 1);
+        d.definir("caballo", 6);
+
+        ASSERT(d.definido("ave"));
+        ASSERT(d.definido("berenjena"));
+        ASSERT(d.definido("caballo"));
+        ASSERT_EQ(d.obtener("ave"), 2);
+        ASSERT_EQ(d.obtener("berenjena"), 1);
+        ASSERT_EQ(d.obtener("caballo"), 6);
+    }
+
+    void maximo_y_minimo() {
+        tp3::DiccLog<std::string, int> d; 
+        d.definir("ave", 2);
+        d.definir("berenjena", 1);
+        d.definir("caballo", 6);
+    
+        ASSERT_EQ(d.minimo().clave, "ave");
+        ASSERT_EQ(d.maximo().clave, "caballo");
+        d.borrar("ave");
+        d.borrar("caballo");
+        ASSERT_EQ(d.minimo().clave, "berenjena");
+        ASSERT_EQ(d.maximo().clave, "berenjena");
     }
 
     void definirSimple() {
@@ -275,6 +303,7 @@ namespace testsDiccLog
         RUN_TEST( constructor );
         RUN_TEST( iterador_vacio );
         RUN_TEST( definir_uno );
+        RUN_TEST( definir_varios );
         // RUN_TEST( definirSimple );
         // RUN_TEST( maxMin );
         // RUN_TEST( eq );
