@@ -21,6 +21,7 @@ namespace tp3 {
 
             DiccLog();
             ~DiccLog();
+            DiccLog(const DiccLog<K,T>& otro);
 
             void definir(const K& k, const T& v);
             bool definido(const K& k) const;
@@ -153,6 +154,11 @@ namespace tp3 {
     }
 
     template<class K, class T>
+    DiccLog<K,T>::DiccLog(__attribute((unused)) const DiccLog<K,T>& otro) {
+        assert(false);
+    }
+
+    template<class K, class T>
     void DiccLog<K, T>::BorrarNodoEHijos(typename DiccLog<K, T>::Nodo* n)
     {
         if( n->menor != NULL ) {
@@ -185,15 +191,15 @@ namespace tp3 {
 
     template<class K, class T>
     DiccLog<K, T>::Nodo::Nodo(const K& k, const T& v, typename DiccLog<K, T>::Nodo* p)
-        : valor(v)
+        : clave(k),
+          valor(v),
+          menor(NULL),
+          mayor(NULL),
+          padre(p),
+          fdb(0)
     {
-        this->clave = k;
-        this->menor = NULL;
-        this->mayor = NULL;
-        this->padre = p;
-        this->fdb = 0;
     }
-    
+
     template<class K, class T>
     void DiccLog<K, T>::auxDefinirNodo(typename DiccLog<K, T>::Nodo* n, const K& k, const T& v)
     {
@@ -204,7 +210,7 @@ namespace tp3 {
             if( k > n->clave ) {
                 if( n->mayor == NULL ) {
                     n->mayor = new Nodo(k, v, n);
-                    auxPropagarInsercion(n->mayor);
+                    //auxPropagarInsercion(n->mayor); TODO descomentar
                 }
                 else {
                     auxDefinirNodo(n->mayor, k, v);
@@ -213,7 +219,7 @@ namespace tp3 {
             else {
                 if( n->menor == NULL ) {
                     n->menor = new Nodo(k, v, n);
-                    auxPropagarInsercion(n->menor);
+                    //auxPropagarInsercion(n->menor); TODO descomentar
                 }
                 else {
                     auxDefinirNodo(n->menor, k, v);
