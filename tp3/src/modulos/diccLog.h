@@ -22,6 +22,7 @@ namespace tp3 {
             DiccLog();
             ~DiccLog();
             DiccLog(const DiccLog<K,T>& otro);
+            DiccLog& operator= (DiccLog<K, T> otro);
 
             void definir(const K& k, const T& v);
             bool definido(const K& k) const;
@@ -164,6 +165,26 @@ namespace tp3 {
             this->maximo_ = auxMaximoNodo(this->raiz_);
             this->minimo_ = auxMinimoNodo(this->raiz_);
         }
+    }
+
+    template<class K, class T>
+    DiccLog<K,T>& DiccLog<K,T>::operator=(DiccLog<K,T> otro)
+    {
+        Nodo* swapTmp;
+
+        swapTmp = raiz_;
+        raiz_ = otro.raiz_;
+        otro.raiz_ = swapTmp;
+
+        swapTmp = maximo_;
+        maximo_ = otro.maximo_;
+        otro.maximo_ = swapTmp;
+
+        swapTmp = minimo_;
+        minimo_ = otro.minimo_;
+        otro.minimo_ = swapTmp;
+
+        return *this;
     }
 
     template<class K, class T>
