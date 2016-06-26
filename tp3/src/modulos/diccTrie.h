@@ -60,6 +60,19 @@ namespace tp3 {
                     }
                 };
 
+                Nodo(const Nodo& otro) :
+                    valor(otro.valor),
+                    esta(otro.esta) {
+
+                    for(int i=0; i<256; i++) {
+                        if(otro.hijos[i] != NULL) {
+                            hijos[i] = new Nodo(*otro.hijos[i]);
+                        } else {
+                            hijos[i] = NULL;
+                        }
+                    }
+                };
+
                 bool operator == (
                         const typename DiccTrie<T>::Nodo& other) const;
                 bool operator != (
@@ -100,8 +113,13 @@ namespace tp3 {
         raiz_(NULL) {}
 
     template<class T>
-    DiccTrie<T>::DiccTrie(__attribute__((unused)) const DiccTrie<T>& otro) {
-        assert(false);
+    DiccTrie<T>::DiccTrie(__attribute__((unused)) const DiccTrie<T>& otro) :
+        minimo_(otro.minimo_),
+        maximo_(otro.maximo_)
+    {
+        if(otro.raiz_ != NULL) {
+            this->raiz_ = new Nodo(*otro.raiz_);
+        }
     }
 
     template<class T>
