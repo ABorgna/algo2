@@ -123,6 +123,7 @@ namespace tp3 {
             void auxRecortar(Nodo* n);
             void auxPropagarBorrado(Nodo* n);
             Nodo* auxMinimoNodo(Nodo* n);
+            Nodo* auxMaximoNodo(Nodo* n);
             const Nodo* auxObtenerNodo(const Nodo* n, const K& k) const;
             bool auxDefinidoNodo(Nodo* n, const K& k) const;
             void auxDefinirNodo(Nodo* n, const K& k, const T& v);
@@ -162,9 +163,17 @@ namespace tp3 {
     {
         if( this->raiz_ == NULL ) {
             this->raiz_ = new Nodo(k, v, NULL);
+            this->maximo_ = this->raiz_;
+            this->minimo_ = this->raiz_;
         }
         else {
             auxDefinirNodo(this->raiz_, k, v);
+            if( k > this->maximo_->clave ) {
+                this->maximo_ = auxMaximoNodo(this->raiz_);
+            }
+            if( k < this->minimo_->clave ) {
+                this->minimo_ = auxMinimoNodo(this->raiz_);
+            }
         }
     }
 
@@ -353,6 +362,22 @@ namespace tp3 {
                 n->padre->mayor = ho;
             }
         }
+        if( this->maximo_ == n ) {
+            if( this->raiz_ == NULL ) {
+                this->maximo_ = NULL;
+            }
+            else {
+                this->maximo_ = auxMaximoNodo(this->raiz_);
+            }
+        }
+        if( this->minimo_ == n ) {
+            if( this->raiz_ == NULL ) {
+                this->minimo_ = NULL;
+            }
+            else {
+                this->minimo_ = auxMinimoNodo(this->raiz_);
+            }
+        }
         delete n;
     }
 
@@ -371,19 +396,34 @@ namespace tp3 {
             return auxMinimoNodo(n->menor);
         }
     }
+
+    template<class K, class T>
+    typename DiccLog<K, T>::Nodo* DiccLog<K, T>::auxMaximoNodo(typename DiccLog<K, T>::Nodo* n)
+    {
+        if( n->mayor == NULL ) {
+            return n;
+        }
+        else {
+            return auxMaximoNodo(n->mayor);
+        }
+    }   
         
     template<class K, class T>
     typename DiccLog<K, T>::ClaveValor DiccLog<K, T>::maximo() const
     {
-        if(maximo_ == NULL) throw -1;
-        assert(false);
+        if( this->maximo_ == NULL ) {
+            throw -1;
+        }
+        return typename DiccLog<K, T>::ClaveValor(this->maximo_->clave, this->maximo_->valor);
     }
     
     template<class K, class T>
     typename DiccLog<K, T>::ClaveValor DiccLog<K, T>::minimo() const
     {
-        if(minimo_ == NULL) throw -1;
-        assert(false);
+        if( this->minimo_ == NULL ) {
+            throw -1;
+        }
+        return typename DiccLog<K, T>::ClaveValor(this->minimo_->clave, this->minimo_->valor);
     }
 
     template<class K, class T>

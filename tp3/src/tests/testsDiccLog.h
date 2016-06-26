@@ -61,7 +61,7 @@ namespace testsDiccLog
         d.definir("ave", 2);
         d.definir("berenjena", 1);
         d.definir("caballo", 6);
-        
+         
         ASSERT(d.definido("ave"));
         d.borrar("ave");
         ASSERT(!d.definido("ave"));
@@ -75,12 +75,16 @@ namespace testsDiccLog
         d.definir("berenjena", 1);
         d.definir("caballo", 6);
     
+        ASSERT("ave" < "berenjena");
         ASSERT_EQ(d.minimo().clave, "ave");
         ASSERT_EQ(d.maximo().clave, "caballo");
         d.borrar("ave");
         d.borrar("caballo");
         ASSERT_EQ(d.minimo().clave, "berenjena");
         ASSERT_EQ(d.maximo().clave, "berenjena");
+        d.borrar("berenjena");
+        ASSERT_RAISE(d.maximo());
+        ASSERT_RAISE(d.minimo());
     }
 
     void definirSimple() {
@@ -319,6 +323,7 @@ namespace testsDiccLog
         RUN_TEST( definir_uno );
         RUN_TEST( definir_varios );
         RUN_TEST( borrar );
+        RUN_TEST( maximo_y_minimo );
         // RUN_TEST( definirSimple );
         // RUN_TEST( maxMin );
         // RUN_TEST( eq );

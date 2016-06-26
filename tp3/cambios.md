@@ -20,3 +20,4 @@
 
 - DiccTrie::CrearNodo es el constructor de nodo
 
+- DiccLog jamas actualizaba maximo y minimo en los algoritmos
