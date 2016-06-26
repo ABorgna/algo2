@@ -384,7 +384,7 @@ namespace testsDiccLog
         RUN_TEST( definirSimple );
         RUN_TEST( maxMin );
         RUN_TEST( eq );
-        // RUN_TEST( iteradores );
-        // RUN_TEST( iteradoresOperators );
+        RUN_TEST( iteradores );
+        RUN_TEST( iteradoresOperators );
     }
 }
