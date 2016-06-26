@@ -117,6 +117,9 @@ namespace tp3 {
             Nodo* minimo_;
             Nodo* maximo_;
 
+            void auxBalancear(Nodo* n);
+            void auxRotarIzquierda(Nodo* rr);
+            void auxRotarDerecha(Nodo* rr);
             Nodo* auxObtenerNodo(Nodo* n, const K& k);
             void BorrarNodoEHijos(Nodo* n);
             void auxBorrarNodo(Nodo* n, const K& k);
@@ -219,6 +222,101 @@ namespace tp3 {
     template<class K, class T>
     void DiccLog<K, T>::auxPropagarInsercion(typename DiccLog<K, T>::Nodo* n)
     {
+        if( n->fdb > 1 || n->fdb < -1 ) {
+            auxBalancear(n);
+        }
+        else {
+            if( n->padre != NULL ) {
+                if( n == n->padre->menor ) {
+                    n->padre->fdb += 1;
+                }
+                else {
+                    n->padre->fdb -= 1;
+                }
+                if( n->padre->fdb != 0 ) {
+                    auxPropagarInsercion(n->padre);
+                }
+            }
+        }
+    }
+
+    template<class K, class T>
+    void DiccLog<K, T>::auxBalancear(typename DiccLog<K, T>::Nodo* n)
+    {
+        if( n->fdb < 0 ) {
+            if( n->mayor->fdb > 0 ) {
+                auxRotarDerecha(n->mayor);
+            }
+            auxRotarIzquierda(n);
+        }
+        else {
+            if( n->menor->fdb < 0 ) {
+                auxRotarIzquierda(n->menor);
+            }
+            auxRotarDerecha(n);
+        }
+    }
+
+    int min(int a, int b) 
+    {
+        if( a > b ) {
+            return b;
+        }
+        else {
+            return a;
+        }
+    }
+
+    template<class K, class T>
+    void DiccLog<K, T>::auxRotarIzquierda(typename DiccLog<K, T>::Nodo* rr)
+    {
+        typename DiccLog<K,T>::Nodo* nr = rr->mayor;
+        rr->mayor = nr->menor;
+        if( nr->menor != NULL ) {
+            nr->menor->padre = rr;
+        }
+        nr->padre = rr->padre;
+        if( rr->padre == NULL ) {
+            this->raiz_ = nr;
+        }
+        else {
+            if( rr->padre->menor == rr ) {
+                rr->padre->menor = nr;
+            }
+            else {
+                rr->padre->mayor = nr;
+            }
+        }
+        nr->menor = rr;
+        rr->padre = nr;
+        rr->fdb = rr->fdb + 1 - min(nr->fdb, 0);
+        nr->fdb = nr->fdb + 1 + min(rr->fdb, 0);
+    }
+
+    template<class K, class T>
+    void DiccLog<K, T>::auxRotarDerecha(typename DiccLog<K, T>::Nodo* rr)
+    {
+        typename DiccLog<K,T>::Nodo* nr = rr->menor;
+        rr->menor = nr->mayor;
+        if( nr->mayor != NULL ) {
+            nr->mayor->padre = rr;
+        }
+        nr->padre = rr->padre;
+        if( rr->padre == NULL ) {
+            this->raiz_ = nr;
+        }
+        else {
+            if( rr->padre->mayor == rr ) {
+                rr->padre->mayor = nr;
+            }
+            else {
+                rr->padre->menor = nr;
+            }
+        }
+        nr->mayor = rr;
+        rr->padre = nr;
+        rr->fdb = rr->fdb + 1 - min(nr->fdb, 0);
+        nr->fdb = nr->fdb + 1 + min(rr->fdb, 0);
     }
 
     template<class K, class T>
@@ -384,6 +482,18 @@ namespace tp3 {
     template<class K, class T>
     void DiccLog<K, T>::auxPropagarBorrado(typename DiccLog<K, T>::Nodo* n)
     {
+        if( n->fdb > 1 || n->fdb < -1 ) {
+            auxBalancear(n);
+        }
+        if( n->padre != NULL ) {
+            if( n->padre->menor == n ) {
+                n->padre->fdb -= 1;
+            }
+            else {
+                n->padre->fdb += 1;
+            }
+            auxPropagarBorrado(n->padre);
+        }
     }
 
     template<class K, class T>

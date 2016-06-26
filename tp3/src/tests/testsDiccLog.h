@@ -115,6 +115,32 @@ namespace testsDiccLog
         ASSERT_RAISE(itc.avanzar());
     }
 
+    void orden_y_balanceo() {
+        tp3::DiccLog<std::string, int> d; 
+        d.definir("ave", 2);
+        d.definir("berenjena", 1);
+        d.definir("caballo", 6);
+        d.definir("desierto", 3);
+        d.definir("eclipse", 4);
+        d.definir("fulano", 5);
+
+        tp3::DiccLog<std::string, int>::Iterador it = d.CrearIt();
+        ASSERT_EQ(it.actual().clave, "desierto");
+        it.avanzar();
+        ASSERT_EQ(it.actual().clave, "berenjena");
+        it.avanzar();
+        ASSERT_EQ(it.actual().clave, "ave");
+        it.avanzar();
+        ASSERT_EQ(it.actual().clave, "caballo");
+        it.avanzar();
+        ASSERT_EQ(it.actual().clave, "eclipse");
+        it.avanzar();
+        ASSERT_EQ(it.actual().clave, "fulano");
+        it.avanzar();
+        ASSERT_EQ(it.hayMas(), false);
+        
+    }
+
     void definirSimple() {
         tp3::DiccLog<std::string, int> d;
 
@@ -353,6 +379,7 @@ namespace testsDiccLog
         RUN_TEST( borrar );
         RUN_TEST( maximo_y_minimo );
         RUN_TEST( iterador );
+        // RUN_TEST( orden_y_balanceo );
         // RUN_TEST( definirSimple );
         // RUN_TEST( maxMin );
         // RUN_TEST( eq );
