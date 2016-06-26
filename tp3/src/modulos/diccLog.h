@@ -119,6 +119,7 @@ namespace tp3 {
             Nodo* minimo_;
             Nodo* maximo_;
 
+            int auxMin(int a, int b);
             void auxBalancear(Nodo* n);
             void auxRotarIzquierda(Nodo* rr);
             void auxRotarDerecha(Nodo* rr);
@@ -259,7 +260,8 @@ namespace tp3 {
         }
     }
 
-    int min(int a, int b) 
+    template<class K, class T>
+    int DiccLog<K, T>::auxMin(int a, int b) 
     {
         if( a > b ) {
             return b;
@@ -292,8 +294,8 @@ namespace tp3 {
         nr->menor = rr;
         rr->padre = nr;
         int rrfdb = rr->fdb;
-        rr->fdb = rr->fdb + 1 - min(nr->fdb, 0);
-        nr->fdb = nr->fdb + 1 + min(rrfdb, 0);
+        rr->fdb = rr->fdb + 1 - auxMin(nr->fdb, 0);
+        nr->fdb = nr->fdb + 1 + auxMin(rrfdb, 0);
     }
 
     template<class K, class T>
@@ -319,8 +321,8 @@ namespace tp3 {
         nr->mayor = rr;
         rr->padre = nr;
         int rrfdb = rr->fdb;
-        rr->fdb = rr->fdb - 1 + min(nr->fdb, 0);
-        nr->fdb = nr->fdb - 1 - min(rrfdb, 0);
+        rr->fdb = rr->fdb - 1 + auxMin(nr->fdb, 0);
+        nr->fdb = nr->fdb - 1 - auxMin(rrfdb, 0);
     }
 
     template<class K, class T>
