@@ -119,6 +119,10 @@ namespace tp3 {
 
             Nodo* auxObtenerNodo(Nodo* n, const K& k);
             void BorrarNodoEHijos(Nodo* n);
+            void auxBorrarNodo(Nodo* n, const K& k);
+            void auxRecortar(Nodo* n);
+            void auxPropagarBorrado(Nodo* n);
+            Nodo* auxMinimoNodo(Nodo* n);
             const Nodo* auxObtenerNodo(const Nodo* n, const K& k) const;
             bool auxDefinidoNodo(Nodo* n, const K& k) const;
             void auxDefinirNodo(Nodo* n, const K& k, const T& v);
@@ -298,9 +302,75 @@ namespace tp3 {
     template<class K, class T>
     void DiccLog<K, T>::borrar(const K& k)
     {
-        assert(false);
+        auxBorrarNodo(this->raiz_, k);
     }
 
+    template<class K, class T>
+    void DiccLog<K, T>::auxBorrarNodo(typename DiccLog<K, T>::Nodo* n, const K& k)
+    {
+        if( k == n->clave ) {
+            if( n->mayor != NULL && n->menor != NULL ) {
+                typename DiccLog<K, T>::Nodo* n2 = auxMinimoNodo(n->mayor);
+                n->clave = n2->clave;
+                n->valor = n2->valor;
+                auxRecortar(n2);
+            }
+            else {
+                auxRecortar(n);
+            }
+        }
+        else {
+            if( k > n->clave ) {
+                auxBorrarNodo(n->mayor, k);
+            }
+            else {
+                auxBorrarNodo(n->menor, k);
+            }
+        }
+    }
+
+    template<class K, class T>
+    void DiccLog<K, T>::auxRecortar(typename DiccLog<K, T>::Nodo* n)
+    {
+        typename DiccLog<K, T>::Nodo* ho = NULL;
+        if( n->menor != NULL ) {
+            ho = n->menor;
+            ho->padre = n->padre;
+        }
+        if( n->mayor != NULL ) {
+            ho = n->mayor;
+            ho->padre = n->padre;
+        }
+        if( n->padre == NULL ) {
+            this->raiz_ = ho;
+        }
+        else {
+            auxPropagarBorrado(n);
+            if( n->padre->menor == n ) {
+                n->padre->menor = ho;
+            }
+            else {
+                n->padre->mayor = ho;
+            }
+        }
+    }
+
+    template<class K, class T>
+    void DiccLog<K, T>::auxPropagarBorrado(typename DiccLog<K, T>::Nodo* n)
+    {
+    }
+
+    template<class K, class T>
+    typename DiccLog<K, T>::Nodo* DiccLog<K, T>::auxMinimoNodo(typename DiccLog<K, T>::Nodo* n)
+    {
+        if( n->menor == NULL ) {
+            return n;
+        }
+        else {
+            return auxMinimoNodo(n->menor);
+        }
+    }
+        
     template<class K, class T>
     typename DiccLog<K, T>::ClaveValor DiccLog<K, T>::maximo() const
     {
