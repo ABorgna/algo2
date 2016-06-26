@@ -381,9 +381,9 @@ namespace testsDiccLog
         RUN_TEST( maximo_y_minimo );
         RUN_TEST( iterador );
         RUN_TEST( orden_y_balanceo );
-        // RUN_TEST( definirSimple );
-        // RUN_TEST( maxMin );
-        // RUN_TEST( eq );
+        RUN_TEST( definirSimple );
+        RUN_TEST( maxMin );
+        RUN_TEST( eq );
         // RUN_TEST( iteradores );
         // RUN_TEST( iteradoresOperators );
     }

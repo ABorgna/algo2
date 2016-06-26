@@ -550,7 +550,17 @@ namespace tp3 {
 
     template<class K, class T>
     bool DiccLog<K,T>::operator==(const DiccLog<K,T>& otro) const {
-        assert(false);
+        typename DiccLog<K,T>::const_Iterador it = this->CrearIt();
+        while( it.hayMas() ) {
+            if( !otro.definido(it.actual().clave) ) {
+                return false;
+            }
+            if( otro.obtener(it.actual().clave) != it.actual().significado ) {
+                return false;
+            }
+            it.avanzar();
+        }
+        return true;
     }
 
     template<class K, class T>
