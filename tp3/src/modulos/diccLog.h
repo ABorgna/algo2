@@ -118,6 +118,7 @@ namespace tp3 {
             Nodo* maximo_;
 
             Nodo* auxObtenerNodo(Nodo* n, const K& k);
+            void BorrarNodoEHijos(Nodo* n);
             const Nodo* auxObtenerNodo(const Nodo* n, const K& k) const;
             bool auxDefinidoNodo(Nodo* n, const K& k) const;
             void auxDefinirNodo(Nodo* n, const K& k, const T& v);
@@ -135,8 +136,21 @@ namespace tp3 {
     template<class K, class T>
     DiccLog<K, T>::~DiccLog()
     {
-        if( this->raiz_ != NULL )
-            delete this->raiz_;
+        if( this->raiz_ != NULL ) {
+            BorrarNodoEHijos(this->raiz_);
+        }
+    }
+
+    template<class K, class T>
+    void DiccLog<K, T>::BorrarNodoEHijos(typename DiccLog<K, T>::Nodo* n)
+    {
+        if( n->menor != NULL ) {
+            BorrarNodoEHijos( n->menor );
+        }
+        if( n->mayor != NULL ) {
+            BorrarNodoEHijos( n->mayor );
+        }
+        delete n;
     }
 
     template<class K, class T>
