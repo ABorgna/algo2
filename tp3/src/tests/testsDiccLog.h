@@ -56,11 +56,23 @@ namespace testsDiccLog
         ASSERT_EQ(d.obtener("caballo"), 6);
     }
 
+    void printoDicco(tp3::DiccLog<std::string, int> d) {
+        tp3::DiccLog<std::string, int>::Iterador it = d.CrearIt();
+        while(it.hayMas()) {
+            std::cout << it.actual().clave;
+            it.avanzar();
+            if(it.hayMas())
+                std::cout << ", ";
+        } 
+    }
+
     void borrar() {
         tp3::DiccLog<std::string, int> d; 
         d.definir("ave", 2);
         d.definir("berenjena", 1);
         d.definir("caballo", 6);
+
+        printoDicco(d);
          
         ASSERT(d.definido("ave"));
         d.borrar("ave");

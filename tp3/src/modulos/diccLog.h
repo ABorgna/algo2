@@ -291,8 +291,9 @@ namespace tp3 {
         }
         nr->menor = rr;
         rr->padre = nr;
+        int rrfdb = rr->fdb;
         rr->fdb = rr->fdb + 1 - min(nr->fdb, 0);
-        nr->fdb = nr->fdb + 1 + min(rr->fdb, 0);
+        nr->fdb = nr->fdb + 1 + min(rrfdb, 0);
     }
 
     template<class K, class T>
@@ -317,8 +318,9 @@ namespace tp3 {
         }
         nr->mayor = rr;
         rr->padre = nr;
-        rr->fdb = rr->fdb + 1 - min(nr->fdb, 0);
-        nr->fdb = nr->fdb + 1 + min(rr->fdb, 0);
+        int rrfdb = rr->fdb;
+        rr->fdb = rr->fdb - 1 + min(nr->fdb, 0);
+        nr->fdb = nr->fdb - 1 - min(rrfdb, 0);
     }
 
     template<class K, class T>
