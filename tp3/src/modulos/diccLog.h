@@ -204,7 +204,7 @@ namespace tp3 {
             if( k > n->clave ) {
                 if( n->mayor == NULL ) {
                     n->mayor = new Nodo(k, v, n);
-                    auxPropagarInsercion(n->mayor);
+                    //auxPropagarInsercion(n->mayor);
                 }
                 else {
                     auxDefinirNodo(n->mayor, k, v);
@@ -213,7 +213,7 @@ namespace tp3 {
             else {
                 if( n->menor == NULL ) {
                     n->menor = new Nodo(k, v, n);
-                    auxPropagarInsercion(n->menor);
+                    //auxPropagarInsercion(n->menor);
                 }
                 else {
                     auxDefinirNodo(n->menor, k, v);
@@ -293,9 +293,8 @@ namespace tp3 {
         }
         nr->menor = rr;
         rr->padre = nr;
-        int rrfdb = rr->fdb;
         rr->fdb = rr->fdb + 1 - auxMin(nr->fdb, 0);
-        nr->fdb = nr->fdb + 1 + auxMin(rrfdb, 0);
+        nr->fdb = nr->fdb + 1 + auxMin(rr->fdb, 0);
     }
 
     template<class K, class T>
@@ -320,9 +319,8 @@ namespace tp3 {
         }
         nr->mayor = rr;
         rr->padre = nr;
-        int rrfdb = rr->fdb;
-        rr->fdb = rr->fdb - 1 + auxMin(nr->fdb, 0);
-        nr->fdb = nr->fdb - 1 - auxMin(rrfdb, 0);
+        rr->fdb = rr->fdb + 1 - auxMin(nr->fdb, 0);
+        nr->fdb = nr->fdb + 1 + auxMin(rr->fdb, 0);
     }
 
     template<class K, class T>
@@ -458,7 +456,7 @@ namespace tp3 {
             this->raiz_ = ho;
         }
         else {
-            auxPropagarBorrado(n);
+            //auxPropagarBorrado(n);
             if( n->padre->menor == n ) {
                 n->padre->menor = ho;
             }
@@ -635,6 +633,7 @@ namespace tp3 {
         if( this->actual_ == NULL ) {
             throw -1;
         }
+        std::cout << "[" << this->actual_->clave << ":fdb=" << this->actual_->fdb << "]";
         return DiccLog<K,T>::ClaveValor(this->actual_->clave, this->actual_->valor);
     }
 
