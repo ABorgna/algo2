@@ -353,6 +353,7 @@ namespace tp3 {
                 n->padre->mayor = ho;
             }
         }
+        delete n;
     }
 
     template<class K, class T>
