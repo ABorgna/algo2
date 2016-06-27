@@ -21,6 +21,8 @@ namespace tp3 {
 
             DiccLog();
             ~DiccLog();
+            DiccLog(const DiccLog<K,T>& otro);
+            DiccLog& operator= (DiccLog<K, T> otro);
 
             void definir(const K& k, const T& v);
             bool definido(const K& k) const;
@@ -104,6 +106,7 @@ namespace tp3 {
             struct Nodo {
 
                 Nodo(const K& k, const T& v, Nodo* p);
+                Nodo(const Nodo& otro);
 
                 K clave;
                 T valor;
@@ -153,6 +156,38 @@ namespace tp3 {
     }
 
     template<class K, class T>
+    DiccLog<K,T>::DiccLog(const DiccLog<K,T>& otro) :
+        raiz_(NULL)
+    {
+        if(otro.raiz_ != NULL) {
+            this->raiz_ = new Nodo(*otro.raiz_);
+
+            this->maximo_ = auxMaximoNodo(this->raiz_);
+            this->minimo_ = auxMinimoNodo(this->raiz_);
+        }
+    }
+
+    template<class K, class T>
+    DiccLog<K,T>& DiccLog<K,T>::operator=(DiccLog<K,T> otro)
+    {
+        Nodo* swapTmp;
+
+        swapTmp = raiz_;
+        raiz_ = otro.raiz_;
+        otro.raiz_ = swapTmp;
+
+        swapTmp = maximo_;
+        maximo_ = otro.maximo_;
+        otro.maximo_ = swapTmp;
+
+        swapTmp = minimo_;
+        minimo_ = otro.minimo_;
+        otro.minimo_ = swapTmp;
+
+        return *this;
+    }
+
+    template<class K, class T>
     void DiccLog<K, T>::BorrarNodoEHijos(typename DiccLog<K, T>::Nodo* n)
     {
         if( n->menor != NULL ) {
@@ -185,15 +220,34 @@ namespace tp3 {
 
     template<class K, class T>
     DiccLog<K, T>::Nodo::Nodo(const K& k, const T& v, typename DiccLog<K, T>::Nodo* p)
-        : valor(v)
+        : clave(k),
+          valor(v),
+          menor(NULL),
+          mayor(NULL),
+          padre(p),
+          fdb(0)
     {
-        this->clave = k;
-        this->menor = NULL;
-        this->mayor = NULL;
-        this->padre = p;
-        this->fdb = 0;
     }
-    
+
+    template<class K, class T>
+    DiccLog<K, T>::Nodo::Nodo(const Nodo& otro)
+        : clave(otro.clave),
+          valor(otro.valor),
+          menor(NULL),
+          mayor(NULL),
+          padre(NULL),
+          fdb(otro.fdb)
+    {
+        if(otro.menor != NULL) {
+            this->menor = new Nodo(*otro.menor);
+            this->menor->padre = this;
+        }
+        if(otro.mayor != NULL) {
+            this->mayor = new Nodo(*otro.mayor);
+            this->mayor->padre = this;
+        }
+    }
+
     template<class K, class T>
     void DiccLog<K, T>::auxDefinirNodo(typename DiccLog<K, T>::Nodo* n, const K& k, const T& v)
     {
@@ -204,7 +258,7 @@ namespace tp3 {
             if( k > n->clave ) {
                 if( n->mayor == NULL ) {
                     n->mayor = new Nodo(k, v, n);
-                    auxPropagarInsercion(n->mayor);
+                    //auxPropagarInsercion(n->mayor); TODO descomentar
                 }
                 else {
                     auxDefinirNodo(n->mayor, k, v);
@@ -213,7 +267,7 @@ namespace tp3 {
             else {
                 if( n->menor == NULL ) {
                     n->menor = new Nodo(k, v, n);
-                    auxPropagarInsercion(n->menor);
+                    //auxPropagarInsercion(n->menor); TODO descomentar
                 }
                 else {
                     auxDefinirNodo(n->menor, k, v);
@@ -261,14 +315,12 @@ namespace tp3 {
     }
 
     template<class K, class T>
-    int DiccLog<K, T>::auxMin(int a, int b) 
+    int DiccLog<K, T>::auxMin(int a, int b)
     {
         if( a > b ) {
             return b;
         }
-        else {
-            return a;
-        }
+        return a;
     }
 
     template<class K, class T>
@@ -458,7 +510,7 @@ namespace tp3 {
             this->raiz_ = ho;
         }
         else {
-            auxPropagarBorrado(n);
+            // auxPropagarBorrado(n); TODO descomentar esto
             if( n->padre->menor == n ) {
                 n->padre->menor = ho;
             }
@@ -603,6 +655,9 @@ namespace tp3 {
     DiccLog<K,T>::Iterador::Iterador(const typename DiccLog<K,T>::Iterador& otro) 
     : actual_(otro.actual_), siguientes_(otro.siguientes_), dicc(otro.dicc)
     {
+        assert(false);
+        // TODO: Hay que hacer una deep copy de todo,
+        // teniendo en cuenta que copy(Lista) esta para el orto
     }
 
     template<class K, class T>
@@ -611,6 +666,8 @@ namespace tp3 {
         this->actual_ = otro.actual_;
         this->siguientes_ = aed2::Lista<typename DiccLog<K,T>::Nodo*>(otro.siguientes_);
         this->dicc = otro.dicc;
+
+        return *this;
     }
 
     template<class K, class T>
@@ -691,6 +748,10 @@ namespace tp3 {
     )
     : actual_(otro.actual_), siguientes_(otro.siguientes_), dicc(otro.dicc)
     {
+        assert(false);
+        // TODO: Hay que hacer una deep copy de todo,
+        // teniendo en cuenta que copy(Lista) esta para el orto
+
         // this->siguientes_ = aed2::Lista<typename DiccLog<K,T>::Nodo*>(otro.siguientes_);
         // this->dicc = otro.dicc;
     }
@@ -701,6 +762,8 @@ namespace tp3 {
         this->actual_ = otro.actual_;
         this->siguientes_ = aed2::Lista<typename DiccLog<K,T>::Nodo*>(otro.siguientes_);
         this->dicc = otro.dicc;
+
+        return *this;
     }
 
     template<class K, class T>

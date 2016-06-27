@@ -194,20 +194,20 @@ namespace testsTabla
 
         ASSERT_EQ(res1.Cardinal(), 2);
 
-        aed2::Conj<tp3::Registro>::const_Iterador it1 = res0.CrearIt();
+        aed2::Conj<tp3::Registro>::const_Iterador it1 = res1.CrearIt();
         const tp3::Registro res1_r0 = it1.Siguiente();
         it1.Avanzar();
         const tp3::Registro res1_r1 = it1.Siguiente();
 
-        ASSERT_EQ(res1_r0.obtener("claveNat0").getNat(), 0);
-        ASSERT_EQ(res1_r1.obtener("claveNat0").getNat(), 1);
+        ASSERT_EQ(res1_r0.obtener("claveNat0").getNat(), 1);
+        ASSERT_EQ(res1_r1.obtener("claveNat0").getNat(), 2);
 
         // Buscar sin resultados
 
         tp3::Registro crit2;
         crit2.definir("str2", tp3::Dato("no existe"));
 
-        const aed2::Conj<tp3::Registro> res2 = t.buscar(crit1);
+        const aed2::Conj<tp3::Registro> res2 = t.buscar(crit2);
 
         ASSERT_EQ(res2.Cardinal(), 0);
 

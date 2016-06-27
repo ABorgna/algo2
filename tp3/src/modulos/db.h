@@ -19,7 +19,6 @@ namespace tp3 {
     class DB {
         public:
             DB();
-            ~DB();
 
             void agregarTabla(const Tabla&);
 

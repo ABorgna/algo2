@@ -5,9 +5,6 @@ using namespace tp3;
 DB::DB() {
 }
 
-DB::~DB() {
-}
-
 void DB::agregarTabla(const Tabla& t) {
     NombreTabla nt = t.nombre();
     assert(!tablasTree_.definido(nt));
@@ -255,6 +252,21 @@ itRegistrosConst DB::vistaJoin(const NombreTabla& nt1, const NombreTabla& nt2) {
         if(op.esInsercion) {
             aed2::Conj<Registro> rs;
 
+            // Borrar si ya hay una entrada
+            if(v.tipo) {
+                unsigned int k = d.getNat();
+                if(v.joinsNat.definido(k)){
+                    v.joinsNat.obtener(k).EliminarSiguiente();
+                    v.joinsNat.borrar(k);
+                }
+            } else {
+                const std::string& k = d.getString();
+                if(v.joinsString.definido(k)){
+                    v.joinsString.obtener(k).EliminarSiguiente();
+                    v.joinsString.borrar(k);
+                }
+            }
+
             Registro crit;
             crit.definir(v.campo,d);
             if(!op.enTablaB) {
@@ -277,8 +289,10 @@ itRegistrosConst DB::vistaJoin(const NombreTabla& nt1, const NombreTabla& nt2) {
                 itRegistros itReg = v.joins.AgregarRapido(r);
 
                 if(v.tipo) {
+                    assert(!v.joinsNat.definido(d.getNat()));
                     v.joinsNat.definir(d.getNat(), itReg);
                 } else {
+                    assert(!v.joinsString.definido(d.getString()));
                     v.joinsString.definir(d.getString(), itReg);
                 }
             }

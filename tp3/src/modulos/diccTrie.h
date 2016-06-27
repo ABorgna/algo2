@@ -18,7 +18,9 @@ namespace tp3 {
             class Iterador;
 
             DiccTrie();
+            DiccTrie(const DiccTrie<T>& otro);
             ~DiccTrie();
+            DiccTrie& operator = (DiccTrie<T> otro);
 
             void definir(const std::string& k, const T& v);
             bool definido(const std::string& k) const;
@@ -56,6 +58,19 @@ namespace tp3 {
                     // con arreglos...
                     for(int i=0; i<256; i++) {
                         hijos[i] = NULL;
+                    }
+                };
+
+                Nodo(const Nodo& otro) :
+                    valor(otro.valor),
+                    esta(otro.esta) {
+
+                    for(int i=0; i<256; i++) {
+                        if(otro.hijos[i] != NULL) {
+                            hijos[i] = new Nodo(*otro.hijos[i]);
+                        } else {
+                            hijos[i] = NULL;
+                        }
                     }
                 };
 
@@ -97,6 +112,31 @@ namespace tp3 {
     template<class T>
     DiccTrie<T>::DiccTrie() :
         raiz_(NULL) {}
+
+    template<class T>
+    DiccTrie<T>::DiccTrie(const DiccTrie<T>& otro) :
+        raiz_(NULL),
+        minimo_(otro.minimo_),
+        maximo_(otro.maximo_)
+    {
+        if(otro.raiz_ != NULL) {
+            this->raiz_ = new Nodo(*otro.raiz_);
+        }
+    }
+
+    template<class T>
+    DiccTrie<T>& DiccTrie<T>::operator= (DiccTrie<T> otro) {
+        Nodo* swapTmp;
+
+        swapTmp = raiz_;
+        raiz_ = otro.raiz_;
+        otro.raiz_ = swapTmp;
+
+        maximo_ = otro.maximo_;
+        minimo_ = otro.minimo_;
+
+        return *this;
+    }
 
     template<class T>
     DiccTrie<T>::~DiccTrie() {
