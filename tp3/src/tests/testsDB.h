@@ -174,7 +174,7 @@ namespace testsDB
         ASSERT(r.definido("nat1_2"));
     }
 
-    void operaciones_con_joins_simple() {
+    void operaciones_con_joins() {
         tp3::DB db;
         tp3::Tabla t0 = sampleTabla0();
         tp3::Tabla t1 = sampleTabla1();
@@ -213,17 +213,24 @@ namespace testsDB
 
         db.insertarEntrada("tabla0", sampleReg0_1());
         db.insertarEntrada("tabla0", sampleReg0_2());
-        db.insertarEntrada("tabla0", sampleReg0_3());
-
         db.insertarEntrada("tabla1", sampleReg1_1());
         db.insertarEntrada("tabla1", sampleReg1_2());
+
+        db.borrar("tabla0", "claveNat0", tp3::Dato(0));
+        db.borrar("tabla1", "claveStr0", tp3::Dato("b"));
+
+        db.insertarEntrada("tabla0", sampleReg0_3());
         db.insertarEntrada("tabla1", sampleReg1_3());
+
+        db.borrar("tabla0", "claveNat0", tp3::Dato(3));
 
         it0 = db.vistaJoin("tabla0","tabla1");
         it1 = db.vistaJoin("tabla1","tabla0");
 
         ASSERT(it0.HaySiguiente());
         ASSERT(it1.HaySiguiente());
+        ASSERT_EQ(it0.Siguiente().obtener("claveNat0").getNat(), 2);
+        ASSERT_EQ(it1.Siguiente().obtener("claveNat0").getNat(), 2);
     }
 
     void main(int, char**) {
@@ -233,7 +240,7 @@ namespace testsDB
         RUN_TEST( buscar );
         RUN_TEST( crear_joins_simple );
         RUN_TEST( crear_joins_con_datos );
-        RUN_TEST( operaciones_con_joins_simple );
+        RUN_TEST( operaciones_con_joins );
     }
 
 
