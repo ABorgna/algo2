@@ -8,8 +8,6 @@ namespace testsDriver
 {
     void ejemplo_simple()
     {
-        ASSERT_EQ(true, true);
-
       aed2::Driver bd;
       ASSERT_EQ(bd.tablas().Cardinal(), 0);
 
@@ -24,8 +22,8 @@ namespace testsDriver
       columna_nombre.tipo = aed2::STR;
 
       aed2::Columna columna_apellido;
-      columna_nombre.nombre = "apellido";
-      columna_nombre.tipo = aed2::STR;
+      columna_apellido.nombre = "apellido";
+      columna_apellido.tipo = aed2::STR;
 
       columnas_personas.Agregar( columna_dni );
       columnas_personas.Agregar( columna_nombre );

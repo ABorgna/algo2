@@ -349,7 +349,7 @@ tp3::Registro Driver::colsToRegistro(const aed2::Conj<Columna>& cols) const {
     while(it.HaySiguiente()) {
         const Columna& col = it.Siguiente();
 
-        r.definir(col.nombre, col.tipo == NAT ? tp3::Dato(0) : tp3::Dato(""));
+        r.definir(col.nombre, col.tipo == aed2::NAT ? tp3::Dato(0) : tp3::Dato(""));
 
         it.Avanzar();
     }
