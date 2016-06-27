@@ -3,6 +3,7 @@
 #define AVL_INCLUDED_H
 
 #include <assert.h>
+#include <iomanip>
 
 #include "../aed2.h"
 
@@ -40,6 +41,8 @@ namespace tp3 {
 
             bool operator == (const DiccLog<K, T>& otro) const;
             bool operator != (const DiccLog<K, T>& otro) const;
+
+            void print(std::ostream& os);
 
             struct ClaveValor {
                 const K& clave;
@@ -121,6 +124,8 @@ namespace tp3 {
             Nodo* raiz_;
             Nodo* minimo_;
             Nodo* maximo_;
+            
+            void printNodo(std::ostream& o, Nodo* n, int indent);
 
             int auxMin(int a, int b);
             void auxBalancear(Nodo* n);
@@ -258,7 +263,7 @@ namespace tp3 {
             if( k > n->clave ) {
                 if( n->mayor == NULL ) {
                     n->mayor = new Nodo(k, v, n);
-                    //auxPropagarInsercion(n->mayor); TODO descomentar
+                    auxPropagarInsercion(n->mayor);
                 }
                 else {
                     auxDefinirNodo(n->mayor, k, v);
@@ -267,7 +272,7 @@ namespace tp3 {
             else {
                 if( n->menor == NULL ) {
                     n->menor = new Nodo(k, v, n);
-                    //auxPropagarInsercion(n->menor); TODO descomentar
+                    auxPropagarInsercion(n->menor);
                 }
                 else {
                     auxDefinirNodo(n->menor, k, v);
@@ -345,9 +350,8 @@ namespace tp3 {
         }
         nr->menor = rr;
         rr->padre = nr;
-        int rrfdb = rr->fdb;
         rr->fdb = rr->fdb + 1 - auxMin(nr->fdb, 0);
-        nr->fdb = nr->fdb + 1 + auxMin(rrfdb, 0);
+        nr->fdb = nr->fdb + 1 + auxMin(rr->fdb, 0);
     }
 
     template<class K, class T>
@@ -372,9 +376,8 @@ namespace tp3 {
         }
         nr->mayor = rr;
         rr->padre = nr;
-        int rrfdb = rr->fdb;
         rr->fdb = rr->fdb - 1 + auxMin(nr->fdb, 0);
-        nr->fdb = nr->fdb - 1 - auxMin(rrfdb, 0);
+        nr->fdb = nr->fdb - 1 - auxMin(rr->fdb, 0);
     }
 
     template<class K, class T>
@@ -510,7 +513,7 @@ namespace tp3 {
             this->raiz_ = ho;
         }
         else {
-            // auxPropagarBorrado(n); TODO descomentar esto
+            auxPropagarBorrado(n); 
             if( n->padre->menor == n ) {
                 n->padre->menor = ho;
             }
@@ -810,6 +813,23 @@ namespace tp3 {
             if( this->actual_->menor != NULL ) {
                 this->siguientes_.AgregarAdelante(this->actual_->menor);
             }
+        }
+    }
+
+    template<class K, class T>
+    void DiccLog<K,T>::print(std::ostream& o) {
+        o << "{";
+        printNodo(o, this->raiz_, 1);
+        o << "}" << std::endl;
+    }
+
+    template<class K, class T>
+    void DiccLog<K,T>::printNodo(std::ostream& o, typename DiccLog<K,T>::Nodo* n, int indent) {
+        if( n != NULL ) {
+            o << std::setw(indent*4) << "[ " << n->clave << " (" << n->fdb << ")" << std::endl;
+            printNodo(o, n->menor, indent+1);
+            printNodo(o, n->mayor, indent+1);
+            o << std::setw(indent*4) << "]" << std::endl;
         }
     }
 }
