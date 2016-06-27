@@ -102,21 +102,21 @@ void Driver::borrarRegistro(const NombreTabla& tabla, const NombreCampo& columna
 aed2::Conj<Columna> Driver::columnasDeTabla(const NombreTabla& tabla) const {
     assert(db.hayTabla(tabla));
 
-    const tp3::Tabla t = db.tabla(tabla);
+    const tp3::Tabla& t = db.tabla(tabla);
     return registroToCols(t.campos());
 }
 
 aed2::Conj<NombreCampo> Driver::columnasClaveDeTabla(const NombreTabla& tabla) const {
     assert(db.hayTabla(tabla));
 
-    const tp3::Tabla t = db.tabla(tabla);
-    const tp3::Registro campos = t.campos();
+    const tp3::Tabla& t = db.tabla(tabla);
+    const tp3::Registro& campos = t.campos();
     aed2::Conj<NombreCampo> res;
 
     tp3::Registro::const_Iterador it = campos.CrearIt();
 
     while(it.hayMas()) {
-        const tp3::Campo c = it.actual().clave;
+        const tp3::Campo& c = it.actual().clave;
         if(t.esClave(c)) {
             res.AgregarRapido(c);
         }
@@ -129,21 +129,21 @@ aed2::Conj<NombreCampo> Driver::columnasClaveDeTabla(const NombreTabla& tabla) c
 aed2::Conj<Driver::Registro> Driver::registrosDeTabla(const NombreTabla& tabla) const {
     assert(db.hayTabla(tabla));
 
-    const tp3::Tabla t = db.tabla(tabla);
+    const tp3::Tabla& t = db.tabla(tabla);
     return itRegsConstToRegistros(t.registros());
 }
 
 aed2::Nat Driver::cantidadDeAccesosDeTabla(const NombreTabla& tabla) const {
     assert(db.hayTabla(tabla));
 
-    const tp3::Tabla t = db.tabla(tabla);
+    const tp3::Tabla& t = db.tabla(tabla);
     return t.accesos();
 }
 
 Driver::Dato Driver::minimo(const NombreTabla& tabla, const NombreCampo& columna) const {
     assert(db.hayTabla(tabla));
 
-    const tp3::Tabla t = db.tabla(tabla);
+    const tp3::Tabla& t = db.tabla(tabla);
 
     assert(t.cantidadRegistros());
     assert(t.esIndice(columna));
@@ -158,7 +158,7 @@ Driver::Dato Driver::minimo(const NombreTabla& tabla, const NombreCampo& columna
 Driver::Dato Driver::maximo(const NombreTabla& tabla, const NombreCampo& columna) const {
     assert(db.hayTabla(tabla));
 
-    const tp3::Tabla t = db.tabla(tabla);
+    const tp3::Tabla& t = db.tabla(tabla);
 
     assert(t.cantidadRegistros());
     assert(t.esIndice(columna));
@@ -197,7 +197,7 @@ const NombreTabla Driver::tablaMaxima() const {
 
 bool Driver::tieneIndiceNat(const NombreTabla& tabla) const {
     assert(db.hayTabla(tabla));
-    const tp3::Tabla t = db.tabla(tabla);
+    const tp3::Tabla& t = db.tabla(tabla);
     tp3::Registro::const_Iterador it = t.campos().CrearIt();
 
     while(it.hayMas()) {
@@ -213,7 +213,7 @@ bool Driver::tieneIndiceNat(const NombreTabla& tabla) const {
 
 bool Driver::tieneIndiceString(const NombreTabla& tabla) const {
     assert(db.hayTabla(tabla));
-    const tp3::Tabla t = db.tabla(tabla);
+    const tp3::Tabla& t = db.tabla(tabla);
     tp3::Registro::const_Iterador it = t.campos().CrearIt();
 
     while(it.hayMas()) {
@@ -230,7 +230,7 @@ bool Driver::tieneIndiceString(const NombreTabla& tabla) const {
 const NombreCampo& Driver::campoIndiceNat(const NombreTabla& tabla) const {
     assert(db.hayTabla(tabla));
     assert(tieneIndiceNat(tabla));
-    const tp3::Tabla t = db.tabla(tabla);
+    const tp3::Tabla& t = db.tabla(tabla);
     tp3::Registro::const_Iterador it = t.campos().CrearIt();
 
     while(it.hayMas()) {
@@ -250,7 +250,7 @@ const NombreCampo& Driver::campoIndiceNat(const NombreTabla& tabla) const {
 const NombreCampo& Driver::campoIndiceString(const NombreTabla& tabla) const {
     assert(db.hayTabla(tabla));
     assert(tieneIndiceString(tabla));
-    const tp3::Tabla t = db.tabla(tabla);
+    const tp3::Tabla& t = db.tabla(tabla);
     tp3::Registro::const_Iterador it = t.campos().CrearIt();
 
     while(it.hayMas()) {
