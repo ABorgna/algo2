@@ -510,7 +510,7 @@ namespace tp3 {
             this->raiz_ = ho;
         }
         else {
-            auxPropagarBorrado(n);
+            // auxPropagarBorrado(n); TODO descomentar esto
             if( n->padre->menor == n ) {
                 n->padre->menor = ho;
             }
