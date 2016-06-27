@@ -174,10 +174,12 @@ namespace testsDB
         ASSERT(r.definido("nat1_2"));
     }
 
-    void operaciones_con_joins() {
+    void operaciones_con_joins_simple() {
         tp3::DB db;
         tp3::Tabla t0 = sampleTabla0();
         tp3::Tabla t1 = sampleTabla1();
+        tp3::itRegistrosConst it0;
+        tp3::itRegistrosConst it1;
 
         db.agregarTabla(t0);
         db.agregarTabla(t1);
@@ -185,7 +187,43 @@ namespace testsDB
         db.generarVistaJoin("tabla0","tabla1", "claveNat0");
         db.generarVistaJoin("tabla1","tabla0", "claveStr0");
 
-        // TODO: terminar esto
+        db.insertarEntrada("tabla0", sampleReg0_0());
+
+        it0 = db.vistaJoin("tabla0","tabla1");
+        it1 = db.vistaJoin("tabla1","tabla0");
+
+        ASSERT(!it0.HaySiguiente());
+        ASSERT(!it1.HaySiguiente());
+
+        db.insertarEntrada("tabla1", sampleReg1_0());
+
+        it0 = db.vistaJoin("tabla0","tabla1");
+        it1 = db.vistaJoin("tabla1","tabla0");
+
+        ASSERT(it0.HaySiguiente());
+        ASSERT(it1.HaySiguiente());
+        ASSERT_EQ(it0.Siguiente().obtener("claveNat0").getNat(), 0);
+        ASSERT_EQ(it1.Siguiente().obtener("claveNat0").getNat(), 0);
+
+        it0.Avanzar();
+        it1.Avanzar();
+
+        ASSERT(!it0.HaySiguiente());
+        ASSERT(!it1.HaySiguiente());
+
+        db.insertarEntrada("tabla0", sampleReg0_1());
+        db.insertarEntrada("tabla0", sampleReg0_2());
+        db.insertarEntrada("tabla0", sampleReg0_3());
+
+        db.insertarEntrada("tabla1", sampleReg1_1());
+        db.insertarEntrada("tabla1", sampleReg1_2());
+        db.insertarEntrada("tabla1", sampleReg1_3());
+
+        it0 = db.vistaJoin("tabla0","tabla1");
+        it1 = db.vistaJoin("tabla1","tabla0");
+
+        ASSERT(it0.HaySiguiente());
+        ASSERT(it1.HaySiguiente());
     }
 
     void main(int, char**) {
@@ -195,7 +233,7 @@ namespace testsDB
         RUN_TEST( buscar );
         RUN_TEST( crear_joins_simple );
         RUN_TEST( crear_joins_con_datos );
-        RUN_TEST( operaciones_con_joins );
+        RUN_TEST( operaciones_con_joins_simple );
     }
 
 
