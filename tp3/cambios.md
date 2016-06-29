@@ -1,5 +1,7 @@
 ## Cambios respecto a la especificación
 
+- Agregamos el operador '!=' a las estructuras de la cátedra (que tenían solo definido '==')
+
 - Los nodos de diccTrie ahora tienen un bool `esta` para saber si tienen un valor válido.
     Cambiaron un cacho los algoritmos.
 
