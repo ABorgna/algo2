@@ -25,10 +25,40 @@ namespace testsDriver
 
         bd.insertarRegistro("personas", persona);
 
+        aed2::Conj<aed2::Columna> columnas = bd.columnasDeTabla("personas");
+
+        ASSERT_EQ(columnas.Cardinal(), 3);
+
+        aed2::Conj<aed2::NombreCampo> columnas_nombre;
+        aed2::Conj<aed2::Columna>::const_Iterador it = columnas.CrearIt();
+        while(it.HaySiguiente()) {
+            columnas_nombre.Agregar(it.Siguiente().nombre);
+            it.Avanzar();
+        }
+        ASSERT(columnas_nombre.Pertenece("DNI"));
+        ASSERT(columnas_nombre.Pertenece("nombre"));
+        ASSERT(columnas_nombre.Pertenece("apellido"));
+
         aed2::Conj<aed2::NombreCampo> claves = bd.columnasClaveDeTabla("personas");
 
         ASSERT_EQ(claves.Cardinal(), 1);
         ASSERT_EQ(claves.CrearIt().Siguiente(), "DNI");
+
+        bd.borrarRegistro("personas", "DNI", aed2::Driver::Dato(1));
+
+        aed2::Conj<aed2::Driver::Registro> registros = bd.registrosDeTabla("personas");
+
+        ASSERT(registros.EsVacio());
+
+        bd.insertarRegistro("personas", persona);
+
+        registros = bd.registrosDeTabla("personas");
+
+        ASSERT_EQ(registros.Cardinal(), 1);
+        ASSERT(registros.CrearIt().Siguiente().Significado("DNI") ==
+                aed2::Driver::Dato(1));
+
+        ASSERT_EQ(bd.cantidadDeAccesosDeTabla("personas"), 3);
     }
 
     void main(int, char**)
