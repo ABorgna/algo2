@@ -215,7 +215,7 @@ itRegistrosConst Tabla::registros() const {
     return registros_.CrearIt();
 }
 
-const Registro Tabla::campos() const {
+const Registro& Tabla::campos() const {
     return campos_;
 }
 

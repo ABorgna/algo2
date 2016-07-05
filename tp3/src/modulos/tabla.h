@@ -31,7 +31,7 @@ namespace tp3 {
             bool esIndice(const Campo&) const;
 
             itRegistrosConst registros() const;
-            const Registro campos() const;
+            const Registro& campos() const;
             bool tipoCampo(const Campo&) const;
 
             unsigned int accesos() const;
