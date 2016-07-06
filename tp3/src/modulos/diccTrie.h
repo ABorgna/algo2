@@ -127,13 +127,19 @@ namespace tp3 {
     template<class T>
     DiccTrie<T>& DiccTrie<T>::operator= (DiccTrie<T> otro) {
         Nodo* swapTmp;
+        ClaveValor cvTmp;
 
         swapTmp = raiz_;
         raiz_ = otro.raiz_;
         otro.raiz_ = swapTmp;
 
+        cvTmp = maximo_;
         maximo_ = otro.maximo_;
+        otro.maximo_ = cvTmp;
+
+        cvTmp = minimo_;
         minimo_ = otro.minimo_;
+        otro.minimo_ = cvTmp;
 
         return *this;
     }
